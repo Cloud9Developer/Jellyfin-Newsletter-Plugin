@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Jellyfin.Plugin.Template</name>
+    </assembly>
+    <members>
+        <member name="T:Jellyfin.Plugin.Template.Configuration.SomeOptions">
+            <summary>
+            The configuration options.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.Template.Configuration.SomeOptions.OneOption">
+            <summary>
+            Option one.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.Template.Configuration.SomeOptions.AnotherOption">
+            <summary>
+            Second option.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.Template.Configuration.PluginConfiguration">
+            <summary>
+            Plugin configuration.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Template.Configuration.PluginConfiguration"/> class.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.SMTPServer">
+            <summary>
+            Gets or sets a value indicating whether some true or false setting is enabled..
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.SMTPPort">
+            <summary>
+            Gets or sets an integer setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.SMTPUser">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.SMTPPass">
+            <summary>
+            Gets or sets an enum option.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.Template.Plugin">
+            <summary>
+            The main plugin.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Template.Plugin.#ctor(MediaBrowser.Common.Configuration.IApplicationPaths,MediaBrowser.Model.Serialization.IXmlSerializer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Template.Plugin"/> class.
+            </summary>
+            <param name="applicationPaths">Instance of the <see cref="T:MediaBrowser.Common.Configuration.IApplicationPaths"/> interface.</param>
+            <param name="xmlSerializer">Instance of the <see cref="T:MediaBrowser.Model.Serialization.IXmlSerializer"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Plugin.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Plugin.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Plugin.Instance">
+            <summary>
+            Gets the current plugin instance.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Template.Plugin.GetPages">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>
