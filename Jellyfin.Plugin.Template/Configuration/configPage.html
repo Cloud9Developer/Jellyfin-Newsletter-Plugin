@@ -9,59 +9,78 @@
         <div data-role="content">
             <div class="content-primary">
                 <form id="TemplateConfigForm">
-				<!--
-                    <div class="selectContainer">
-                        <label class="selectLabel" for="Options">Several Options</label>
-                        <select is="emby-select" id="Options" name="Options" class="emby-select-withcolor emby-select">
-                            <option id="optOneOption" value="OneOption">One Option</option>
-                            <option id="optAnotherOption" value="AnotherOption">Another Option</option>
-                        </select>
+                    <div id="OutboundEmailDetails">
+                        <div class="inputContainer" id="ToAddress">
+                            <label class="inputLabel inputLabelUnfocused" for="ToAddr">To Address:</label>
+                            <input id="ToAddr" name="ToAddr" type="text" is="emby-input" />
+                            <div class="fieldDescription">Recipient's email to recieve newsletter. If more than 1, seperate with commas</div>
+                        </div>
+                        <div class="inputContainer" id="FromAddress">
+                            <label class="inputLabel inputLabelUnfocused" for="FromAddr">From Address:</label>
+                            <input id="FromAddr" name="FromAddr" type="text" is="emby-input" />
+                            <div class="fieldDescription">The address that the newsletter will come from</div>
+                        </div>
+                        <div class="inputContainer" id="SubjectTemplate">
+                            <label class="inputLabel inputLabelUnfocused" for="Subject">Subject:</label>
+                            <input id="Subject" name="Subject" type="text" is="emby-input" />
+                            <div class="fieldDescription">Subject field of the newsletter (Default: 'Jellyfin Newsletter)</div>
+                        </div>
+                        <div class="inputContainer" id="BodyTemplate">
+                            <label class="inputLabel inputLabelUnfocused" for="Body">Body:</label>
+                            <input id="Body" name="Body" type="text" is="emby-input" />
+                            <div class="fieldDescription">Body of the email. Defaults to a predefined template</div>
+                        </div>
                     </div>
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="AnInteger">An Integer</label>
-                        <input id="AnInteger" name="AnInteger" type="number" is="emby-input" min="0" />
-                        <div class="fieldDescription">A Description</div>
-                    </div>
-                    <div class="checkboxContainer checkboxContainer-withDescription">
-                        <label class="emby-checkbox-label">
-                            <input id="TrueFalseSetting" name="TrueFalseCheckBox" type="checkbox" is="emby-checkbox" />
-                            <span>A Checkbox</span>
-                        </label>
-                    </div>
-					-->
 
-					<!-- SMTP Server Details -->
-					<div id="ServerDetails">
-						<div class="inputContainer" id="SMTPServerAddress">
-							<label class="inputLabel inputLabelUnfocused" for="SMTPServer">SMTP Server Address:</label>
-							<input id="SMTPServer" name="SMTPServerName" type="text" is="emby-input" />
-							<div class="fieldDescription">Server address of the SMTP server/service you want to use (i.e. smtp.gmail.com)</div>
-						</div>
-						<div class="inputContainer" id="SMTPPortNum">
-							<label class="inputLabel inputLabelUnfocused" for="SMTPPort">SMTP Port:</label>
-							<input id="SMTPPort" name="SMTPPortNum" type="number" is="emby-input" min="0" />
-							<div class="fieldDescription">SMTP Port that the server/service listed above uses (i.e. 587)</div>
-						</div>
-						<div class="inputContainer" id="SMTPUsername">
-							<label class="inputLabel inputLabelUnfocused" for="SMTPUser">SMTP Username:</label>
-							<input id="SMTPUser" name="SMTPUsername" type="text" is="emby-input" />
-							<div class="fieldDescription">Username/email that will be used to login to the SMTP server</div>
-						</div>
-						<div class="inputContainer" id="SMTPPassword">
-							<label class="inputLabel inputLabelUnfocused" for="SMTPPass">SMTP Password:</label>
-							<input id="SMTPPass" name="SMTPPassword" type="text" is="emby-input" />
-							<div class="fieldDescription">Password that will be used to login to the SMTP server</div>
-						</div>
-						<!-- Save config button-->
-						<div>
-							<button is="emby-button" type="submit" class="raised button-submit block emby-button">
-								<span>Save</span>
-							</button>
-						</div>
-					</div>
+                    <!-- SMTP Server Details -->
+                    <div id="ServerDetails">
+                        <details>
+                            <summary>SMTP Config</summary>
+                            <div class="inputContainer" id="SMTPServerAddress">
+                                <label class="inputLabel inputLabelUnfocused" for="SMTPServer">SMTP Server Address:</label>
+                                <input id="SMTPServer" name="SMTPServerName" type="text" is="emby-input" />
+                                <div class="fieldDescription">Server address of the SMTP server/service you want to use (i.e. smtp.gmail.com)</div>
+                            </div>
+                            <div class="inputContainer" id="SMTPPortNum">
+                                <label class="inputLabel inputLabelUnfocused" for="SMTPPort">SMTP Port:</label>
+                                <input id="SMTPPort" name="SMTPPortNum" type="number" is="emby-input" min="0" />
+                                <div class="fieldDescription">SMTP Port that the server/service listed above uses (i.e. 587)</div>
+                            </div>
+                            <div class="inputContainer" id="SMTPUsername">
+                                <label class="inputLabel inputLabelUnfocused" for="SMTPUser">SMTP Username:</label>
+                                <input id="SMTPUser" name="SMTPUsername" type="text" is="emby-input" />
+                                <div class="fieldDescription">Username/email that will be used to login to the SMTP server</div>
+                            </div>
+                            <div class="inputContainer" id="SMTPPassword">
+                                <label class="inputLabel inputLabelUnfocused" for="SMTPPass">SMTP Password:</label>
+                                <input id="SMTPPass" name="SMTPPassword" type="text" is="emby-input" />
+                                <div class="fieldDescription">Password that will be used to login to the SMTP server</div>
+                            </div>
+                        </details>
+                    </div>
+                        <!-- buttons -->
+                    <div>
+                        <button id="testButton" is="emby-button" type="button" class="raised button-submit block emby-button">
+                            <span>Test Notifications</span>
+                        </button>
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                            <span>Save</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
+        <style>
+            #ServerDetails {
+                border-width: 2px;
+                border-style: solid;
+                border-color: white;
+                padding: 10px 10px 10px 10px;
+            }
+            #testButton {
+                background: #C1C1BF;
+            }
+        </style>
         <script type="text/javascript">
             var TemplateConfig = {
                 pluginUniqueId: '60f478ab-2dd6-4ea0-af10-04d033f75979'
@@ -71,12 +90,18 @@
                 .addEventListener('pageshow', function() {
                     Dashboard.showLoadingMsg();
                     ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
-						console.log("Populating Page..");
-						console.log(document.querySelector('#SMTPPort').value);
+                        console.log("Populating Page..");
+                        console.log(document.querySelector('#SMTPPort').value);
+                        //serverDetails
                         document.querySelector('#SMTPServer').value = config.SMTPServer;
                         document.querySelector('#SMTPPort').value = config.SMTPPort;
                         document.querySelector('#SMTPUser').value = config.SMTPUser;
                         document.querySelector('#SMTPPass').value = config.SMTPPass;
+                        //emailDetails
+                        document.querySelector('#ToAddr').value = config.ToAddr;
+                        document.querySelector('#FromAddr').value = config.FromAddr;
+                        document.querySelector('#Subject').value = config.Subject;
+                        document.querySelector('#Body').value = config.Body;
                         Dashboard.hideLoadingMsg();
                     });
                 });
@@ -85,17 +110,26 @@
                 .addEventListener('submit', function(e) {
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
+                    //serverDetails
                     config.SMTPServer = document.querySelector('#SMTPServer').value;
                     config.SMTPPort = document.querySelector('#SMTPPort').value;
                     config.SMTPUser = document.querySelector('#SMTPUser').value;
                     config.SMTPPass = document.querySelector('#SMTPPass').value;
-					console.log("HERE: ",config);
+                    //emailDetails
+                    config.ToAddr = document.querySelector('#ToAddr').value;
+                    config.FromAddr = document.querySelector('#FromAddr').value;
+                    config.Subject = document.querySelector('#Subject').value;
+                    config.Body = document.querySelector('#Body').value;
+                    console.log("HERE: ",config);
 
                     ApiClient.updatePluginConfiguration(TemplateConfig.pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
-						console.log("RESULT: ", result);
+                        console.log("RESULT: ", result);
                     });
                 });
+
+                // test Notifications
+                //document.querySelector
 
                 e.preventDefault();
                 return false;

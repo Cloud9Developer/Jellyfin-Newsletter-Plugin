@@ -35,11 +35,20 @@ public class PluginConfiguration : BasePluginConfiguration
         AnInteger = 2;
         AString = "string";
 */
+        // default Server Details
         SMTPServer = "smtp.gmail.com";
         SMTPPort = 587;
         SMTPUser = string.Empty;
         SMTPPass = string.Empty;
+
+        // default Email Details
+        ToAddr = string.Empty;
+        FromAddr = "JellyfinNewsletter@donotreply.com";
+        Subject = "Jellyfin Newsletter";
+        Body = string.Empty;
     }
+
+    // Server Details
 
     /// <summary>
     /// Gets or sets a value indicating whether some true or false setting is enabled..
@@ -57,7 +66,31 @@ public class PluginConfiguration : BasePluginConfiguration
     public string SMTPUser { get; set; }
 
     /// <summary>
-    /// Gets or sets an enum option.
+    /// Gets or sets a string setting.
     /// </summary>
     public string SMTPPass { get; set; }
+
+    // -----------------------------------
+
+    // Email Details
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string ToAddr { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string FromAddr { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string Subject { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string Body { get; set; }
 }

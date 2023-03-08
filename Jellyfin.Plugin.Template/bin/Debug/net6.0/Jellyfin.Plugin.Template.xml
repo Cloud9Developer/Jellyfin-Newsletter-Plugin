@@ -46,7 +46,27 @@
         </member>
         <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.SMTPPass">
             <summary>
-            Gets or sets an enum option.
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.ToAddr">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.FromAddr">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.Subject">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Template.Configuration.PluginConfiguration.Body">
+            <summary>
+            Gets or sets a string setting.
             </summary>
         </member>
         <member name="T:Jellyfin.Plugin.Template.Plugin">
