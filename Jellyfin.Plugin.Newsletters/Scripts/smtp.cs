@@ -4,14 +4,16 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Plugin.Newsletters.Configuration;
 using MediaBrowser.Common.Configuration;
+using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-using static System.Net.NetworkCredential;
+// using System.Net.NetworkCredential;
 
 namespace Jellyfin.Plugin.Newsletters.Scripts;
 
@@ -23,53 +25,39 @@ namespace Jellyfin.Plugin.Newsletters.Scripts;
 [Route("Smtp")]
 public class Smtp : ControllerBase
 {
-   // private readonly IServerConfigurationManager _configurationManager;
+    private readonly PluginConfiguration config;
+
+    public Smtp()
+    {
+        config = Plugin.Instance!.Configuration;
+    }
 
     [HttpPost("SendSmtp")]
     // [ProducesResponseType(StatusCodes.Status201Created)]
     // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public static void SendSmtp(string recipient, string sender)
+    public void SendEmail()
     {
-        // created object of SmtpClient details and provides server details
-        System.Console.WriteLine("Running SMTP C# File");
-        SmtpClient smtp = new SmtpClient();
-        smtp.Host = "smtp.gmail.com";
-        smtp.Port = 587;
-
-        // Server Credentials
-        NetworkCredential nc = new NetworkCredential();
-        nc.UserName = "chris.hebert.jesusfreak09@gmail.com";
-        nc.Password = "hmctnexjirhhphms";
-        // assigned credetial details to server
-        smtp.Credentials = nc;
-
-        // create sender address
-        MailAddress from = new MailAddress(sender, sender);
-
-        // create receiver address
-        MailAddress receiver = new MailAddress(recipient, recipient);
-
-        MailMessage mymessage = new MailMessage(from, receiver);
-        mymessage.Subject = "this is a test message";
-        mymessage.Body = string.Empty;
-        // sends the email
-        smtp.Send(mymessage);
-    }
-
-    public static void SendEmail()
-    {
+        // Smtp varsmtp = new Smtp();
         MailMessage mail = new MailMessage();
-        string smtpAddress = "smtp.gmail.com";
-        int portNumber = 587;
+        string smtpAddress = config.SMTPServer;
+        int portNumber = config.SMTPPort;
         bool enableSSL = true;
-        string emailFromAddress = "chris.hebert.jesusfreak09@gmail.com";
-        string password = "hmctnexjirhhphms";
-        string emailToAddress = "christopher.hebert94@gmail.com";
-        string subject = "Jellyfin Test";
-        string body = "Hello, This is Email sending test using gmail.";
+        string emailFromAddress = config.SMTPUser;
+        string password = config.SMTPPass;
+        string emailToAddress = config.ToAddr;
+        string subject = config.Subject;
+        string body = "All values set";
 
-        mail.From = new MailAddress(emailFromAddress);
-        mail.To.Add(emailToAddress);
+        mail.From = new MailAddress(emailFromAddress, emailFromAddress);
+        // mail.To.Add(emailToAddress);
+        mail.To.Clear();
+        string[] emailArr = emailToAddress.Split(',');
+
+        foreach (string email in emailArr)
+        {
+            mail.Bcc.Add(email.Trim());
+        }
+
         mail.Subject = subject;
         mail.Body = body;
         mail.IsBodyHtml = true;
@@ -79,20 +67,4 @@ public class Smtp : ControllerBase
         smtp.EnableSsl = enableSSL;
         smtp.Send(mail);
     }
-
-/*
-    public Task SendSmtpTask(IProgress<double> progress, CancellationToken cancellationToken)
-    {
-        try {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            Console.WriteLine("I made it!!!");
-            progress.Report(100);
-        }
-        catch (Exception e) {
-            Console.WriteLine("{0} Exception Caught.", e);
-        }
-        return Task.CompletedTask;
-    }
-*/
 }

@@ -16,20 +16,6 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
     /// </summary>
     public class EmailNewsletter : IScheduledTask
     {
-        // public ILibraryManager _libraryManager;
-        // public ILocalizationManager _localization;
-
-        // /// <summary>
-        // /// Initializes a new instance of the <see cref="RefreshMediaLibraryTask" /> class.
-        // /// </summary>
-        // /// <param name="libraryManager">Instance of the <see cref="ILibraryManager"/> interface.</param>
-        // /// <param name="localization">Instance of the <see cref="ILocalizationManager"/> interface.</param>
-        // public void RefreshMediaLibraryTask(ILibraryManager libraryManager, ILocalizationManager localization)
-        // {
-        //     _libraryManager = libraryManager;
-        //     _localization = localization;
-        // }
-
         /// <inheritdoc />
         public string Name => "Newsletter Scheduler";
 
@@ -59,14 +45,11 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
         public Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             progress.Report(0);
-            Console.WriteLine("I made it!!!");
-            // return ((LibraryManager)_libraryManager).ValidateMediaLibraryInternal(progress, cancellationToken);
-            // string to = "christopher.hebert94@gmail.com";
-            // string from = "donotreply";
-            // Smtp.SendSmtp(to, from);
-            Smtp.SendEmail();
+
+            Smtp mySmtp = new Smtp();
+            mySmtp.SendEmail();
+            progress.Report(100);
             return Task.CompletedTask;
         }
     }
