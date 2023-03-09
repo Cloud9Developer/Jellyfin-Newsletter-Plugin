@@ -60,7 +60,7 @@
                     </div>
                         <!-- buttons -->
                     <div>
-                        <button id="testButton" is="emby-button" type="button" class="raised button-submit block emby-button">
+                        <button id="testButton" is="emby-button" type="button" class="raised button-submit block emby-button" >
                             <span>Test Notifications</span>
                         </button>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
@@ -79,6 +79,7 @@
             }
             #testButton {
                 background: #C1C1BF;
+                display: none;
             }
         </style>
         <script type="text/javascript">
@@ -159,8 +160,9 @@
                     );
                     */
                     console.log("TEST: ", config);
-                    //let url = ApiClient.getUrl('SendSmtp');
-                    let url = '@Url.Action("SendSmtp", "Home")';
+                    let url = ApiClient.getUrl('Smtp/SendSmtp');
+                    console.log("ServerAddr: ", ApiClient.serverAddress());
+                    //let url = '@Url.Action("SendSmtp", "Home")';
                     //let url = '<%= ResolveUrl("/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Scripts/smtp.cs") %>';
                     console.log("URL: ",url);
                     let data = JSON.stringify(config);

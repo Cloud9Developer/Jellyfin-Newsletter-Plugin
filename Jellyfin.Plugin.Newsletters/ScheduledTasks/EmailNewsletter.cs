@@ -63,9 +63,10 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
             progress.Report(0);
             Console.WriteLine("I made it!!!");
             // return ((LibraryManager)_libraryManager).ValidateMediaLibraryInternal(progress, cancellationToken);
-            string to = "christopher.hebert94@gmail.com";
-            string from = "donotreply";
-            Smtp.SendSmtp(to, from);
+            // string to = "christopher.hebert94@gmail.com";
+            // string from = "donotreply";
+            // Smtp.SendSmtp(to, from);
+            Smtp.SendEmail();
             return Task.CompletedTask;
         }
     }
