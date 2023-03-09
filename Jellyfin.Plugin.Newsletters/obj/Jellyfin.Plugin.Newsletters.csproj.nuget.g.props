@@ -4,17 +4,17 @@
     <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
     <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
     <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
-    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/home/christopher/.nuget/packages/</NuGetPackageRoot>
-    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/home/christopher/.nuget/packages/</NuGetPackageFolders>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/root/.nuget/packages/</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/root/.nuget/packages/</NuGetPackageFolders>
     <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
-    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.5.0</NuGetToolVersion>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.3.2</NuGetToolVersion>
   </PropertyGroup>
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <SourceRoot Include="/home/christopher/.nuget/packages/" />
+    <SourceRoot Include="/root/.nuget/packages/" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <PkgStyleCop_Analyzers_Unstable Condition=" '$(PkgStyleCop_Analyzers_Unstable)' == '' ">/home/christopher/.nuget/packages/stylecop.analyzers.unstable/1.2.0.376</PkgStyleCop_Analyzers_Unstable>
-    <PkgSmartAnalyzers_MultithreadingAnalyzer Condition=" '$(PkgSmartAnalyzers_MultithreadingAnalyzer)' == '' ">/home/christopher/.nuget/packages/smartanalyzers.multithreadinganalyzer/1.1.31</PkgSmartAnalyzers_MultithreadingAnalyzer>
-    <PkgSerilogAnalyzer Condition=" '$(PkgSerilogAnalyzer)' == '' ">/home/christopher/.nuget/packages/seriloganalyzer/0.15.0</PkgSerilogAnalyzer>
+    <PkgStyleCop_Analyzers_Unstable Condition=" '$(PkgStyleCop_Analyzers_Unstable)' == '' ">/root/.nuget/packages/stylecop.analyzers.unstable/1.2.0.376</PkgStyleCop_Analyzers_Unstable>
+    <PkgSmartAnalyzers_MultithreadingAnalyzer Condition=" '$(PkgSmartAnalyzers_MultithreadingAnalyzer)' == '' ">/root/.nuget/packages/smartanalyzers.multithreadinganalyzer/1.1.31</PkgSmartAnalyzers_MultithreadingAnalyzer>
+    <PkgSerilogAnalyzer Condition=" '$(PkgSerilogAnalyzer)' == '' ">/root/.nuget/packages/seriloganalyzer/0.15.0</PkgSerilogAnalyzer>
   </PropertyGroup>
 </Project>

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj": {}
+    "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj": {}
   },
   "projects": {
-    "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj": {
+    "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj": {
       "version": "0.0.0.1",
       "restore": {
-        "projectUniqueName": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
+        "projectUniqueName": "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
         "projectName": "Jellyfin.Plugin.Newsletters",
-        "projectPath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
-        "packagesPath": "/home/christopher/.nuget/packages/",
-        "outputPath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/obj/",
+        "projectPath": "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/Development/Jellyfin.Plugin.Newsletters/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/christopher/.nuget/NuGet/NuGet.Config"
+          "/root/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -74,22 +74,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.14, 6.0.14]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.14, 6.0.14]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/snap/dotnet-sdk/194/sdk/7.0.200/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.406/RuntimeIdentifierGraph.json"
         }
       }
     }

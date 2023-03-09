@@ -95,7 +95,33 @@
         <member name="M:Jellyfin.Plugin.Newsletters.Plugin.GetPages">
             <inheritdoc />
         </member>
-        <member name="T:Jellyfin.Plugin.NewsLetters.Scripts.Smtp">
+        <member name="T:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter">
+            <summary>
+            Class RefreshMediaLibraryTask.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Category">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Key">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.GetDefaultTriggers">
+            <summary>
+            Creates the triggers that define when the task will run.
+            </summary>
+            <returns>IEnumerable{BaseTaskTrigger}.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Plugin.Newsletters.Scripts.Smtp">
             <summary>
             Interaction logic for SendMail.xaml.
             </summary>
