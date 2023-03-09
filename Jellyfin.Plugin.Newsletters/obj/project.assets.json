@@ -1123,11 +1123,11 @@
   "project": {
     "version": "0.0.0.1",
     "restore": {
-      "projectUniqueName": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Template/Jellyfin.Plugin.Template.csproj",
-      "projectName": "Jellyfin.Plugin.Template",
-      "projectPath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Template/Jellyfin.Plugin.Template.csproj",
+      "projectUniqueName": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
+      "projectName": "Jellyfin.Plugin.Newsletters",
+      "projectPath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
       "packagesPath": "/home/christopher/.nuget/packages/",
-      "outputPath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Template/obj/",
+      "outputPath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/christopher/.nuget/NuGet/NuGet.Config"

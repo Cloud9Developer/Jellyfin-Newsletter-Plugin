@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "RevdliNRhAgjjKgXmGy8/xR/DDDIvRq/1aHTRdmUJVObsVPZPT7xbDoj2Rv0OW37UNttuBsv0HIoU+im1Uj66w==",
+  "dgSpecHash": "i8FaHyixAXcvDwCWQEXF4jcFybcNVXgza8ZPuwa0ClK48LFacVgLfn6l8vb5DCcA0hNTzUUjXVHh1jtef1NfKg==",
   "success": true,
-  "projectFilePath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Template/Jellyfin.Plugin.Template.csproj",
+  "projectFilePath": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
   "expectedPackageFiles": [
     "/home/christopher/.nuget/packages/jellyfin.common/10.8.0/jellyfin.common.10.8.0.nupkg.sha512",
     "/home/christopher/.nuget/packages/jellyfin.controller/10.8.0/jellyfin.controller.10.8.0.nupkg.sha512",

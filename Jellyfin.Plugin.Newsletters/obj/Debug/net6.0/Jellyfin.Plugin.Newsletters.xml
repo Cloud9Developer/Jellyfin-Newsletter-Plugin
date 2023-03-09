@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Jellyfin.Plugin.Newsletters</name>
+    </assembly>
+    <members>
+        <member name="T:Jellyfin.Plugin.Newsletters.Configuration.SomeOptions">
+            <summary>
+            The configuration options.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.Newsletters.Configuration.SomeOptions.OneOption">
+            <summary>
+            Option one.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.Newsletters.Configuration.SomeOptions.AnotherOption">
+            <summary>
+            Second option.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration">
+            <summary>
+            Plugin configuration.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration"/> class.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.SMTPServer">
+            <summary>
+            Gets or sets a value indicating whether some true or false setting is enabled..
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.SMTPPort">
+            <summary>
+            Gets or sets an integer setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.SMTPUser">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.SMTPPass">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.ToAddr">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.FromAddr">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.Subject">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.Body">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.Newsletters.Plugin">
+            <summary>
+            The main plugin.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.Plugin.#ctor(MediaBrowser.Common.Configuration.IApplicationPaths,MediaBrowser.Model.Serialization.IXmlSerializer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Plugin"/> class.
+            </summary>
+            <param name="applicationPaths">Instance of the <see cref="T:MediaBrowser.Common.Configuration.IApplicationPaths"/> interface.</param>
+            <param name="xmlSerializer">Instance of the <see cref="T:MediaBrowser.Model.Serialization.IXmlSerializer"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Plugin.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Plugin.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Plugin.Instance">
+            <summary>
+            Gets the current plugin instance.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.Plugin.GetPages">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Plugin.NewsLetters.Scripts.Smtp">
+            <summary>
+            Interaction logic for SendMail.xaml.
+            </summary>
+        </member>
+    </members>
+</doc>

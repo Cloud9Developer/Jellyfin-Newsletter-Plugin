@@ -1,0 +1,46 @@
+using System;
+using System.Net;
+using System.Net.*;
+using System.Net.Mail;
+
+namespace Jellyfin.Plugin.NewsLetters.Scripts
+{
+    /// <summary>
+    /// Interaction logic for SendMail.xaml
+    /// </summary>
+    public class SendEmail
+    {
+        public SendMail()
+        {
+            InitializeComponent();
+        }
+
+        private void sendSmtp(string To, string From)
+        {
+            // created object of SmtpClient details and provides server details
+            SmtpClient Smtp = new SmtpClient();
+            Smtp.Host = string.Empty;
+            Smtp.Port = 81;
+
+            // Server Credentials
+            NetworkCredential NC = new NetworkCredential();
+            NC.UserName="";
+            NC.Password="";
+            // assigned credetial details to server
+            Smtp.Credentials = NC;
+
+            // create sender address
+            MailAddress from = new MailAddress("Sender Address", "Name want to display");
+
+            // create receiver address
+            MailAddress receiver = new MailAddress(To.Text.Trim(), "Name want to display");
+
+            MailMessage Mymessage = new MailMessage(from, receiver);
+            Mymessage.Subject = txtSubject.Text.Trim();
+            Mymessage.Body = txtDocument.Text.Trim();
+            // sends the email
+            Smtp.Send(Mymessage);
+        }
+    }
+}
+
