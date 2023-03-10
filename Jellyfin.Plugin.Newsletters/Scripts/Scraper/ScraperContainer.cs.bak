@@ -1,0 +1,29 @@
+using System;
+
+namespace Jellyfin.Plugin.Newsletters.Scripts.Scraper;
+
+/// <summary>
+/// Queued item container.
+/// </summary>
+public class ScraperContainer
+{
+    /// <summary>
+    /// details
+    /// </summary>
+    /// <param name="id">The item id.</param>
+    public ScraperContainer(Guid id)
+    {
+        ItemId = id;
+        RetryCount = 0;
+    }
+
+    /// <summary>
+    /// Gets or sets the current retry count.
+    /// </summary>
+    public int RetryCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current item id.
+    /// </summary>
+    public Guid ItemId { get; set; }
+}

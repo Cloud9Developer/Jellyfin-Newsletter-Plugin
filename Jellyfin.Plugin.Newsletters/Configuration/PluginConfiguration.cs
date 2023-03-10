@@ -29,12 +29,6 @@ public class PluginConfiguration : BasePluginConfiguration
     public PluginConfiguration()
     {
         // set default options here
-/*
-        Options = SomeOptions.AnotherOption;
-        TrueFalseSetting = true;
-        AnInteger = 2;
-        AString = "string";
-*/
         // default Server Details
         SMTPServer = "smtp.gmail.com";
         SMTPPort = 587;

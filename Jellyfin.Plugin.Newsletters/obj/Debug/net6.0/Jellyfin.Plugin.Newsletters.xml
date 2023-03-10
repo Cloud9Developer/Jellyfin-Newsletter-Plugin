@@ -95,31 +95,62 @@
         <member name="M:Jellyfin.Plugin.Newsletters.Plugin.GetPages">
             <inheritdoc />
         </member>
-        <member name="T:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter">
+        <member name="T:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask">
             <summary>
             Class RefreshMediaLibraryTask.
             </summary>
         </member>
-        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Name">
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask.Name">
             <inheritdoc />
         </member>
-        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Description">
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask.Description">
             <inheritdoc />
         </member>
-        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Category">
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask.Category">
             <inheritdoc />
         </member>
-        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.Key">
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask.Key">
             <inheritdoc />
         </member>
-        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.GetDefaultTriggers">
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask.GetDefaultTriggers">
             <summary>
             Creates the triggers that define when the task will run.
             </summary>
             <returns>IEnumerable{BaseTaskTrigger}.</returns>
         </member>
-        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletter.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
             <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask">
+            <summary>
+            Class RefreshMediaLibraryTask.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.Category">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.Key">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.GetDefaultTriggers">
+            <summary>
+            Creates the triggers that define when the task will run.
+            </summary>
+            <returns>IEnumerable{BaseTaskTrigger}.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.Scripts.Scraper.JsonFileObj.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Scripts.Scraper.JsonFileObj"/> class.
+            </summary>
         </member>
         <member name="T:Jellyfin.Plugin.Newsletters.Scripts.Smtp">
             <summary>

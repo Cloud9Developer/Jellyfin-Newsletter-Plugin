@@ -47,6 +47,10 @@
               "target": "Package",
               "version": "[10.8.0, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "SerilogAnalyzer": {
               "suppressParent": "All",
               "target": "Package",

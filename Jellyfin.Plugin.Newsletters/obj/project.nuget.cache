@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1MMfLhrdSCK1mE1LTGy939uBDdEmEOjdFcQv6XbXI+pRTML2J/S/bJM5ZhXgaG0A1BWTKB5jdWFhI1cv6i4QTg==",
+  "dgSpecHash": "WisuOuwckBF0SG5obmi2a/qhWoJ647ZpqMpEYKFb8pZGhQUUUtWtgkf1ZjYPY5CEaPLGYEZ+mor/L+V3KlqGPg==",
   "success": true,
   "projectFilePath": "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
   "expectedPackageFiles": [
@@ -20,6 +20,7 @@
     "/root/.nuget/packages/microsoft.extensions.primitives/6.0.0/microsoft.extensions.primitives.6.0.0.nupkg.sha512",
     "/root/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "/root/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
+    "/root/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512",
     "/root/.nuget/packages/seriloganalyzer/0.15.0/seriloganalyzer.0.15.0.nupkg.sha512",
     "/root/.nuget/packages/smartanalyzers.multithreadinganalyzer/1.1.31/smartanalyzers.multithreadinganalyzer.1.1.31.nupkg.sha512",
     "/root/.nuget/packages/stylecop.analyzers/1.2.0-beta.376/stylecop.analyzers.1.2.0-beta.376.nupkg.sha512",

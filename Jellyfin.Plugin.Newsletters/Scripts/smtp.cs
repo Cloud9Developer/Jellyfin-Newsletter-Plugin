@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
+using Jellyfin.Plugin.Newsletters.Scripts.Scraper;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
@@ -46,7 +47,16 @@ public class Smtp : ControllerBase
         string password = config.SMTPPass;
         string emailToAddress = config.ToAddr;
         string subject = config.Subject;
-        string body = "All values set";
+        string body;
+
+        if (config.Body.Trim().Length != 0)
+        {
+            body = config.Body;
+        }
+        else
+        {
+            body = "Default Value";
+        }
 
         mail.From = new MailAddress(emailFromAddress, emailFromAddress);
         // mail.To.Add(emailToAddress);

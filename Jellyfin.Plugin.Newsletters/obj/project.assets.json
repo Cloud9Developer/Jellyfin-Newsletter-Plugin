@@ -268,6 +268,15 @@
           "lib/netstandard1.0/_._": {}
         }
       },
+      "Newtonsoft.Json/13.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {}
+        }
+      },
       "SerilogAnalyzer/0.15.0": {
         "type": "package"
       },
@@ -722,6 +731,28 @@
         "runtime.json"
       ]
     },
+    "Newtonsoft.Json/13.0.3": {
+      "sha512": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
+      "type": "package",
+      "path": "newtonsoft.json/13.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "README.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net6.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "newtonsoft.json.13.0.3.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
+      ]
+    },
     "SerilogAnalyzer/0.15.0": {
       "sha512": "sVpwfls4MfNnwIXLSGCgaUnV+c9kgJ8ia6GsyRcpd4Vs3gLogSDtSYBYrre2K2u/PNMo8GgG09RehwVnze70Tw==",
       "type": "package",
@@ -1112,6 +1143,7 @@
     "net6.0": [
       "Jellyfin.Controller >= 10.8.0",
       "Jellyfin.Model >= 10.8.0",
+      "Newtonsoft.Json >= 13.0.3",
       "SerilogAnalyzer >= 0.15.0",
       "SmartAnalyzers.MultithreadingAnalyzer >= 1.1.31",
       "StyleCop.Analyzers >= 1.2.0-beta.376"
@@ -1162,6 +1194,10 @@
           "Jellyfin.Model": {
             "target": "Package",
             "version": "[10.8.0, )"
+          },
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[13.0.3, )"
           },
           "SerilogAnalyzer": {
             "suppressParent": "All",

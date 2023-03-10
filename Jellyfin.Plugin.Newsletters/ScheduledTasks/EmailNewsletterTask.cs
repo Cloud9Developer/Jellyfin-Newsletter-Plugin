@@ -14,10 +14,10 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
     /// <summary>
     /// Class RefreshMediaLibraryTask.
     /// </summary>
-    public class EmailNewsletter : IScheduledTask
+    public class EmailNewsletterTask : IScheduledTask
     {
         /// <inheritdoc />
-        public string Name => "Newsletter Scheduler";
+        public string Name => "Email Newsletter";
 
         /// <inheritdoc />
         public string Description => "Email Newsletters";
