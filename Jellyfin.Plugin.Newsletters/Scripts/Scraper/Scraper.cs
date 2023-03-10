@@ -24,58 +24,48 @@ public class Scraper
     // Global Vars
     // Readonly
     private readonly PluginConfiguration config;
-    // private readonly IApplicationPaths appPaths;
-    // private readonly string appPaths;
     // private readonly string archiveList;
+    private readonly string currScanListDir;
     private readonly string currScanList;
 
     // Non-readonly
     private int fileCount = 0;
     private static string append = "Append";
     private static string write = "Overwrite";
+    private IProgress<double> progress;
     // private List<string> fileList;
 
-    public Scraper()
+    public Scraper(IProgress<double> passedProgress)
     {
         config = Plugin.Instance!.Configuration;
+        progress = passedProgress;
         // archiveList = "/ssl/archive.txt";
-        currScanList = config.MediaDir + "/currScan.txt";
+        currScanListDir = config.TempDirectory + "/Newsletters/";
+        currScanList = currScanListDir + "currList.txt";
+        Directory.CreateDirectory(currScanListDir);
         WriteFile(write, currScanList, string.Empty);
-        // WriteFile(write, "/ssl/myconfig.txt", config.applicationPaths);
+        WriteFile(write, "/ssl/myconfig.txt", currScanList);
         // fileList = new List<string>();
         // appPaths = ;
     }
 
-    public Task GetSeriesData(IProgress<double> progress)
+    public Task GetSeriesData()
     {
         progress.Report(0);
 
-        string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces
+        string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
 
-        List<string> fileList = GetFileList(@filePath);
+        // WriteFile(write, "/ssl/meddir.txt", config.MediaDir);
 
-        List<JsonFileObj> fileObjList = ConvertToJsonList(fileList);
+        GetFileList(filePath);
+
+        WriteFile(write, "/ssl/testconfigpath.txt", config.PluginsPath);
+
+        // List<JsonFileObj> fileObjList = ConvertToJsonList(fileList);
 
         // google API image search: curl 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBbh1JoIyThpTHa_WT8k1apsMBUC9xUCEs&cx=4688c86980c2f4d18&num=1&searchType=image&fileType=jpg&q=my%hero%academia'
 
         return Task.CompletedTask;
-    }
-
-    private List<JsonFileObj> ConvertToJsonList(List<string> fileList)
-    {
-        List<JsonFileObj> objList = new List<JsonFileObj>();
-        foreach (var file in fileList)
-        {
-            // JsonFileObj obj = new JsonFileObj()
-            // {
-            //     Filename = file
-            // };
-            JsonFileObj obj = ConvertToJsonObj(file);
-
-            objList.Add(obj);
-        }
-
-        return objList;
     }
 
     private JsonFileObj ConvertToJsonObj(string file)
@@ -88,15 +78,14 @@ public class Scraper
         return obj;
     }
 
-    private List<string> GetFileList(string dirPath)
+    private void GetFileList(string dirPath)
     {
         // File.AppendAllText("/ssl/logs.txt", "DIR: " + dirPath + ";\n");
-        List<string> newFileList = new List<string>();
         // Process the list of files found in the directory.
-        string[] fileEntries = Directory.GetFiles(@dirPath);
-        foreach (string filePath in @fileEntries)
+        string[] fileEntries = Directory.GetFiles(dirPath);
+        foreach (string filePath in fileEntries)
         {
-            string[] excludedExt = { ".srt" };
+            string[] excludedExt = { ".srt", ".txt" };
             bool contBool = false;
             foreach (string ext in excludedExt)
             {
@@ -116,14 +105,20 @@ public class Scraper
             JsonFileObj currFileObj = ConvertToJsonObj(filePath);
 
             // get Title, Season, Episode, Description
-            string currFileName = currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 1];
-            currFileObj.Title = string.Join(" ", currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 3].Split('_'));
-            currFileObj.Season = currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0];
-            currFileObj.Episode = "E" + currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0];
+            try
+            {
+                string currFileName = currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 1];
+                currFileObj.Title = string.Join(" ", currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 3].Split('_'));
+                currFileObj.Season = currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0];
+                currFileObj.Episode = "E" + currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0];
 
-            WriteFile(append, currScanList, JsonConvert.SerializeObject(currFileObj) + ";");
-            newFileList.Add(@filePath);
-            fileCount++;
+                WriteFile(append, currScanList, JsonConvert.SerializeObject(currFileObj) + ";;");
+                fileCount++;
+            }
+            finally
+            {
+                fileCount++;
+            }
         }
 
         // Recurse into subdirectories of this directory.
@@ -132,22 +127,7 @@ public class Scraper
         {
             GetFileList(@subdirectory);
         }
-
-        return newFileList;
     }
-
-/*
-    private int GetListCount(List<string> list)
-    {
-        int count = 0;
-        foreach (string file in list)
-        {
-            count++;
-        }
-
-        return count;
-    }
-*/
 
     private void WriteFile(string method, string path, string value)
     {

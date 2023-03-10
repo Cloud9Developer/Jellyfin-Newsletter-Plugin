@@ -17,10 +17,10 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
     public class ScrapeInfoTask : IScheduledTask
     {
         /// <inheritdoc />
-        public string Name => "Newsletter Scraper";
+        public string Name => "Filesystem Scraper";
 
         /// <inheritdoc />
-        public string Description => "Gather info on recently added media and store it for newsletters";
+        public string Description => "Gather info on recently added media and store it for Newsletters";
 
         /// <inheritdoc />
         public string Category => "Newsletters";
@@ -49,8 +49,8 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
 
             // Smtp mySmtp = new Smtp();
             // mySmtp.SendEmail();
-            Scraper myScraper = new Scraper();
-            return myScraper.GetSeriesData(progress); // .ConfigureAwait(false);
+            Scraper myScraper = new Scraper(progress);
+            return myScraper.GetSeriesData(); // .ConfigureAwait(false);
             // progress.Report(100);
             // return Task.CompletedTask;
         }

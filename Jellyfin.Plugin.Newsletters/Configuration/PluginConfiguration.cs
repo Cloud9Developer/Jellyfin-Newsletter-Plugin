@@ -45,6 +45,11 @@ public class PluginConfiguration : BasePluginConfiguration
         MediaDir = string.Empty;
         ApiKey = string.Empty;
         CXKey = string.Empty;
+
+        // default Paths
+        DataPath = string.Empty;
+        TempDirectory = string.Empty;
+        PluginsPath = string.Empty;
     }
 
     // Server Details
@@ -111,4 +116,23 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string CXKey { get; set; }
+
+    // -----------------------------------
+
+    // Paths
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string PluginsPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string TempDirectory { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DataPath { get; set; }
 }

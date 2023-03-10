@@ -84,6 +84,21 @@
             Gets or sets a string setting.
             </summary>
         </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.PluginsPath">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.TempDirectory">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.DataPath">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
         <member name="T:Jellyfin.Plugin.Newsletters.Plugin">
             <summary>
             The main plugin.

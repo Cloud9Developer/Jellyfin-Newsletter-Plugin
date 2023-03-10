@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
@@ -23,6 +24,17 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         : base(applicationPaths, xmlSerializer)
     {
         Instance = this;
+
+        void SetConfigPaths(IApplicationPaths dataPaths)
+        {
+            // custom code
+            PluginConfiguration config = Plugin.Instance!.Configuration;
+            config.DataPath = dataPaths.DataPath;
+            config.TempDirectory = dataPaths.TempDirectory;
+            config.PluginsPath = dataPaths.PluginsPath;
+        }
+
+        SetConfigPaths(applicationPaths);
     }
 
     /// <inheritdoc />
