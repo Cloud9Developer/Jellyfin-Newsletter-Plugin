@@ -40,6 +40,11 @@ public class PluginConfiguration : BasePluginConfiguration
         FromAddr = "JellyfinNewsletter@donotreply.com";
         Subject = "Jellyfin Newsletter";
         Body = string.Empty;
+
+        // default Scraper config
+        MediaDir = string.Empty;
+        ApiKey = string.Empty;
+        CXKey = string.Empty;
     }
 
     // Server Details
@@ -87,4 +92,23 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string Body { get; set; }
+
+    // -----------------------------------
+
+    // Scraper Config
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string MediaDir { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string ApiKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string CXKey { get; set; }
 }

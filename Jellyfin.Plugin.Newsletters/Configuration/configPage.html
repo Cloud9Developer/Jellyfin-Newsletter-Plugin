@@ -31,9 +31,30 @@
                             <div class="fieldDescription">Body of the email. Defaults to a predefined template</div>
                         </div>
                     </div>
-
+                    <!-- Scraper configuration Details -->
+                    <div id="HiddenDetails" name="ScraperConfig">
+                        <details>
+                            <summary>Scraper Config</summary>
+                            <div class="inputContainer" id="MediaDirPath">
+                                <label class="inputLabel inputLabelUnfocused" for="MediaDir">Directory to Media:</label>
+                                <input id="MediaDir" name="MediaDir" type="text" is="emby-input" />
+                                <div class="fieldDescription">Currently only working for Series directories following the standard formatting: <i><b>/PATH/TO/My_Series/SeasonX/My_Series_S01E01.mp4</b></i></div>
+                            </div>
+                            <div class="inputContainer" id="GoogleAPIkey">
+                                <label class="inputLabel inputLabelUnfocused" for="ApiKey">Google API Key:</label>
+                                <input id="ApiKey" name="ApiKey" type="text" is="emby-input" />
+                                <div class="fieldDescription">Required for image searching. Follow instructions <a href="https://support.google.com/googleapi/answer/6158862?hl=en" target="_blank">Google API Key</a></div>
+                            </div>
+                            <div class="inputContainer" id="GoogleCXkey">
+                                <label class="inputLabel inputLabelUnfocused" for="CXKey">Google CX Key:</label>
+                                <input id="CXKey" name="CXKey" type="text" is="emby-input" />
+                                <div class="fieldDescription">Required for image searching <b>(Different from API key above)</b>. Reference: <a href="https://stackoverflow.com/questions/6562125/getting-a-cx-id-for-custom-search-google-api-python" target="_blank">Google CX Key</a></div>
+                            </div>
+                        </details>
+                    </div>
+                    <br>
                     <!-- SMTP Server Details -->
-                    <div id="ServerDetails">
+                    <div id="HiddenDetails" name="ServerDetails">
                         <details>
                             <summary>SMTP Config</summary>
                             <div class="inputContainer" id="SMTPServerAddress">
@@ -71,7 +92,7 @@
             </div>
         </div>
         <style>
-            #ServerDetails {
+            #HiddenDetails {
                 border-width: 2px;
                 border-style: solid;
                 border-color: white;
@@ -100,6 +121,10 @@
                     config.FromAddr = document.querySelector('#FromAddr').value;
                     config.Subject = document.querySelector('#Subject').value;
                     config.Body = document.querySelector('#Body').value;
+                    //scraperConfig
+                    config.MediaDir = document.querySelector('#MediaDir').value;
+                    config.ApiKey = document.querySelector('#ApiKey').value;
+                    config.CXKey = document.querySelector('#CXKey').value;
                     console.log("HERE: ",config);
 
                     ApiClient.updatePluginConfiguration(NewsletterConfig.pluginUniqueId, config).then(function (result) {
@@ -124,6 +149,10 @@
                     document.querySelector('#FromAddr').value = config.FromAddr;
                     document.querySelector('#Subject').value = config.Subject;
                     document.querySelector('#Body').value = config.Body;
+                    //scraperConfig
+                    document.querySelector('#MediaDir').value = config.MediaDir;
+                    document.querySelector('#ApiKey').value = config.ApiKey;
+                    document.querySelector('#CXKey').value = config.CXKey;
                     Dashboard.hideLoadingMsg();
                 });
 
@@ -151,14 +180,6 @@
                 console.log("TestButtonPressed!");
                 // Configure test notification
                 ApiClient.getPluginConfiguration(NewsletterConfig.pluginUniqueId).then(function (config) {
-                    /*
-                    const CsharpFunction = Blazor.platform.findMethod(
-                        "Jellyfin.Plugin.NewsLetters",
-                        "Jellyfin.Plugin.NewsLetters.Scripts",
-                        "Smtp",
-                        "SendSmtp"
-                    );
-                    */
                     console.log("TEST: ", config);
                     let url = ApiClient.getUrl('Smtp/SendSmtp');
                     console.log("ServerAddr: ", ApiClient.serverAddress());

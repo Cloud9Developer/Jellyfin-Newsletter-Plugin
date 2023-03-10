@@ -69,6 +69,21 @@
             Gets or sets a string setting.
             </summary>
         </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.MediaDir">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.ApiKey">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.CXKey">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
         <member name="T:Jellyfin.Plugin.Newsletters.Plugin">
             <summary>
             The main plugin.
