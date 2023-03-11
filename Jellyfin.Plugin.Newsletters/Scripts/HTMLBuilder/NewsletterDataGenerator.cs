@@ -20,15 +20,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder;
+namespace Jellyfin.Plugin.Newsletters.Scripts.NLDataGenerator;
 
-public class HtmlBuilder
+public class NewsletterDataGenerator
 {
     // Global Vars
     // Readonly
     private readonly PluginConfiguration config;
     private readonly string newslettersDir;
-    private readonly string newsletterFile;
     private readonly string newsletterDataFile;
 
     private readonly string currRunList;
@@ -38,11 +37,12 @@ public class HtmlBuilder
     // Non-readonly
     private static string append = "Append";
     private static string write = "Overwrite";
+    private static int totalFileCount;
     private IProgress<double> progress;
     private List<JsonFileObj> archiveSeriesList;
     // private List<string> fileList;
 
-    public HtmlBuilder(IProgress<double> passedProgress)
+    public NewsletterDataGenerator(IProgress<double> passedProgress)
     {
         config = Plugin.Instance!.Configuration;
         progress = passedProgress;
@@ -56,19 +56,25 @@ public class HtmlBuilder
         newslettersDir = config.NewsletterDir; // newsletterdir
         Directory.CreateDirectory(newslettersDir);
 
-        // if no newsletter filename is saved or the file doesn't exist
-        if (config.NewsletterFileName.Length == 0 || File.Exists(newslettersDir + config.NewsletterFileName))
-        {
-            // use date to create filename
-            string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
-            newsletterFile = newslettersDir + currDate + "newsletter.html";
-        }
-        else
-        {
-            newsletterFile = newslettersDir + config.NewsletterFileName;
-        }
-
         // WriteFile(write, "/ssl/htmlbuilder.log", newslettersDir); // testing
+    }
+
+    public NewsletterDataGenerator(IProgress<double> passedProgress, int fileCount)
+    {
+        config = Plugin.Instance!.Configuration;
+        progress = passedProgress;
+        totalFileCount = fileCount;
+        myDataDir = config.TempDirectory + "/Newsletters";
+
+        archiveFile = config.MyDataDir + config.ArchiveFileName; // curlist/archive
+        currRunList = config.MyDataDir + config.CurrRunListFileName;
+        newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
+
+        archiveSeriesList = new List<JsonFileObj>();
+        newslettersDir = config.NewsletterDir; // newsletterdir
+        Directory.CreateDirectory(newslettersDir);
+
+        // WriteFile(write, "/ssl/htmlbuilder.log", newslettersDir); // Testing
     }
 
     public Task GenerateDataForNextNewsletter()

@@ -104,6 +104,31 @@
             Gets or sets a string setting.
             </summary>
         </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.MyDataDir">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.CurrRunListFileName">
+            <summary>
+            Gets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.ArchiveFileName">
+            <summary>
+            Gets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.NewsletterDir">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.NewsletterDataFileName">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
         <member name="T:Jellyfin.Plugin.Newsletters.Plugin">
             <summary>
             The main plugin.
@@ -181,11 +206,6 @@
         </member>
         <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
             <inheritdoc />
-        </member>
-        <member name="M:Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder.JsonSeriesObj.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder.JsonSeriesObj"/> class.
-            </summary>
         </member>
         <member name="M:Jellyfin.Plugin.Newsletters.Scripts.Scraper.JsonFileObj.#ctor">
             <summary>

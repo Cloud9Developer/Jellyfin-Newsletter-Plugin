@@ -32,6 +32,8 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
             config.DataPath = dataPaths.DataPath;
             config.TempDirectory = dataPaths.TempDirectory;
             config.PluginsPath = dataPaths.PluginsPath;
+            config.MyDataDir = config.TempDirectory + "/Newsletters/";
+            config.NewsletterDir = config.MyDataDir + "/myNewsletters/";
         }
 
         SetConfigPaths(applicationPaths);

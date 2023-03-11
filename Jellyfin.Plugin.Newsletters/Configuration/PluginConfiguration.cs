@@ -46,11 +46,18 @@ public class PluginConfiguration : BasePluginConfiguration
         ApiKey = string.Empty;
         CXKey = string.Empty;
 
-        // default Paths
+        // System Paths
         DataPath = string.Empty;
         TempDirectory = string.Empty;
         PluginsPath = string.Empty;
+
+        // default newsletter paths
         NewsletterFileName = string.Empty;
+        MyDataDir = string.Empty;
+        CurrRunListFileName = "Currlist.txt";
+        ArchiveFileName = "Archive.txt";
+        NewsletterDataFileName = "NewsletterList.txt";
+        NewsletterDir = string.Empty;
     }
 
     // Server Details
@@ -120,7 +127,7 @@ public class PluginConfiguration : BasePluginConfiguration
 
     // -----------------------------------
 
-    // Paths
+    // System Paths
 
     /// <summary>
     /// Gets or sets a string setting.
@@ -137,8 +144,37 @@ public class PluginConfiguration : BasePluginConfiguration
     /// </summary>
     public string DataPath { get; set; }
 
+    // -----------------------------------
+
+    // Newsletter Paths
+
     /// <summary>
     /// Gets or sets a string setting.
     /// </summary>
     public string NewsletterFileName { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string MyDataDir { get; set; }
+
+    /// <summary>
+    /// Gets a string setting.
+    /// </summary>
+    public string CurrRunListFileName { get; }
+
+    /// <summary>
+    /// Gets a string setting.
+    /// </summary>
+    public string ArchiveFileName { get; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string NewsletterDir { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string NewsletterDataFileName { get; set; }
 }

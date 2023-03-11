@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
-using Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder;
+using Jellyfin.Plugin.Newsletters.Scripts.NLDataGenerator;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller;
@@ -27,14 +27,16 @@ public class Scraper
     // Readonly
     private readonly PluginConfiguration config;
     // private readonly string archiveList;
-    private readonly string currScanListDir;
-    private readonly string currScanList;
+    // private readonly string currRunScanListDir;
+    private readonly string currRunScanList;
+    private readonly string currNewsletterFile;
 
     // Non-readonly
     private int fileCount = 0;
     private static string append = "Append";
     private static string write = "Overwrite";
     private IProgress<double> progress;
+    private NewsletterDataGenerator ng;
     // private List<string> fileList;
 
     public Scraper(IProgress<double> passedProgress)
@@ -42,11 +44,13 @@ public class Scraper
         config = Plugin.Instance!.Configuration;
         progress = passedProgress;
         // archiveList = "/ssl/archive.txt";
-        currScanListDir = config.TempDirectory + "/Newsletters/";
-        currScanList = currScanListDir + "currList.txt";
-        Directory.CreateDirectory(currScanListDir);
-        WriteFile(write, currScanList, string.Empty);
-        WriteFile(write, "/ssl/myconfig.txt", currScanList);
+        // currRunScanListDir = config.TempDirectory + "/Newsletters/";
+        currRunScanList = config.MyDataDir + config.CurrRunListFileName;
+        currNewsletterFile = config.MyDataDir + config.NewsletterDataFileName;
+        Directory.CreateDirectory(config.MyDataDir);
+        WriteFile(write, currRunScanList, string.Empty); // overwrite currscan data on run (testing purposes)
+        WriteFile(write, "/ssl/myconfig.txt", currRunScanList);
+        ng = new NewsletterDataGenerator(progress);
         // fileList = new List<string>();
         // appPaths = ;
     }
@@ -57,14 +61,14 @@ public class Scraper
 
         string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
 
-        GetFileList(filePath);
+        GetFileListToProcess(filePath);
 
         WriteFile(write, "/ssl/testconfigpath.txt", config.PluginsPath);
 
         progress.Report(50);
 
-        HtmlBuilder myBuilder = new HtmlBuilder(progress, fileCount);
-        return myBuilder.GenerateHTMLfromTemplate();
+        NewsletterDataGenerator nlDG = new NewsletterDataGenerator(progress, fileCount);
+        return nlDG.GenerateDataForNextNewsletter();
     }
 
     private JsonFileObj ConvertToJsonObj(string file)
@@ -77,18 +81,21 @@ public class Scraper
         return obj;
     }
 
-    private void GetFileList(string dirPath)
+    private void GetFileListToProcess(string dirPath)
     {
         // File.AppendAllText("/ssl/logs.txt", "DIR: " + dirPath + ";\n");
         // Process the list of files found in the directory.
         string[] fileEntries = Directory.GetFiles(dirPath);
+        // check if already existing before writing to file
+        List<JsonFileObj> archiveObj = ng.PopulateFromArchive();
+
         foreach (string filePath in fileEntries)
         {
             string[] excludedExt = { ".srt", ".txt" };
             bool contBool = false;
             foreach (string ext in excludedExt)
             {
-                if (filePath.EndsWith(ext, StringComparison.Ordinal))
+                if (filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
                 {
                     contBool = true;
                     break;
@@ -111,7 +118,11 @@ public class Scraper
                 currFileObj.Season = currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0];
                 currFileObj.Episode = "E" + currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0];
 
-                WriteFile(append, currScanList, JsonConvert.SerializeObject(currFileObj) + ";;");
+                if (!AlreadyInArchive(archiveObj, currFileObj) && !AlreadyInCurrNewsletterData(archiveObj, currFileObj))
+                {
+                    WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;");
+                }
+
                 fileCount++;
             }
             finally
@@ -124,8 +135,55 @@ public class Scraper
         string[] subdirectoryEntries = Directory.GetDirectories(@dirPath);
         foreach (string subdirectory in @subdirectoryEntries)
         {
-            GetFileList(@subdirectory);
+            GetFileListToProcess(@subdirectory);
         }
+    }
+
+    private bool AlreadyInCurrNewsletterData(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)
+    {
+        List<JsonFileObj> currNLObj = new List<JsonFileObj>();
+        if (File.Exists(currNewsletterFile))
+        {
+            StreamReader sr = new StreamReader(currNewsletterFile);
+            string nlFile = sr.ReadToEnd();
+            foreach (string ep in nlFile.Split(";;"))
+            {
+                JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
+                if (currObj is not null)
+                {
+                    currNLObj.Add(currObj);
+                }
+            }
+        }
+
+        foreach (JsonFileObj element in currNLObj)
+        {
+            // WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
+            if (element.Filename == currFileObj.Filename)
+            {
+                WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool AlreadyInArchive(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)
+    {
+        foreach (JsonFileObj element in archiveObj)
+        {
+            // WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
+            if (element.Filename == currFileObj.Filename)
+            {
+                WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void WriteFile(string method, string path, string value)
