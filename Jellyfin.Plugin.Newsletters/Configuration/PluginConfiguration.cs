@@ -50,6 +50,7 @@ public class PluginConfiguration : BasePluginConfiguration
         DataPath = string.Empty;
         TempDirectory = string.Empty;
         PluginsPath = string.Empty;
+        NewsletterFileName = string.Empty;
     }
 
     // Server Details
@@ -135,4 +136,9 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string DataPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string NewsletterFileName { get; set; }
 }

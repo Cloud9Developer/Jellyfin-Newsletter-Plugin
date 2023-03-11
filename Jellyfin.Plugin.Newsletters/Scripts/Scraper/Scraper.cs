@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
+using Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller;
@@ -15,6 +16,7 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 // using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.Newsletters.Scripts.Scraper;
@@ -55,17 +57,14 @@ public class Scraper
 
         string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
 
-        // WriteFile(write, "/ssl/meddir.txt", config.MediaDir);
-
         GetFileList(filePath);
 
         WriteFile(write, "/ssl/testconfigpath.txt", config.PluginsPath);
 
-        // List<JsonFileObj> fileObjList = ConvertToJsonList(fileList);
+        progress.Report(50);
 
-        // google API image search: curl 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBbh1JoIyThpTHa_WT8k1apsMBUC9xUCEs&cx=4688c86980c2f4d18&num=1&searchType=image&fileType=jpg&q=my%hero%academia'
-
-        return Task.CompletedTask;
+        HtmlBuilder myBuilder = new HtmlBuilder(progress, fileCount);
+        return myBuilder.GenerateHTMLfromTemplate();
     }
 
     private JsonFileObj ConvertToJsonObj(string file)
@@ -131,11 +130,11 @@ public class Scraper
 
     private void WriteFile(string method, string path, string value)
     {
-        if (method == "Append")
+        if (method == append)
         {
             File.AppendAllText(path, value);
         }
-        else if (method == "Overwrite")
+        else if (method == write)
         {
             File.WriteAllText(path, value);
         }

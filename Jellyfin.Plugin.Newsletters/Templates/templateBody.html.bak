@@ -1,0 +1,80 @@
+<html>
+    <title>Jellyfin Newsletter</title>
+    <div id="main">
+        <h1 id="Title">Jellyfin Newsletter</h1>
+        <body>
+            <table id="InsertHere" name="MainTable"> 
+                <!-- Fill this in from code -->
+                <tr>
+                    <td class="lefttable">
+                        <img src="https://m.media-amazon.com/images/I/7103o243KEL.jpg">
+                    </td>
+                    <td class="righttable">
+                        <p>
+                            <div id="SeasonEpisode" class="text">Season XX - Episode[s] X-XX</div>
+                            <hr>
+                            <div id="Description" class="text">My Hero Academia is such an awesome show! I hope everyone enjoys it as much as I do!!!</div>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lefttable">
+                        <img src="https://m.media-amazon.com/images/I/7103o243KEL.jpg">
+                    </td>
+                    <td class="righttable">
+                        <p>
+                            <div id="SeasonEpisode" class="text">Season XX - Episode[s] X-XX</div>
+                            <hr>
+                            <div id="Description" class="text">My Hero Academia is such an awesome show! I hope everyone enjoys it as much as I do!!!</div>
+                        </p>
+                    </td>
+                </tr>
+                <!-- Fill that in from code -->
+            </table>
+        </body>
+    </div>
+
+    <style>
+        #title {
+            color: white;
+            text-align: center;
+        }
+        img {
+            width: 200px;
+            height: 300px;
+        }
+        body {
+            background-color: black;
+        }
+        table {
+            margin-left: auto;
+            margin-right: auto;
+            border-spacing: 0 5px;
+        }
+        .lefttable {
+            padding-right: 5%;
+            padding-left: 2%;
+        }
+        .righttable {
+            padding-left: 5%;
+            padding-right: 2%;
+        }
+        td {
+            padding-top: 2%;
+            padding-bottom: 2%;
+        }
+        tr {
+            outline: thin solid lightgrey;
+        }
+        .main {
+            background-color: black;
+        }
+        p {
+            color: white;
+        }
+        .text {
+            color:white;
+        }
+
+    </style>
+</html>

@@ -45,14 +45,8 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
         public Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            // progress.Report(0);
-
-            // Smtp mySmtp = new Smtp();
-            // mySmtp.SendEmail();
             Scraper myScraper = new Scraper(progress);
             return myScraper.GetSeriesData(); // .ConfigureAwait(false);
-            // progress.Report(100);
-            // return Task.CompletedTask;
         }
     }
 }

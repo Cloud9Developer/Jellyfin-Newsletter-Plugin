@@ -77,4 +77,9 @@ public class Smtp : ControllerBase
         smtp.EnableSsl = enableSSL;
         smtp.Send(mail);
     }
+
+    private void WriteToArchive()
+    {
+        string test = string.Empty;
+    }
 }
