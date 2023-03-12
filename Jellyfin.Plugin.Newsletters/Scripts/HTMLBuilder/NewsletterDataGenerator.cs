@@ -101,6 +101,8 @@ public class NewsletterDataGenerator
                     myObj.Add(currObj);
                 }
             }
+
+            sr.Close();
         }
 
         return myObj;
@@ -130,6 +132,8 @@ public class NewsletterDataGenerator
 
             break;
         }
+
+        sr.Close();
 
         return string.Empty;
     }

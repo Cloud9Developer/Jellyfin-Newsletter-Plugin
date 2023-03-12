@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -91,7 +92,7 @@ public class Scraper
 
         foreach (string filePath in fileEntries)
         {
-            string[] excludedExt = { ".srt", ".txt" };
+            string[] excludedExt = { ".srt", ".txt", ".srt", ".saa", ".ttml", ".sbv", ".dfxp", ".vtt" };
             bool contBool = false;
             foreach (string ext in excludedExt)
             {
@@ -115,8 +116,12 @@ public class Scraper
             {
                 string currFileName = currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 1];
                 currFileObj.Title = string.Join(" ", currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 3].Split('_'));
-                currFileObj.Season = currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0];
-                currFileObj.Episode = "E" + currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0];
+                // currFileObj.Season = currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0];
+                // currFileObj.Episode = currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0];
+                // WriteFile(write, "/ssl/testIntFormat.txt", currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0].Trim());
+                currFileObj.Season = int.Parse(currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0].Split('S')[1], CultureInfo.CurrentCulture);
+                currFileObj.Episode = int.Parse(currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0].Trim(), CultureInfo.CurrentCulture);
+                // int test = int.Parse("003", CultureInfo.CurrentCulture);
 
                 if (!AlreadyInArchive(archiveObj, currFileObj) && !AlreadyInCurrNewsletterData(archiveObj, currFileObj))
                 {
@@ -154,6 +159,8 @@ public class Scraper
                     currNLObj.Add(currObj);
                 }
             }
+
+            sr.Close();
         }
 
         foreach (JsonFileObj element in currNLObj)
@@ -208,8 +215,10 @@ public class JsonFileObj
     {
         Filename = string.Empty;
         Title = string.Empty;
-        Season = string.Empty;
-        Episode = string.Empty;
+        // Season = string.Empty;
+        Season = 0;
+        Episode = 0;
+        // Episode = string.Empty;
         Description = string.Empty;
         ImageURL = string.Empty;
     }
@@ -218,9 +227,13 @@ public class JsonFileObj
 
     public string Title { get; set; }
 
-    public string Season { get; set; }
+    // public string Season { get; set; }
 
-    public string Episode { get; set; }
+    public int Season { get; set; }
+
+    public int Episode { get; set; }
+
+    // public string Episode { get; set; }
 
     public string Description { get; set; }
 

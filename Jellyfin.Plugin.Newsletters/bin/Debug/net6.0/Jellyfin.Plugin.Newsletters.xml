@@ -129,6 +129,26 @@
             Gets or sets a string setting.
             </summary>
         </member>
+        <member name="T:Jellyfin.Plugin.Newsletters.LOGGER.Logger">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.LOGGER.Logger"/> class.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.LOGGER.Logger.Debug(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="M:Jellyfin.Plugin.Newsletters.LOGGER.Logger.Debug(System.Object)"/> class.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.LOGGER.Logger.Info(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="M:Jellyfin.Plugin.Newsletters.LOGGER.Logger.Info(System.Object)"/> class.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.LOGGER.Logger.Error(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="M:Jellyfin.Plugin.Newsletters.LOGGER.Logger.Error(System.Object)"/> class.
+            </summary>
+        </member>
         <member name="T:Jellyfin.Plugin.Newsletters.Plugin">
             <summary>
             The main plugin.
@@ -206,6 +226,11 @@
         </member>
         <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScrapeInfoTask.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
             <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder.NlDetailsJson.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder.NlDetailsJson"/> class.
+            </summary>
         </member>
         <member name="M:Jellyfin.Plugin.Newsletters.Scripts.Scraper.JsonFileObj.#ctor">
             <summary>

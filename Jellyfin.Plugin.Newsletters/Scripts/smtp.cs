@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
+using Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.Scripts.Scraper;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller.Configuration;
@@ -49,14 +50,12 @@ public class Smtp : ControllerBase
         string subject = config.Subject;
         string body;
 
-        if (config.Body.Trim().Length != 0)
-        {
-            body = config.Body;
-        }
-        else
-        {
-            body = "Default Value";
-        }
+        HtmlBuilder hb = new HtmlBuilder();
+        // body = "<html> <div> <table style='margin-left: auto; margin-right: auto;'> <tr> <td width='100%' height='100%' style='vertical-align: top; background-color: #000000;'> <table id='InsertHere' name='MainTable' style='margin-left: auto; margin-right: auto; border-spacing: 0 5px; padding-left: 2%; padding-right: 2%; padding-bottom: 1%;'> <tr style='text-align: center;'> <td colspan='2'> <span><h1 id='Title' style='color:#FFFFFF;'>Jellyfin Newsletter</h1></span> </td> </tr> <!-- Fill this in from code --> REPLACEME <!-- Fill that in from code --> </table> </td> </tr> </table> </div> </html>";
+
+        body = hb.GetDefaultHTMLBody();
+        string builtString = hb.BuildDataHtmlStringFromNewsletterData();
+        string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
 
         mail.From = new MailAddress(emailFromAddress, emailFromAddress);
         // mail.To.Add(emailToAddress);
@@ -69,13 +68,15 @@ public class Smtp : ControllerBase
         }
 
         mail.Subject = subject;
-        mail.Body = body;
+        mail.Body = finalBody;
         mail.IsBodyHtml = true;
         // mail.Attachments.Add(new Attachment("D:\\TestFile.txt"));//--Uncomment this to send any attachment
         SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
         smtp.Credentials = new NetworkCredential(emailFromAddress, password);
         smtp.EnableSsl = enableSSL;
         smtp.Send(mail);
+
+        hb.CleanUp(finalBody);
     }
 
     private void WriteToArchive()
