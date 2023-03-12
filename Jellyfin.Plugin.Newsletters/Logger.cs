@@ -1,4 +1,4 @@
-#pragma warning disable SA1611
+#pragma warning disable SA1611, CS0162
 using System;
 
 namespace Jellyfin.Plugin.Newsletters.LOGGER;
@@ -13,7 +13,10 @@ public class Logger
     /// </summary>
     public void Debug(object msg)
     {
-        Console.WriteLine("[NLP]: " + GetDateTime() + " - [DEBUG] " + msg);
+        if (false)
+        {
+            Console.WriteLine("[NLP]: " + GetDateTime() + " - [DEBUG] " + msg);
+        }
     }
 
     /// <summary>
@@ -22,6 +25,14 @@ public class Logger
     public void Info(object msg)
     {
         Console.WriteLine("[NLP]: " + GetDateTime() + " - [INFO] " + msg);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Warn"/> class.
+    /// </summary>
+    public void Warn(object msg)
+    {
+        Console.WriteLine("[NLP]: " + GetDateTime() + " - [WARN] " + msg);
     }
 
     /// <summary>

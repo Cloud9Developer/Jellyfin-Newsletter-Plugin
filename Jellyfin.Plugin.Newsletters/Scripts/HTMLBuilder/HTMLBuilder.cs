@@ -30,10 +30,8 @@ public class HtmlBuilder
     // Readonly
     private readonly PluginConfiguration config;
     private readonly string newslettersDir;
-    private readonly string newsletterFile;
+    private readonly string newsletterHTMLFile;
     private readonly string newsletterDataFile;
-
-    private readonly string myDataDir;
 
     private string emailBody;
     private Logger logger;
@@ -47,8 +45,6 @@ public class HtmlBuilder
     {
         logger = new Logger();
         config = Plugin.Instance!.Configuration;
-        myDataDir = config.TempDirectory + "/Newsletters";
-
         newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
         emailBody = config.Body;
 
@@ -60,12 +56,14 @@ public class HtmlBuilder
         {
             // use date to create filename
             string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
-            newsletterFile = newslettersDir + currDate + "_Newsletter.html";
+            newsletterHTMLFile = newslettersDir + currDate + "_Newsletter.html";
         }
         else
         {
-            newsletterFile = newslettersDir + config.NewsletterFileName;
+            newsletterHTMLFile = newslettersDir + config.NewsletterFileName;
         }
+
+        logger.Info("Newsletter will be saved to: " + newsletterHTMLFile);
 
         // WriteFile(write, "/ssl/htmlbuilder.log", newslettersDir); // testing
     }
@@ -99,7 +97,7 @@ public class HtmlBuilder
                 List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(obj, readDataFile);
                 seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
 
-                builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + obj.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + "Descriptions not yet available with the Jellyfin Newsletter Plugin..." + "</div> </p> </td> </tr>";
+                builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + obj.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + obj.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + "Descriptions not yet available with the Jellyfin Newsletter Plugin..." + "</div> </p> </td> </tr>";
                 completed.Add(obj.Title);
             }
         }
@@ -196,6 +194,10 @@ public class HtmlBuilder
                 {
                     currSeriesDetailsObj.EpisodeRange = tempEpsList.First() + " - " + tempEpsList.Last();
                 }
+                else
+                {
+                    currSeriesDetailsObj.EpisodeRange = string.Join(", ", tempEpsList);
+                }
 
                 logger.Debug("Adding to finalListObj: " + JsonConvert.SerializeObject(currSeriesDetailsObj));
                 // finalList.Add(currSeriesDetailsObj);
@@ -207,7 +209,7 @@ public class HtmlBuilder
 
                 // currSeason = item.Season;
                 tempEpsList.Clear();
-                logger.Info("Clearing tempEpsList(): " + string.Join(',', tempEpsList));
+                logger.Debug("Clearing tempEpsList(): " + string.Join(',', tempEpsList));
                 newSeason = true;
             }
 
@@ -276,22 +278,26 @@ public class HtmlBuilder
     public void CleanUp(string htmlBody)
     {
         // create html from body of email
+        logger.Info("Saving HTML file");
+        WriteFile(write, newsletterHTMLFile, htmlBody);
 
         // append newsletter cycle data to Archive.txt
+        CopyNewsletterDataToArchive();
 
         // remove newsletter cycle data
+        File.Delete(newsletterDataFile);
     }
 
-    // private void CopyCurrRunDataToNewsletterData()
-    // {
-    //     if (File.Exists(currRunList)) // archiveFile
-    //     {
-    //         Stream input = File.OpenRead(currRunList);
-    //         Stream output = new FileStream(newsletterDataFile, FileMode.Append, FileAccess.Write, FileShare.None);
-    //         input.CopyTo(output);
-    //         File.Delete(currRunList);
-    //     }
-    // }
+    private void CopyNewsletterDataToArchive()
+    {
+        string archiveFile = config.MyDataDir + config.ArchiveFileName;
+        logger.Info("Appending NewsletterData for Current Newsletter Cycle to Archive file: " + archiveFile);
+
+        Stream input = File.OpenRead(newsletterDataFile);
+        Stream output = new FileStream(archiveFile, FileMode.Append, FileAccess.Write, FileShare.None);
+        input.CopyTo(output);
+        // File.Delete(currRunList);
+    }
 
     private void WriteFile(string method, string path, string value)
     {

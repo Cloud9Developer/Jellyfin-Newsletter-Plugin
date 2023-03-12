@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
+using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Scripts.Scraper;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
@@ -33,17 +34,18 @@ public class NewsletterDataGenerator
     private readonly string currRunList;
     private readonly string archiveFile;
     private readonly string myDataDir;
+    private Logger logger;
 
     // Non-readonly
     private static string append = "Append";
     private static string write = "Overwrite";
-    private static int totalFileCount;
     private IProgress<double> progress;
     private List<JsonFileObj> archiveSeriesList;
     // private List<string> fileList;
 
     public NewsletterDataGenerator(IProgress<double> passedProgress)
     {
+        logger = new Logger();
         config = Plugin.Instance!.Configuration;
         progress = passedProgress;
         myDataDir = config.TempDirectory + "/Newsletters";
@@ -59,27 +61,9 @@ public class NewsletterDataGenerator
         // WriteFile(write, "/ssl/htmlbuilder.log", newslettersDir); // testing
     }
 
-    public NewsletterDataGenerator(IProgress<double> passedProgress, int fileCount)
-    {
-        config = Plugin.Instance!.Configuration;
-        progress = passedProgress;
-        totalFileCount = fileCount;
-        myDataDir = config.TempDirectory + "/Newsletters";
-
-        archiveFile = config.MyDataDir + config.ArchiveFileName; // curlist/archive
-        currRunList = config.MyDataDir + config.CurrRunListFileName;
-        newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
-
-        archiveSeriesList = new List<JsonFileObj>();
-        newslettersDir = config.NewsletterDir; // newsletterdir
-        Directory.CreateDirectory(newslettersDir);
-
-        // WriteFile(write, "/ssl/htmlbuilder.log", newslettersDir); // Testing
-    }
-
     public Task GenerateDataForNextNewsletter()
     {
-        archiveSeriesList = PopulateFromArchive();
+        archiveSeriesList = PopulateFromArchive(); // Files that shouldn't be processed again
         string entries = GenerateData();
         CopyCurrRunDataToNewsletterData();
 
@@ -95,10 +79,10 @@ public class NewsletterDataGenerator
             string arFile = sr.ReadToEnd();
             foreach (string series in arFile.Split(";;"))
             {
-                JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(series);
-                if (currObj is not null)
+                JsonFileObj? currArcObj = JsonConvert.DeserializeObject<JsonFileObj?>(series);
+                if (currArcObj is not null)
                 {
-                    myObj.Add(currObj);
+                    myObj.Add(currArcObj);
                 }
             }
 
@@ -112,22 +96,24 @@ public class NewsletterDataGenerator
     {
         StreamReader sr = new StreamReader(currRunList); // curlist/archive
         string readScrapeFile = sr.ReadToEnd();
-        // WriteFile(write, "/ssl/mystreamreader.txt", readScrapeFile);
+
         foreach (string? ep in readScrapeFile.Split(";;"))
         {
-            WriteFile(append, "/ssl/logs.txt", "Looping - Episode: " + ep + "\n");
             JsonFileObj? obj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
             if (obj is not null)
             {
-                // WriteFile(append, "/ssl/mystreamreader_single.txt", "\n" + obj.Title);
-
                 JsonFileObj currObj = new JsonFileObj();
                 currObj.Title = obj.Title;
                 archiveSeriesList.Add(currObj);
 
-                // string imgUrl = FetchImagePoster(obj);
-                // WriteFile(append, "/ssl/myparsedURL.txt", imgUrl);
-                WriteFile(append, "/ssl/looplogger.log", obj.Title + "\n");
+                // string imgUrl = FetchImagePoster(obj.Title);
+
+                // if (imgUrl.Length == 0)
+                // {
+                //     logger.Warn("Image URL failed to be captured. Is this an error?");
+                // }
+
+                // currObj.ImageURL = imgUrl;
             }
 
             break;
@@ -138,10 +124,12 @@ public class NewsletterDataGenerator
         return string.Empty;
     }
 
-    private string FetchImagePoster(JsonFileObj obj)
+    public string FetchImagePoster(string title)
     {
-        string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", obj.Title.Split(" "));
+        string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", title.Split(" "));
         // google API image search: curl 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBbh1JoIyThpTHa_WT8k1apsMBUC9xUCEs&cx=4688c86980c2f4d18&num=1&searchType=image&fileType=jpg&q=my%hero%academia'
+        logger.Debug("Image Search URL: " + url);
+        // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
 
         // HttpClient hc = new HttpClient();
         // string res = await hc.GetStringAsync(url).ConfigureAwait(false);
@@ -160,7 +148,15 @@ public class NewsletterDataGenerator
             {
                 if (line.Contains("\"link\":", StringComparison.OrdinalIgnoreCase))
                 {
-                    return line.Split("\"")[3];
+                    string fetchedURL = line.Split("\"")[3];
+
+                    logger.Info("Fetched Image: " + fetchedURL);
+                    if (fetchedURL.Length == 0)
+                    {
+                        logger.Warn("Image URL failed to be captured. Is this an error?");
+                    }
+
+                    return fetchedURL; // Actual URL
                 }
             }
             else
