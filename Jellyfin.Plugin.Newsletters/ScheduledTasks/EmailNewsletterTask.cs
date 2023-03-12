@@ -37,7 +37,7 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
             yield return new TaskTriggerInfo
             {
                 Type = TaskTriggerInfo.TriggerInterval,
-                IntervalTicks = TimeSpan.FromHours(12).Ticks
+                IntervalTicks = TimeSpan.FromHours(168).Ticks
             };
         }
 
