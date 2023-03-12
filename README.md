@@ -17,7 +17,7 @@ This is my first end-to-end C# project, but I hope you enjoy!
 
 # Installation
 
-The current build file for this plugin is already uploaded here in Jellyfin-Newsletter-Plugin/Jellyfin.Plugin.Newsletters/bin/Debug/net6.0/
+The current build file for this plugin is already uploaded here in `Jellyfin-Newsletter-Plugin/Jellyfin.Plugin.Newsletters/bin/Debug/net6.0/`
 Just copy create a folder in your Jellyfin Plugin directory (I named mine Newsletters_alpha) and copy the .dll file to that new folder. 
 
 Once copied, restart Jellyfin and you should see it in your plugins!
