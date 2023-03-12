@@ -142,14 +142,6 @@ public class HtmlBuilder
             }
         }
 
-        // compiledList = SortListBySeason(SortListByEpisode(compiledList));
-
-        // for debugging
-        // foreach (NlDetailsJson item in compiledList)
-        // {
-        //     logger.Debug("After Sort: Season::" + item.Season + "; Episode::" + item.Episode);
-        // }
-
         List<int> tempEpsList = new List<int>();
         NlDetailsJson currSeriesDetailsObj = new NlDetailsJson();
 
@@ -172,7 +164,7 @@ public class HtmlBuilder
 
             void AddNewSeason()
             {
-                logger.Debug("AddNewSeason()");
+                // logger.Debug("AddNewSeason()");
                 currSeriesDetailsObj.Season = currSeason = item.Season;
                 newSeason = false;
                 tempEpsList.Add(item.Episode);
@@ -180,7 +172,7 @@ public class HtmlBuilder
 
             void AddCurrentSeason()
             {
-                logger.Debug("AddCurrentSeason()");
+                // logger.Debug("AddCurrentSeason()");
                 logger.Debug("Seasons Match " + currSeason + "::" + item.Season);
                 tempEpsList.Add(item.Episode);
             }
@@ -209,12 +201,10 @@ public class HtmlBuilder
 
                 // currSeason = item.Season;
                 tempEpsList.Clear();
-                logger.Debug("Clearing tempEpsList(): " + string.Join(',', tempEpsList));
                 newSeason = true;
             }
 
             logger.Debug("CurrItem Season/Episode number: " + item.Season + "/" + item.Episode);
-            // logger.Debug("Counts: " + count + "/" + list_len);
             if (newSeason)
             {
                 AddNewSeason();

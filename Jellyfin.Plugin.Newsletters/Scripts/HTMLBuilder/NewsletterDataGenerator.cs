@@ -63,9 +63,13 @@ public class NewsletterDataGenerator
 
     public Task GenerateDataForNextNewsletter()
     {
+        progress.Report(25);
         archiveSeriesList = PopulateFromArchive(); // Files that shouldn't be processed again
-        string entries = GenerateData();
+        progress.Report(50);
+        GenerateData();
+        progress.Report(75);
         CopyCurrRunDataToNewsletterData();
+        progress.Report(99);
 
         return Task.CompletedTask;
     }
@@ -92,7 +96,7 @@ public class NewsletterDataGenerator
         return myObj;
     }
 
-    private string GenerateData()
+    private void GenerateData()
     {
         StreamReader sr = new StreamReader(currRunList); // curlist/archive
         string readScrapeFile = sr.ReadToEnd();
@@ -105,28 +109,17 @@ public class NewsletterDataGenerator
                 JsonFileObj currObj = new JsonFileObj();
                 currObj.Title = obj.Title;
                 archiveSeriesList.Add(currObj);
-
-                // string imgUrl = FetchImagePoster(obj.Title);
-
-                // if (imgUrl.Length == 0)
-                // {
-                //     logger.Warn("Image URL failed to be captured. Is this an error?");
-                // }
-
-                // currObj.ImageURL = imgUrl;
             }
 
             break;
         }
 
         sr.Close();
-
-        return string.Empty;
     }
 
     public string FetchImagePoster(string title)
     {
-        string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", title.Split(" "));
+        string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", (title + " series + cover + art").Split(" "));
         // google API image search: curl 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBbh1JoIyThpTHa_WT8k1apsMBUC9xUCEs&cx=4688c86980c2f4d18&num=1&searchType=image&fileType=jpg&q=my%hero%academia'
         logger.Debug("Image Search URL: " + url);
         // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";

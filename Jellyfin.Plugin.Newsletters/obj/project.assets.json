@@ -1153,7 +1153,7 @@
     "/root/.nuget/packages/": {}
   },
   "project": {
-    "version": "0.0.0.1",
+    "version": "1.0.0",
     "restore": {
       "projectUniqueName": "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
       "projectName": "Jellyfin.Plugin.Newsletters",

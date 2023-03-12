@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "WisuOuwckBF0SG5obmi2a/qhWoJ647ZpqMpEYKFb8pZGhQUUUtWtgkf1ZjYPY5CEaPLGYEZ+mor/L+V3KlqGPg==",
+  "dgSpecHash": "pYA5IZ7uO6o1sdTMwPBI+79Iz4HKIRpEuDUXXDQ37AwqtQc5uIvcquD63QHIDnd9JZIrFGLUHcX6tT4FJOfORw==",
   "success": true,
   "projectFilePath": "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
   "expectedPackageFiles": [

@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "Jellyfin.Plugin.Newsletters/0.0.0.1": {
+      "Jellyfin.Plugin.Newsletters/1.0.0.0": {
         "dependencies": {
           "Jellyfin.Controller": "10.8.0",
           "Jellyfin.Model": "10.8.0",
@@ -197,7 +197,7 @@
     }
   },
   "libraries": {
-    "Jellyfin.Plugin.Newsletters/0.0.0.1": {
+    "Jellyfin.Plugin.Newsletters/1.0.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

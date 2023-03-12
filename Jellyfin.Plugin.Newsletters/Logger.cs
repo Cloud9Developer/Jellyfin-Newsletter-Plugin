@@ -1,5 +1,6 @@
 #pragma warning disable SA1611, CS0162
 using System;
+using Jellyfin.Plugin.Newsletters.Configuration;
 
 namespace Jellyfin.Plugin.Newsletters.LOGGER;
 
@@ -13,7 +14,8 @@ public class Logger
     /// </summary>
     public void Debug(object msg)
     {
-        if (false)
+        PluginConfiguration config = Plugin.Instance!.Configuration;
+        if (config.DebugMode)
         {
             Console.WriteLine("[NLP]: " + GetDateTime() + " - [DEBUG] " + msg);
         }

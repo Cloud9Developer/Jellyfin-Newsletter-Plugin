@@ -178,9 +178,9 @@ public class Scraper
 
         // string url = ng.FetchImagePoster(obj.Title);
         logger.Debug("Fetching URL from google...");
-        // return ng.FetchImagePoster(currObj.Title);
+        return ng.FetchImagePoster(currObj.Title);
         // return string.Empty;
-        return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
+        // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
     }
 
     private bool AlreadyInCurrNewsletterData(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)

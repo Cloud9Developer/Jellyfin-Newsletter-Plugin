@@ -10,6 +10,12 @@
             <div class="content-primary">
                 <form id="NewsletterConfigForm">
                     <div id="OutboundEmailDetails">
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label class="emby-checkbox-label">
+                                <input id="DebugMode" name="DebugMode" type="checkbox" is="emby-checkbox" />
+                                <span>Debug Mode</span>
+                            </label>
+                        </div>
                         <div class="inputContainer" id="ToAddress">
                             <label class="inputLabel inputLabelUnfocused" for="ToAddr">To Address:</label>
                             <input id="ToAddr" name="ToAddr" type="text" is="emby-input" />
@@ -111,6 +117,7 @@
             function saveConfig() {
                 console.log("test");
                 ApiClient.getPluginConfiguration(NewsletterConfig.pluginUniqueId).then(function (config) {
+                    config.DebugMode = document.querySelector('#DebugMode').checked;
                     //serverDetails
                     config.SMTPServer = document.querySelector('#SMTPServer').value;
                     config.SMTPPort = document.querySelector('#SMTPPort').value;
@@ -125,7 +132,7 @@
                     config.MediaDir = document.querySelector('#MediaDir').value;
                     config.ApiKey = document.querySelector('#ApiKey').value;
                     config.CXKey = document.querySelector('#CXKey').value;
-                    console.log("HERE: ",config);
+                    // console.log("HERE: ",config);
 
                     ApiClient.updatePluginConfiguration(NewsletterConfig.pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
@@ -138,7 +145,7 @@
             function loadConfig() {
                 ApiClient.getPluginConfiguration(NewsletterConfig.pluginUniqueId).then(function (config) {
                     console.log("Populating Page..");
-                    console.log(document.querySelector('#SMTPPort').value);
+                    document.querySelector('#DebugMode').checked = config.DebugMode;
                     //serverDetails
                     document.querySelector('#SMTPServer').value = config.SMTPServer;
                     document.querySelector('#SMTPPort').value = config.SMTPPort;

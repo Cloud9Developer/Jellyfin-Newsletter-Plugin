@@ -29,6 +29,11 @@
             Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration"/> class.
             </summary>
         </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.DebugMode">
+            <summary>
+            Gets or sets a value indicating whether debug mode is enabled..
+            </summary>
+        </member>
         <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.SMTPServer">
             <summary>
             Gets or sets a value indicating whether some true or false setting is enabled..

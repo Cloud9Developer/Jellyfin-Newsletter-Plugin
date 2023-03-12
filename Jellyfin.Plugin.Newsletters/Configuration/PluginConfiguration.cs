@@ -29,6 +29,8 @@ public class PluginConfiguration : BasePluginConfiguration
     public PluginConfiguration()
     {
         // set default options here
+        DebugMode = false;
+
         // default Server Details
         SMTPServer = "smtp.gmail.com";
         SMTPPort = 587;
@@ -59,6 +61,11 @@ public class PluginConfiguration : BasePluginConfiguration
         NewsletterDataFileName = "NewsletterList.txt";
         NewsletterDir = string.Empty;
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether debug mode is enabled..
+    /// </summary>
+    public bool DebugMode { get; set; }
 
     // Server Details
 
