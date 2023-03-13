@@ -120,14 +120,23 @@ public class NewsletterDataGenerator
     public string FetchImagePoster(string title)
     {
         string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", (title + " series + cover + art").Split(" "));
-        // google API image search: curl 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBbh1JoIyThpTHa_WT8k1apsMBUC9xUCEs&cx=4688c86980c2f4d18&num=1&searchType=image&fileType=jpg&q=my%hero%academia'
         logger.Debug("Image Search URL: " + url);
         // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
 
         // HttpClient hc = new HttpClient();
         // string res = await hc.GetStringAsync(url).ConfigureAwait(false);
+        string res;
         WebClient wc = new WebClient();
-        string res = wc.DownloadString(url);
+        try
+        {
+            res = wc.DownloadString(url);
+        }
+        catch (WebException e)
+        {
+            logger.Warn("Unable to get proper response from googleapi: " + e);
+            return string.Empty;
+        }
+
         string urlResFile = myDataDir + "/.lasturlresponse";
 
         WriteFile(write, urlResFile, res);
