@@ -1,0 +1,28 @@
+[
+    {
+        "guid": "60f478ab-2dd6-4ea0-af10-04d033f75979",
+        "name": "Newsletters",
+        "overview": "Send out newsletters for newly added media",
+        "description": "Scan your libraries and send out Newsletters on what has been recently added",
+        "owner": "Cloud9Developer",
+        "category": "Newsletters",
+        "imageUrl": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/NewslettersLogo.png",
+        "versions": [
+            {
+                "version": "0.0.5",
+                "changelog": "",
+                "targetAbi": "10.8.0.0",
+                "sourceUrl": "",
+                "checksum": "e42fa802b3310865f3ae26c18549539f"
+            },
+            {
+                "version": "0.0.0.1",
+                "changelog": "- initial alpha release",
+                "targetAbi": "10.8.0.0",
+                "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.0.1/Newsletters-v0.0.1.zip",
+                "checksum": "0f9e05f8f1e13a0f2eaadd69542a7700",
+                "timestamp": "2023-03-10T10:00:00Z"
+            }
+        ]
+    }
+]
