@@ -125,16 +125,33 @@ public class NewsletterDataGenerator
         };
 
         w.Headers.Add("Authorization", "Client-ID " + config.ApiKey);
-        byte[] response = w.UploadValues("https://api.imgur.com/3/upload.xml", values);
+        try
+        {
+            byte[] response = w.UploadValues("https://api.imgur.com/3/upload.xml", values);
 
-        string res = System.Text.Encoding.Default.GetString(response);
+            string res = System.Text.Encoding.Default.GetString(response);
 
-        logger.Debug("Imgur Response: " + res);
+            logger.Debug("Imgur Response: " + res);
 
-        logger.Info("Imgur Uploaded! Link:");
-        logger.Info(res.Split("<link>")[1].Split("</link>")[0]);
+            logger.Info("Imgur Uploaded! Link:");
+            logger.Info(res.Split("<link>")[1].Split("</link>")[0]);
 
-        return res.Split("<link>")[1].Split("</link>")[0];
+            return res.Split("<link>")[1].Split("</link>")[0];
+        }
+        catch (WebException e)
+        {
+            logger.Debug("WebClient Return STATUS: " + e.Status);
+            logger.Debug(e.ToString().Split(")")[0].Split("(")[1]);
+            try
+            {
+                return e.ToString().Split(")")[0].Split("(")[1];
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Error caught while trying to parse webException error: " + ex);
+                return "ERR";
+            }
+        }
     }
 
     private void CopyCurrRunDataToNewsletterData()

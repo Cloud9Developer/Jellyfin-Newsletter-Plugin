@@ -56,7 +56,7 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
             // _scanner
             // ILibraryManager libManager = _scanner.GetLibrary();
             // Scraper myScraper = new Scraper();
-            Scraper myScraper = new Scraper(_libraryManager);
+            Scraper myScraper = new Scraper(_libraryManager, progress, cancellationToken);
             return myScraper.GetSeriesData(); // .ConfigureAwait(false);
             // return Task.CompletedTask;
         }

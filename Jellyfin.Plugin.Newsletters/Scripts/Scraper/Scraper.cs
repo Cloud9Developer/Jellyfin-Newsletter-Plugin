@@ -35,17 +35,24 @@ public class Scraper
     private readonly ILibraryManager libManager;
 
     // Non-readonly
-    // private int EpisodeCount = 0;
+    private int totalLibCount;
     private static string append = "Append";
     private static string write = "Overwrite";
+    private int currCount;
     private NewsletterDataGenerator ng;
     private Logger logger;
+    private IProgress<double> progress;
+    private CancellationToken cancelToken;
 
-    public Scraper(ILibraryManager libraryManager)
+    public Scraper(ILibraryManager libraryManager, IProgress<double> passedProgress, CancellationToken cancellationToken)
     {
         logger = new Logger();
+        progress = passedProgress;
+        cancelToken = cancellationToken;
         config = Plugin.Instance!.Configuration;
         libManager = libraryManager;
+
+        totalLibCount = currCount = 0;
         // currRunScanListDir = config.TempDirectory + "/Newsletters/";
         archiveFile = config.MyDataDir + config.ArchiveFileName;
         currRunScanList = config.MyDataDir + config.CurrRunListFileName;
@@ -54,8 +61,8 @@ public class Scraper
 
         ng = new NewsletterDataGenerator();
 
-        logger.Info("Setting Config Paths: ");
-        logger.Info("\n  DataPath: " + config.DataPath +
+        logger.Debug("Setting Config Paths: ");
+        logger.Debug("\n  DataPath: " + config.DataPath +
                     "\n  TempDirectory: " + config.TempDirectory +
                     "\n  PluginsPath: " + config.PluginsPath +
                     "\n  MyDataDir: " + config.MyDataDir +
@@ -84,23 +91,16 @@ public class Scraper
         string[] mediaTypes = { "Series" };
         query.IncludeItemTypes = new[] { BaseItemKind.Episode };
         List<BaseItem> items = libManager.GetItemList(query);
-        logger.Info("Scan Size: " + items.Count);
+        totalLibCount = items.Count;
+        logger.Info("Scan Size: " + totalLibCount);
 
         foreach (BaseItem? item in libManager.GetItemList(query))
         {
+            progress.Report((currCount * 100) / totalLibCount);
+            cancelToken.ThrowIfCancellationRequested();
             BaseItem episode = item;
             BaseItem season = item.GetParent();
             BaseItem series = item.GetParent().GetParent();
-
-            logger.Debug("Series: " + series.Name); // Title
-            logger.Debug("Season: " + season.Name); // Season
-            logger.Debug("Episode Name: " + episode.Name); // episode Name
-            logger.Debug("Episode Number: " + episode.IndexNumber); // episode Name
-            logger.Debug("Series Overview: " + series.Overview); // series overview
-            logger.Debug("ImageInfos: " + series.PrimaryImagePath);
-            logger.Debug(series.Id.ToString("N")); // series ItemId
-            logger.Debug(episode.PhysicalLocations[0]); // Filepath
-            logger.Debug("---------------");
 
             if (item is not null)
             {
@@ -119,12 +119,29 @@ public class Scraper
                         currFileObj.SeriesOverview = series.Overview;
                         currFileObj.ItemID = series.Id.ToString("N");
                         currFileObj.PosterPath = series.PrimaryImagePath;
-                        currFileObj.ImageURL = SetImageURL(currFileObj);
+                        string url = SetImageURL(currFileObj);
+                        if ((url == "429") || (url == "ERR"))
+                        {
+                            logger.Debug("URL is not atainable at this time. Stopping scan.. Will resume during next scan.");
+                            break;
+                        }
+
+                        currFileObj.ImageURL = url;
                         currFileObj.Season = int.Parse(season.Name.Split(' ')[1], CultureInfo.CurrentCulture);
                     }
                     catch (Exception e)
                     {
                         logger.Error("Encountered an error parsing: " + currFileObj.Filename);
+                        logger.Debug("Series: " + series.Name); // Title
+                        logger.Debug("Season: " + season.Name); // Season
+                        logger.Debug("Episode Name: " + episode.Name); // episode Name
+                        logger.Debug("Episode Number: " + episode.IndexNumber); // episode Name
+                        logger.Debug("Series Overview: " + series.Overview); // series overview
+                        logger.Debug("ImageInfos: " + series.PrimaryImagePath);
+                        logger.Debug(series.Id.ToString("N")); // series ItemId
+                        logger.Debug(episode.PhysicalLocations[0]); // Filepath
+                        logger.Debug("---------------");
+                        logger.Debug("Error message:");
                         logger.Error(e);
                     }
                     finally
@@ -138,6 +155,8 @@ public class Scraper
                     logger.Debug("\"" + currFileObj.Filename + "\" has already been processed either by Previous or Current Newsletter!");
                 }
             }
+
+            currCount++;
         }
     }
 
@@ -186,7 +205,8 @@ public class Scraper
         }
 
         // string url = ng.FetchImagePoster(obj.Title);
-        logger.Debug("Fetching URL from google...");
+        logger.Debug("Uploading poster...");
+        // return string.Empty;
         return ng.FetchImagePoster(currObj.PosterPath);
     }
 
