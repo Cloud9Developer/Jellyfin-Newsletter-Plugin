@@ -13,7 +13,8 @@
                 "changelog": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md",
                 "targetAbi": "10.8.0.0",
                 "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.0.5/Newsletters-v0.0.5.zip",
-                "checksum": "dbd9c4709e1ef37bf2583b4321b97568"
+                "checksum": "dbd9c4709e1ef37bf2583b4321b97568",
+                "timestamp": "2023-03-14T12:00:00Z"
             },
             {
                 "version": "0.0.1",
