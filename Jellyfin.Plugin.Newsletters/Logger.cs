@@ -1,5 +1,6 @@
 #pragma warning disable SA1611, CS0162
 using System;
+using System.IO;
 using Jellyfin.Plugin.Newsletters.Configuration;
 
 namespace Jellyfin.Plugin.Newsletters.LOGGER;
@@ -9,6 +10,18 @@ namespace Jellyfin.Plugin.Newsletters.LOGGER;
 /// </summary>
 public class Logger
 {
+    private readonly PluginConfiguration config;
+    private readonly string logFile;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Logger"/> class.
+    /// </summary>
+    public Logger()
+    {
+        config = Plugin.Instance!.Configuration;
+        logFile = config.LogDirectoryPath + "/" + GetDate() + "_Newsletter.log";
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Debug"/> class.
     /// </summary>
@@ -17,7 +30,10 @@ public class Logger
         PluginConfiguration config = Plugin.Instance!.Configuration;
         if (config.DebugMode)
         {
-            Console.WriteLine("[NLP]: " + GetDateTime() + " - [DEBUG] " + msg);
+            string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [DEBUG] ";
+            Console.WriteLine(logMsgPrefix + msg);
+            File.AppendAllText(logFile, logMsgPrefix + msg);
+            File.AppendAllText(logFile, "\n");
         }
     }
 
@@ -26,7 +42,10 @@ public class Logger
     /// </summary>
     public void Info(object msg)
     {
-        Console.WriteLine("[NLP]: " + GetDateTime() + " - [INFO] " + msg);
+        string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [INFO] ";
+        Console.WriteLine(logMsgPrefix + msg);
+        File.AppendAllText(logFile, logMsgPrefix + msg);
+        File.AppendAllText(logFile, "\n");
     }
 
     /// <summary>
@@ -34,7 +53,10 @@ public class Logger
     /// </summary>
     public void Warn(object msg)
     {
-        Console.WriteLine("[NLP]: " + GetDateTime() + " - [WARN] " + msg);
+        string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [WARN] ";
+        Console.WriteLine(logMsgPrefix + msg);
+        File.AppendAllText(logFile, logMsgPrefix + msg);
+        File.AppendAllText(logFile, "\n");
     }
 
     /// <summary>
@@ -42,11 +64,19 @@ public class Logger
     /// </summary>
     public void Error(object msg)
     {
-        Console.WriteLine("[NLP]: " + GetDateTime() + " - [ERR] " + msg);
+        string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [ERR] ";
+        Console.WriteLine(logMsgPrefix + msg);
+        File.AppendAllText(logFile, logMsgPrefix + msg);
+        File.AppendAllText(logFile, "\n");
     }
 
     private string GetDateTime()
     {
         return DateTime.Now.ToString("[yyyy-MM-dd] :: [HH:mm:ss]", System.Globalization.CultureInfo.CurrentCulture);
+    }
+
+    private string GetDate()
+    {
+        return DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.CurrentCulture);
     }
 }

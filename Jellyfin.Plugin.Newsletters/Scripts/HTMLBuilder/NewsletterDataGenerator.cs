@@ -1,8 +1,9 @@
-#pragma warning disable 1591, SYSLIB0014, CA1002
+#pragma warning disable 1591, SYSLIB0014, CA1002, CS0162
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
-using Jellyfin.Plugin.Newsletters.Scripts.Scraper;
+using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller;
@@ -39,15 +40,13 @@ public class NewsletterDataGenerator
     // Non-readonly
     private static string append = "Append";
     private static string write = "Overwrite";
-    private IProgress<double> progress;
     private List<JsonFileObj> archiveSeriesList;
     // private List<string> fileList;
 
-    public NewsletterDataGenerator(IProgress<double> passedProgress)
+    public NewsletterDataGenerator()
     {
         logger = new Logger();
         config = Plugin.Instance!.Configuration;
-        progress = passedProgress;
         myDataDir = config.TempDirectory + "/Newsletters";
 
         archiveFile = config.MyDataDir + config.ArchiveFileName; // curlist/archive
@@ -57,19 +56,13 @@ public class NewsletterDataGenerator
         archiveSeriesList = new List<JsonFileObj>();
         newslettersDir = config.NewsletterDir; // newsletterdir
         Directory.CreateDirectory(newslettersDir);
-
-        // WriteFile(write, "/ssl/htmlbuilder.log", newslettersDir); // testing
     }
 
     public Task GenerateDataForNextNewsletter()
     {
-        progress.Report(25);
         archiveSeriesList = PopulateFromArchive(); // Files that shouldn't be processed again
-        progress.Report(50);
         GenerateData();
-        progress.Report(75);
         CopyCurrRunDataToNewsletterData();
-        progress.Report(99);
 
         return Task.CompletedTask;
     }
@@ -81,7 +74,7 @@ public class NewsletterDataGenerator
         {
             StreamReader sr = new StreamReader(archiveFile);
             string arFile = sr.ReadToEnd();
-            foreach (string series in arFile.Split(";;"))
+            foreach (string series in arFile.Split(";;;"))
             {
                 JsonFileObj? currArcObj = JsonConvert.DeserializeObject<JsonFileObj?>(series);
                 if (currArcObj is not null)
@@ -101,7 +94,7 @@ public class NewsletterDataGenerator
         StreamReader sr = new StreamReader(currRunList); // curlist/archive
         string readScrapeFile = sr.ReadToEnd();
 
-        foreach (string? ep in readScrapeFile.Split(";;"))
+        foreach (string? ep in readScrapeFile.Split(";;;"))
         {
             JsonFileObj? obj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
             if (obj is not null)
@@ -117,60 +110,29 @@ public class NewsletterDataGenerator
         sr.Close();
     }
 
-    public string FetchImagePoster(string title)
+    public string FetchImagePoster(string posterFilePath)
     {
-        string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", (title + " series + cover + art").Split(" "));
-        logger.Debug("Image Search URL: " + url);
-        // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
+        return UploadToImgur(posterFilePath);
+    }
 
-        // HttpClient hc = new HttpClient();
-        // string res = await hc.GetStringAsync(url).ConfigureAwait(false);
-        string res;
-        WebClient wc = new WebClient();
-        try
+    private string UploadToImgur(string posterFilePath)
+    {
+        var w = new WebClient();
+
+        var values = new NameValueCollection()
         {
-            res = wc.DownloadString(url);
-        }
-        catch (WebException e)
-        {
-            logger.Warn("Unable to get proper response from googleapi: " + e);
-            return string.Empty;
-        }
+            { "image", Convert.ToBase64String(File.ReadAllBytes(posterFilePath)) }
+        };
 
-        string urlResFile = myDataDir + "/.lasturlresponse";
+        w.Headers.Add("Authorization", "Client-ID " + config.ApiKey);
+        byte[] response = w.UploadValues("https://api.imgur.com/3/upload.xml", values);
 
-        WriteFile(write, urlResFile, res);
+        string res = System.Text.Encoding.Default.GetString(response);
 
-        bool testForItems = false;
+        logger.Info("Imgur Uploaded! Link:");
+        logger.Info(res.Split("<link>")[1].Split("</link>")[0]);
 
-        foreach (string line in File.ReadAllLines(urlResFile))
-        {
-            WriteFile(write, "/ssl/testUrlReader.txt", line); // testing
-            if (testForItems)
-            {
-                if (line.Contains("\"link\":", StringComparison.OrdinalIgnoreCase))
-                {
-                    string fetchedURL = line.Split("\"")[3];
-
-                    logger.Info("Fetched Image: " + fetchedURL);
-                    if (fetchedURL.Length == 0)
-                    {
-                        logger.Warn("Image URL failed to be captured. Is this an error?");
-                    }
-
-                    return fetchedURL; // Actual URL
-                }
-            }
-            else
-            {
-                if (line.Contains("\"items\":", StringComparison.OrdinalIgnoreCase))
-                {
-                    testForItems = true;
-                }
-            }
-        }
-
-        return string.Empty;
+        return res.Split("<link>")[1].Split("</link>")[0];
     }
 
     private void CopyCurrRunDataToNewsletterData()

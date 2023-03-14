@@ -1,74 +1,303 @@
+#pragma warning disable 1591
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-// using Jellyfin.Plugin.Webhook.Destinations;
-// using Jellyfin.Plugin.Webhook.Helpers;
-// using Jellyfin.Plugin.Webhook.Models;
 using Jellyfin.Plugin.Newsletters.Configuration;
+using Jellyfin.Plugin.Newsletters.LOGGER;
+using Jellyfin.Plugin.Newsletters.Scripts.NLDataGenerator;
+using MediaBrowser.Common.Configuration;
+using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
-using Microsoft.Extensions.Logging;
+using MediaBrowser.Model.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace Jellyfin.Plugin.Newsletters.Scripts.Scraper;
+// using Microsoft.Extensions.Logging;
 
-/// <inheritdoc />
+namespace Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
+
 public class Scraper
 {
+    // Global Vars
+    // Readonly
     private readonly PluginConfiguration config;
-    private readonly ConcurrentDictionary<Guid, ScraperContainer> _itemProcessQueue;
+    // private readonly string archiveList;
+    // private readonly string currRunScanListDir;
+    private readonly string currRunScanList;
+    private readonly string archiveFile;
+    private readonly string currNewsletterDataFile;
 
-    public Scraper()
+    // Non-readonly
+    private int fileCount = 0;
+    private static string append = "Append";
+    private static string write = "Overwrite";
+    private IProgress<double> progress;
+    private NewsletterDataGenerator ng;
+    private Logger logger;
+
+    // private List<string> fileList;
+
+    public Scraper(IProgress<double> passedProgress)
     {
+        logger = new Logger();
         config = Plugin.Instance!.Configuration;
-        _itemProcessQueue = new ConcurrentDictionary<Guid, ScraperContainer>();
-    }
-    
+        progress = passedProgress;
+        // archiveList = "/ssl/archive.txt";
+        // currRunScanListDir = config.TempDirectory + "/Newsletters/";
+        archiveFile = config.MyDataDir + config.ArchiveFileName;
+        currRunScanList = config.MyDataDir + config.CurrRunListFileName;
+        currNewsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
+        Directory.CreateDirectory(config.MyDataDir);
 
-    /// <inheritdoc />
-    public async Task ProcessItemsAsync()
+        // empty currrun database if it exists
+        WriteFile(write, currRunScanList, string.Empty); // overwrite currscan data on run (testing purposes)
+        ng = new NewsletterDataGenerator(progress);
+
+        logger.Info("Setting Config Paths: ");
+        logger.Info("\n  DataPath: " + config.DataPath +
+                    "\n  TempDirectory: " + config.TempDirectory +
+                    "\n  PluginsPath: " + config.PluginsPath +
+                    "\n  MyDataDir: " + config.MyDataDir +
+                    "\n  NewsletterDir: " + config.NewsletterDir +
+                    "\n  ProgramDataPath: " + config.ProgramDataPath +
+                    "\n  ProgramSystemPath: " + config.ProgramSystemPath +
+                    "\n  SystemConfigurationFilePath: " + config.SystemConfigurationFilePath);
+    }
+
+    public Task GetSeriesData()
     {
-        // _logger.LogDebug("ProcessItemsAsync");
-        // Attempt to process all items in queue.
-        var currentItems = _itemProcessQueue.ToArray();
-        foreach (var (key, container) in currentItems)
+        progress.Report(0);
+
+        string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
+
+        GetFileListToProcess(filePath);
+
+        logger.Info("Scanned " + fileCount + " files" );
+
+        progress.Report(50);
+
+        // NewsletterDataGenerator nlDG = new NewsletterDataGenerator(progress, fileCount);
+        return ng.GenerateDataForNextNewsletter();
+    }
+
+    private JsonFileObj ConvertToJsonObj(string file)
+    {
+        JsonFileObj obj = new JsonFileObj()
         {
-            var item = _libraryManager.GetItemById(key);
-            if (item is null)
+            Filename = file
+        };
+
+        return obj;
+    }
+
+    private void GetFileListToProcess(string dirPath)
+    {
+        // File.AppendAllText("/ssl/logs.txt", "DIR: " + dirPath + ";\n");
+        // Process the list of files found in the directory.
+        string[] fileEntries = Directory.GetFiles(dirPath);
+        // check if already existing before writing to file
+        List<JsonFileObj> archiveObj = ng.PopulateFromArchive();
+
+        foreach (string filePath in fileEntries)
+        {
+            string[] excludedExt = { ".srt", ".txt", ".srt", ".saa", ".ttml", ".sbv", ".dfxp", ".vtt" };
+            bool contBool = false;
+            foreach (string ext in excludedExt)
             {
-                // Remove item from queue.
-                _itemProcessQueue.TryRemove(key, out _);
-                return;
+                if (filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                {
+                    contBool = true;
+                    break;
+                }
             }
 
-
-            // Metadata not refreshed yet and under retry limit.
-            if (item.ProviderIds.Keys.Count == 0 && container.RetryCount < MaxRetries)
+            if (contBool)
             {
-                container.RetryCount++;
-                _itemProcessQueue.AddOrUpdate(key, container, (_, _) => container);
                 continue;
             }
 
+            // File.AppendAllText("/ssl/logs.txt", "FILE: " + filePath + ";\n");
+            JsonFileObj currFileObj = ConvertToJsonObj(filePath);
 
-            // Send notification to each configured destination.
-            var dataObject = DataObjectHelpers
-                .GetBaseDataObject(_applicationHost, NotificationType.ItemAdded)
-                .AddBaseItemData(item);
+            // get Title, Season, Episode, Description
+            try
+            {
+                if (!AlreadyInArchive(archiveObj, currFileObj) && !AlreadyInCurrNewsletterData(archiveObj, currFileObj))
+                {
+                    string currFileName = currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 1];
+                    currFileObj.Title = string.Join(" ", currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 3].Split('_'));
+                    currFileObj.Season = int.Parse(currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0].Split('S')[1], CultureInfo.CurrentCulture);
+                    currFileObj.Episode = int.Parse(currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0].Trim(), CultureInfo.CurrentCulture);
+                    currFileObj.ImageURL = SetImageURL(currFileObj);
 
-            var itemType = item.GetType();
-            // await _webhookSender.SendNotification(NotificationType.ItemAdded, dataObject, itemType)
-            //     .ConfigureAwait(false);
+                    // save to "database"
+                    WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
+                }
+                else
+                {
+                    logger.Debug("\"" + currFileObj.Filename + "\" has already been processed either by Previous or Current Newsletter!");
+                }
 
-            // Remove item from queue.
-            _itemProcessQueue.TryRemove(key, out _);
+                fileCount++;
+            }
+            finally
+            {
+                fileCount++;
+            }
+        }
+
+        // Recurse into subdirectories of this directory.
+        string[] subdirectoryEntries = Directory.GetDirectories(@dirPath);
+        foreach (string subdirectory in @subdirectoryEntries)
+        {
+            GetFileListToProcess(@subdirectory);
         }
     }
 
-    /// <inheritdoc />
-    public void AddItem(BaseItem item)
+    private string SetImageURL(JsonFileObj currObj)
     {
-        _itemProcessQueue.TryAdd(item.Id, new QueuedItemContainer(item.Id));
-        // _logger.LogDebug("Queued {ItemName} for notification", item.Name);
+        // check if URL for series already exists in CurrNewsletterData from Previous scan
+        if (File.Exists(currNewsletterDataFile))
+        {
+            foreach (string item in File.ReadAllText(currNewsletterDataFile).Split(";;;"))
+            {
+                JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+                if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+                {
+                    logger.Debug("Found Previous Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    return fileObj.ImageURL;
+                }
+            }
+        }
+
+        // check if URL for series already exists in Archive from Previous scan
+        if (File.Exists(archiveFile))
+        {
+            foreach (string item in File.ReadAllText(archiveFile).Split(";;;"))
+            {
+                JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+                if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+                {
+                    logger.Debug("Found Previous Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    return fileObj.ImageURL;
+                }
+            }
+        }
+
+        // check if URL for series already exists in CurrList
+        foreach (string item in File.ReadAllText(currRunScanList).Split(";;;"))
+        {
+            JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+            if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+            {
+                logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                return fileObj.ImageURL;
+            }
+        }
+
+        // string url = ng.FetchImagePoster(obj.Title);
+        logger.Debug("Fetching URL from google...");
+        return ng.FetchImagePoster(currObj.Title);
+        // return string.Empty;
+        // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
     }
+
+    private bool AlreadyInCurrNewsletterData(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)
+    {
+        List<JsonFileObj> currNLObj = new List<JsonFileObj>();
+        if (File.Exists(currNewsletterDataFile))
+        {
+            StreamReader sr = new StreamReader(currNewsletterDataFile);
+            string nlFile = sr.ReadToEnd();
+            foreach (string ep in nlFile.Split(";;;"))
+            {
+                JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
+                if (currObj is not null)
+                {
+                    currNLObj.Add(currObj);
+                }
+            }
+
+            sr.Close();
+        }
+
+        foreach (JsonFileObj element in currNLObj)
+        {
+            if (element.Filename == currFileObj.Filename)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool AlreadyInArchive(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)
+    {
+        foreach (JsonFileObj element in archiveObj)
+        {
+            if (element.Filename == currFileObj.Filename)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void WriteFile(string method, string path, string value)
+    {
+        if (method == append)
+        {
+            File.AppendAllText(path, value);
+        }
+        else if (method == write)
+        {
+            File.WriteAllText(path, value);
+        }
+    }
+}
+
+public class JsonFileObj
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonFileObj"/> class.
+    /// </summary>
+    public JsonFileObj()
+    {
+        Filename = string.Empty;
+        Title = string.Empty;
+        // Season = string.Empty;
+        Season = 0;
+        Episode = 0;
+        // Episode = string.Empty;
+        Description = string.Empty;
+        ImageURL = string.Empty;
+        ItemID = string.Empty;
+    }
+
+    public string Filename { get; set; }
+
+    public string Title { get; set; }
+
+    // public string Season { get; set; }
+
+    public int Season { get; set; }
+
+    public int Episode { get; set; }
+
+    // public string Episode { get; set; }
+
+    public string Description { get; set; }
+
+    public string ImageURL { get; set; }
+
+    public string ItemID { get; set; }
 }

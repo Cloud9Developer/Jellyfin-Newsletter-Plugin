@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Data.Enums;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Scripts.NLDataGenerator;
@@ -21,140 +22,142 @@ using Newtonsoft.Json.Linq;
 
 // using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.Newsletters.Scripts.Scraper;
+namespace Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
 
 public class Scraper
 {
     // Global Vars
     // Readonly
     private readonly PluginConfiguration config;
-    // private readonly string archiveList;
-    // private readonly string currRunScanListDir;
     private readonly string currRunScanList;
+    private readonly string archiveFile;
     private readonly string currNewsletterDataFile;
+    private readonly ILibraryManager libManager;
 
     // Non-readonly
-    private int fileCount = 0;
+    // private int EpisodeCount = 0;
     private static string append = "Append";
     private static string write = "Overwrite";
-    private IProgress<double> progress;
     private NewsletterDataGenerator ng;
     private Logger logger;
 
-    // private List<string> fileList;
-
-    public Scraper(IProgress<double> passedProgress)
+    public Scraper(ILibraryManager libraryManager)
     {
         logger = new Logger();
         config = Plugin.Instance!.Configuration;
-        progress = passedProgress;
-        // archiveList = "/ssl/archive.txt";
+        libManager = libraryManager;
         // currRunScanListDir = config.TempDirectory + "/Newsletters/";
+        archiveFile = config.MyDataDir + config.ArchiveFileName;
         currRunScanList = config.MyDataDir + config.CurrRunListFileName;
         currNewsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
         Directory.CreateDirectory(config.MyDataDir);
-        WriteFile(write, currRunScanList, string.Empty); // overwrite currscan data on run (testing purposes)
-        ng = new NewsletterDataGenerator(progress);
-        // fileList = new List<string>();
-        // appPaths = ;
+
+        ng = new NewsletterDataGenerator();
+
+        logger.Info("Setting Config Paths: ");
+        logger.Info("\n  DataPath: " + config.DataPath +
+                    "\n  TempDirectory: " + config.TempDirectory +
+                    "\n  PluginsPath: " + config.PluginsPath +
+                    "\n  MyDataDir: " + config.MyDataDir +
+                    "\n  NewsletterDir: " + config.NewsletterDir +
+                    "\n  ProgramDataPath: " + config.ProgramDataPath +
+                    "\n  ProgramSystemPath: " + config.ProgramSystemPath +
+                    "\n  SystemConfigurationFilePath: " + config.SystemConfigurationFilePath +
+                    "\n  LogDirectoryPath: " + config.LogDirectoryPath );
     }
 
     public Task GetSeriesData()
     {
-        progress.Report(0);
+        // string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
+        logger.Info("Gathering Data...");
 
-        string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
-
-        GetFileListToProcess(filePath);
-
-        logger.Info("Scanned " + fileCount + " files" );
-
-        WriteFile(write, "/ssl/testconfigpath.txt", config.PluginsPath);
-
-        progress.Report(50);
-
-        // NewsletterDataGenerator nlDG = new NewsletterDataGenerator(progress, fileCount);
-        return ng.GenerateDataForNextNewsletter();
+        BuildJsonObjsToCurrScanfile();
+        CopyCurrRunDataToNewsletterData();
+        return Task.CompletedTask;
     }
 
-    private JsonFileObj ConvertToJsonObj(string file)
+    private void BuildJsonObjsToCurrScanfile()
     {
-        JsonFileObj obj = new JsonFileObj()
-        {
-            Filename = file
-        };
-
-        return obj;
-    }
-
-    private void GetFileListToProcess(string dirPath)
-    {
-        // File.AppendAllText("/ssl/logs.txt", "DIR: " + dirPath + ";\n");
-        // Process the list of files found in the directory.
-        string[] fileEntries = Directory.GetFiles(dirPath);
-        // check if already existing before writing to file
         List<JsonFileObj> archiveObj = ng.PopulateFromArchive();
 
-        foreach (string filePath in fileEntries)
+        InternalItemsQuery query = new InternalItemsQuery();
+        string[] mediaTypes = { "Series" };
+        query.IncludeItemTypes = new[] { BaseItemKind.Episode };
+        List<BaseItem> items = libManager.GetItemList(query);
+        logger.Info("Scan Size: " + items.Count);
+
+        foreach (BaseItem? item in libManager.GetItemList(query))
         {
-            string[] excludedExt = { ".srt", ".txt", ".srt", ".saa", ".ttml", ".sbv", ".dfxp", ".vtt" };
-            bool contBool = false;
-            foreach (string ext in excludedExt)
+            BaseItem episode = item;
+            BaseItem season = item.GetParent();
+            BaseItem series = item.GetParent().GetParent();
+
+            logger.Debug("Series: " + series.Name); // Title
+            logger.Debug("Season: " + season.Name); // Season
+            logger.Debug("Episode Name: " + episode.Name); // episode Name
+            logger.Debug("Episode Number: " + episode.IndexNumber); // episode Name
+            logger.Debug("Series Overview: " + series.Overview); // series overview
+            logger.Debug("ImageInfos: " + series.PrimaryImagePath);
+            logger.Debug(series.Id.ToString("N")); // series ItemId
+            logger.Debug(episode.PhysicalLocations[0]); // Filepath
+            logger.Debug("---------------");
+
+            if (item is not null)
             {
-                if (filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                JsonFileObj currFileObj = new JsonFileObj();
+                currFileObj.Filename = episode.PhysicalLocations[0];
+                currFileObj.Title = series.Name;
+                if (!AlreadyInArchive(archiveObj, currFileObj) && !AlreadyInCurrNewsletterData(currFileObj) && !AlreadyInCurrScanData(currFileObj))
                 {
-                    contBool = true;
-                    break;
-                }
-            }
+                    try
+                    {
+                        if (episode.IndexNumber is int && episode.IndexNumber is not null)
+                        {
+                            currFileObj.Episode = (int)episode.IndexNumber;
+                        }
 
-            if (contBool)
-            {
-                continue;
-            }
-
-            // File.AppendAllText("/ssl/logs.txt", "FILE: " + filePath + ";\n");
-            JsonFileObj currFileObj = ConvertToJsonObj(filePath);
-
-            // get Title, Season, Episode, Description
-            try
-            {
-                if (!AlreadyInArchive(archiveObj, currFileObj) && !AlreadyInCurrNewsletterData(archiveObj, currFileObj))
-                {
-                    string currFileName = currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 1];
-                    currFileObj.Title = string.Join(" ", currFileObj.Filename.Split('/')[currFileObj.Filename.Split('/').Length - 3].Split('_'));
-                    currFileObj.Season = int.Parse(currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[0].Split('S')[1], CultureInfo.CurrentCulture);
-                    currFileObj.Episode = int.Parse(currFileName.Split('-')[currFileName.Split('-').Length - 1].Split('E')[1].Split('.')[0].Trim(), CultureInfo.CurrentCulture);
-                    currFileObj.ImageURL = SetImageURL(currFileObj);
-                    WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;");
+                        currFileObj.SeriesOverview = series.Overview;
+                        currFileObj.ItemID = series.Id.ToString("N");
+                        currFileObj.PosterPath = series.PrimaryImagePath;
+                        currFileObj.ImageURL = SetImageURL(currFileObj);
+                        currFileObj.Season = int.Parse(season.Name.Split(' ')[1], CultureInfo.CurrentCulture);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Error("Encountered an error parsing: " + currFileObj.Filename);
+                        logger.Error(e);
+                    }
+                    finally
+                    {
+                        // save to "database"
+                        WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
+                    }
                 }
                 else
                 {
                     logger.Debug("\"" + currFileObj.Filename + "\" has already been processed either by Previous or Current Newsletter!");
                 }
-
-                fileCount++;
             }
-            finally
-            {
-                fileCount++;
-            }
-        }
-
-        // Recurse into subdirectories of this directory.
-        string[] subdirectoryEntries = Directory.GetDirectories(@dirPath);
-        foreach (string subdirectory in @subdirectoryEntries)
-        {
-            GetFileListToProcess(@subdirectory);
         }
     }
 
     private string SetImageURL(JsonFileObj currObj)
     {
+        // check if URL for series already exists in CurrList
+        foreach (string item in File.ReadAllText(currRunScanList).Split(";;;"))
+        {
+            JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+            if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+            {
+                logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                return fileObj.ImageURL;
+            }
+        }
+
         // check if URL for series already exists in CurrNewsletterData from Previous scan
         if (File.Exists(currNewsletterDataFile))
         {
-            foreach (string item in File.ReadAllText(currNewsletterDataFile).Split(";;"))
+            foreach (string item in File.ReadAllText(currNewsletterDataFile).Split(";;;"))
             {
                 JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
                 if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
@@ -165,32 +168,64 @@ public class Scraper
             }
         }
 
-        // check if URL for series already exists in CurrList
-        foreach (string item in File.ReadAllText(currRunScanList).Split(";;"))
+        // check if URL for series already exists in Archive from Previous scan
+        if (File.Exists(archiveFile))
         {
-            JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
-            if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+            foreach (string item in File.ReadAllText(archiveFile).Split(";;;"))
             {
-                logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
-                return fileObj.ImageURL;
+                JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+                if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+                {
+                    logger.Debug("Found Previous Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    return fileObj.ImageURL;
+                }
             }
         }
 
         // string url = ng.FetchImagePoster(obj.Title);
         logger.Debug("Fetching URL from google...");
-        return ng.FetchImagePoster(currObj.Title);
-        // return string.Empty;
-        // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
+        return ng.FetchImagePoster(currObj.PosterPath);
     }
 
-    private bool AlreadyInCurrNewsletterData(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)
+    private bool AlreadyInCurrScanData(JsonFileObj currFileObj)
     {
-        List<JsonFileObj> currNLObj = new List<JsonFileObj>();
+        List<JsonFileObj> currScanObj;
         if (File.Exists(currNewsletterDataFile))
         {
+            currScanObj = new List<JsonFileObj>();
             StreamReader sr = new StreamReader(currNewsletterDataFile);
             string nlFile = sr.ReadToEnd();
-            foreach (string ep in nlFile.Split(";;"))
+            foreach (string ep in nlFile.Split(";;;"))
+            {
+                JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
+                if (currObj is not null)
+                {
+                    currScanObj.Add(currObj);
+                }
+            }
+
+            sr.Close();
+            foreach (JsonFileObj element in currScanObj)
+            {
+                if (element.Filename == currFileObj.Filename)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private bool AlreadyInCurrNewsletterData(JsonFileObj currFileObj)
+    {
+        List<JsonFileObj> currNLObj;
+        if (File.Exists(currNewsletterDataFile))
+        {
+            currNLObj = new List<JsonFileObj>();
+            StreamReader sr = new StreamReader(currNewsletterDataFile);
+            string nlFile = sr.ReadToEnd();
+            foreach (string ep in nlFile.Split(";;;"))
             {
                 JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
                 if (currObj is not null)
@@ -200,16 +235,12 @@ public class Scraper
             }
 
             sr.Close();
-        }
-
-        foreach (JsonFileObj element in currNLObj)
-        {
-            // WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
-            if (element.Filename == currFileObj.Filename)
+            foreach (JsonFileObj element in currNLObj)
             {
-                WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
-
-                return true;
+                if (element.Filename == currFileObj.Filename)
+                {
+                    return true;
+                }
             }
         }
 
@@ -220,16 +251,24 @@ public class Scraper
     {
         foreach (JsonFileObj element in archiveObj)
         {
-            // WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
             if (element.Filename == currFileObj.Filename)
             {
-                WriteFile(append, "/ssl/compareTitle.txt", "element: " + element.Filename + ";; currFileObj: " + currFileObj.Filename + "\n");
-
                 return true;
             }
         }
 
         return false;
+    }
+
+    private void CopyCurrRunDataToNewsletterData()
+    {
+        if (File.Exists(currRunScanList)) // archiveFile
+        {
+            Stream input = File.OpenRead(currRunScanList);
+            Stream output = new FileStream(currNewsletterDataFile, FileMode.Append, FileAccess.Write, FileShare.None);
+            input.CopyTo(output);
+            File.Delete(currRunScanList);
+        }
     }
 
     private void WriteFile(string method, string path, string value)
@@ -258,8 +297,10 @@ public class JsonFileObj
         Season = 0;
         Episode = 0;
         // Episode = string.Empty;
-        Description = string.Empty;
+        SeriesOverview = string.Empty;
         ImageURL = string.Empty;
+        ItemID = string.Empty;
+        PosterPath = string.Empty;
     }
 
     public string Filename { get; set; }
@@ -274,7 +315,11 @@ public class JsonFileObj
 
     // public string Episode { get; set; }
 
-    public string Description { get; set; }
+    public string SeriesOverview { get; set; }
 
     public string ImageURL { get; set; }
+
+    public string ItemID { get; set; }
+
+    public string PosterPath { get; set; }
 }

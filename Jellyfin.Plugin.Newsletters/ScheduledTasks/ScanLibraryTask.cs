@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Jellyfin.Plugin.Newsletters.Scripts.Scraper;
+using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.Tasks;
@@ -14,8 +14,15 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
     /// <summary>
     /// Class RefreshMediaLibraryTask.
     /// </summary>
-    public class ScrapeInfoTask : IScheduledTask
+    public class ScanLibraryTask : IScheduledTask
     {
+        private readonly ILibraryManager _libraryManager;
+
+        public ScanLibraryTask(ILibraryManager libraryManager)
+        {
+            _libraryManager = libraryManager;
+        }
+
         /// <inheritdoc />
         public string Name => "Filesystem Scraper";
 
@@ -45,8 +52,13 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
         public Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            Scraper myScraper = new Scraper(progress);
+            progress.Report(0);
+            // _scanner
+            // ILibraryManager libManager = _scanner.GetLibrary();
+            // Scraper myScraper = new Scraper();
+            Scraper myScraper = new Scraper(_libraryManager);
             return myScraper.GetSeriesData(); // .ConfigureAwait(false);
+            // return Task.CompletedTask;
         }
     }
 }
