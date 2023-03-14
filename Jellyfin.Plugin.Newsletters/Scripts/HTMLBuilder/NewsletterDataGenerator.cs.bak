@@ -79,7 +79,7 @@ public class NewsletterDataGenerator
         {
             StreamReader sr = new StreamReader(archiveFile);
             string arFile = sr.ReadToEnd();
-            foreach (string series in arFile.Split(";;;"))
+            foreach (string series in arFile.Split(";;"))
             {
                 JsonFileObj? currArcObj = JsonConvert.DeserializeObject<JsonFileObj?>(series);
                 if (currArcObj is not null)
@@ -99,7 +99,7 @@ public class NewsletterDataGenerator
         StreamReader sr = new StreamReader(currRunList); // curlist/archive
         string readScrapeFile = sr.ReadToEnd();
 
-        foreach (string? ep in readScrapeFile.Split(";;;"))
+        foreach (string? ep in readScrapeFile.Split(";;"))
         {
             JsonFileObj? obj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
             if (obj is not null)

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -113,83 +114,39 @@ public class NewsletterDataGenerator
         sr.Close();
     }
 
-    public string FetchImagePoster(string title)
+    public string FetchImagePoster(string posterFilePath)
     {
         // string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", (title + " series + cover + art").Split(" "));
         // string url = "http://" + GetIP() + ":8096/Items/1d288ad3613f82f523b6a9353f608bde/Images/Primary";
 
-        // local posters are located in /config/metadata/library/XX/ItemID/poster.jpg
+        // local posters are located in /config/metadata/library/XX/{{ItemID}}/poster.jpg
         // use config.ProgramDataPath (this points to /config)
         // can parse all directories to get correct poster, but need to have ItemId
         // then need to upload image to repo (imgur?) and get Imgurl from response (see link below for imgur api)
         // https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139
 
-        // string posterFilePath = GetPosterFilePath();
-        // string urlToImgurPoster = UploadToImgur(posterFilePath);
-        // return urlToImgurPoster;
+        return UploadToImgur(posterFilePath);
         // https://github.com/jellyfin/jellyfin/issues/2246
-
-        string url = "http://" + GetIP() + ":8096/Items/Counts";
-        logger.Debug("Image Search URL: " + url);
-        // return "https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/91eNqTeYvzL.jpg";
-
-        // HttpClient hc = new HttpClient();
-        // string res = await hc.GetStringAsync(url).ConfigureAwait(false);
-        string res;
-        WebClient wc = new WebClient();
-        try
-        {
-            res = wc.DownloadString(url);
-            logger.Info("Response: " + res);
-            return string.Empty;
-            string urlResFile = myDataDir + "/.lasturlresponse";
-
-            // can pass response directly into forloop below?
-            WriteFile(write, urlResFile, res);
-
-            bool testForItems = false;
-
-            foreach (string line in File.ReadAllLines(urlResFile))
-            {
-                if (testForItems)
-                {
-                    if (line.Contains("\"link\":", StringComparison.OrdinalIgnoreCase))
-                    {
-                        string fetchedURL = line.Split("\"")[3];
-
-                        logger.Info("Fetched Image: " + fetchedURL);
-                        if (fetchedURL.Length == 0)
-                        {
-                            logger.Warn("Image URL failed to be captured. Is this an error?");
-                        }
-
-                        return fetchedURL; // Actual URL
-                    }
-                }
-                else
-                {
-                    if (line.Contains("\"items\":", StringComparison.OrdinalIgnoreCase))
-                    {
-                        testForItems = true;
-                    }
-                }
-            }
-        }
-        catch (WebException e)
-        {
-            logger.Warn("Unable to get proper response from googleapi: " + e);
-            return string.Empty;
-        }
-
-        return string.Empty;
     }
 
-    private string GetIP()
+    private string UploadToImgur(string posterFilePath)
     {
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName()); // `Dns.Resolve()` method is deprecated.
-        IPAddress ipAddress = ipHostInfo.AddressList[0];
-        logger.Info("Server DNS: " + ipAddress.ToString());
-        return ipAddress.ToString();
+        var w = new WebClient();
+
+        var values = new NameValueCollection()
+        {
+            { "image", Convert.ToBase64String(File.ReadAllBytes(posterFilePath)) }
+        };
+
+        w.Headers.Add("Authorization", "Client-ID " + config.ApiKey);
+        byte[] response = w.UploadValues("https://api.imgur.com/3/upload.xml", values);
+
+        string res = System.Text.Encoding.Default.GetString(response);
+
+        logger.Info("Imgur Uploaded! Link:");
+        logger.Info(res.Split("<link>")[1].Split("</link>")[0]);
+
+        return res.Split("<link>")[1].Split("</link>")[0];
     }
 
     private void CopyCurrRunDataToNewsletterData()
