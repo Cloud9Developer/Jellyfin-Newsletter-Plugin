@@ -123,6 +123,7 @@ public class Scraper
                         if ((url == "429") || (url == "ERR"))
                         {
                             logger.Debug("URL is not atainable at this time. Stopping scan.. Will resume during next scan.");
+                            logger.Debug("Not processing current file: " + currFileObj.Filename);
                             break;
                         }
 
