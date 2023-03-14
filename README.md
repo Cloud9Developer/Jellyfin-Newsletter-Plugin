@@ -35,3 +35,7 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
 # Issues
 I expect there to be quite a few issues when people start using this plugin. Please leave a ticket in the Issues on this GitHub page and I will get to it as soon as I can. 
 Please be patient with me though, since I did this on the side of my normal job. But I will try to fix any issues that come up to the best of my ability and as fast as I can!
+
+## Known Issues
+- When Imgur API reaches it's user limit, all scanned items will have a blank poster image. 
+    - This will be fixed in the next release by stopping the current scan, finishing the work on the current scan data, and when the next scheduled scan is run, resume from where it left off
