@@ -12,7 +12,7 @@
                 "version": "0.0.0.1",
                 "changelog": "- initial alpha release",
                 "targetAbi": "10.8.0.0",
-                "sourceUrl": "https://github.com/cph015/Jellyfin-Newsletter-Plugin/archive/refs/tags/v0.0.1.zip",
+                "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.0.1/Jellyfin.Plugin.Newsletters.dll",
                 "checksum": "e42fa802b3310865f3ae26c18549539f",
                 "timestamp": "2023-03-10T10:00:00Z"
             }
