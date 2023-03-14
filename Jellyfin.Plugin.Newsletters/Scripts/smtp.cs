@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder;
-using Jellyfin.Plugin.Newsletters.Scripts.Scraper;
+using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;

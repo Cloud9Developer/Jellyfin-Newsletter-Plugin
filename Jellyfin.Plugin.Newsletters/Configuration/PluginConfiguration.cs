@@ -52,6 +52,9 @@ public class PluginConfiguration : BasePluginConfiguration
         DataPath = string.Empty;
         TempDirectory = string.Empty;
         PluginsPath = string.Empty;
+        ProgramDataPath = string.Empty;
+        SystemConfigurationFilePath = string.Empty;
+        ProgramSystemPath = string.Empty;
 
         // default newsletter paths
         NewsletterFileName = string.Empty;
@@ -150,6 +153,21 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string DataPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string ProgramDataPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string SystemConfigurationFilePath { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string ProgramSystemPath { get; set; }
 
     // -----------------------------------
 

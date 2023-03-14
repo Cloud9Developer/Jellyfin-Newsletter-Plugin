@@ -39,13 +39,15 @@ public class NewsletterDataGenerator
     // Non-readonly
     private static string append = "Append";
     private static string write = "Overwrite";
+    private IProgress<double> progress;
     private List<JsonFileObj> archiveSeriesList;
     // private List<string> fileList;
 
-    public NewsletterDataGenerator()
+    public NewsletterDataGenerator(IProgress<double> passedProgress)
     {
         logger = new Logger();
         config = Plugin.Instance!.Configuration;
+        progress = passedProgress;
         myDataDir = config.TempDirectory + "/Newsletters";
 
         archiveFile = config.MyDataDir + config.ArchiveFileName; // curlist/archive

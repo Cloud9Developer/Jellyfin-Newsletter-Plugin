@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Jellyfin.Plugin.Newsletters.Configuration;
+using Jellyfin.Plugin.Newsletters.LOGGER;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
@@ -15,6 +16,8 @@ namespace Jellyfin.Plugin.Newsletters;
 /// </summary>
 public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 {
+    private Logger logger;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Plugin"/> class.
     /// </summary>
@@ -24,16 +27,23 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         : base(applicationPaths, xmlSerializer)
     {
         Instance = this;
+        logger = new Logger();
 
         void SetConfigPaths(IApplicationPaths dataPaths)
         {
             // custom code
+            // IApplication Paths
             PluginConfiguration config = Plugin.Instance!.Configuration;
             config.DataPath = dataPaths.DataPath;
             config.TempDirectory = dataPaths.TempDirectory;
             config.PluginsPath = dataPaths.PluginsPath;
+            config.ProgramDataPath = dataPaths.ProgramDataPath;
+            config.ProgramSystemPath = dataPaths.ProgramSystemPath;
+            config.SystemConfigurationFilePath = dataPaths.SystemConfigurationFilePath;
+
+            // Custom Paths
             config.MyDataDir = config.TempDirectory + "/Newsletters/";
-            config.NewsletterDir = config.MyDataDir + "/myNewsletters/";
+            config.NewsletterDir = config.MyDataDir + "myNewsletters/";
         }
 
         SetConfigPaths(applicationPaths);
