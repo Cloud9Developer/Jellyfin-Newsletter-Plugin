@@ -236,30 +236,36 @@
         <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.EmailNewsletterTask.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="T:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScanLibraryTask">
+            <summary>
+            Class RefreshMediaLibraryTask.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScanLibraryTask.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScanLibraryTask.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScanLibraryTask.Category">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScanLibraryTask.Key">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScanLibraryTask.GetDefaultTriggers">
+            <summary>
+            Creates the triggers that define when the task will run.
+            </summary>
+            <returns>IEnumerable{BaseTaskTrigger}.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.ScheduledTasks.ScanLibraryTask.ExecuteAsync(System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="M:Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder.NlDetailsJson.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder.NlDetailsJson"/> class.
             </summary>
-        </member>
-        <member name="T:Jellyfin.Plugin.Newsletters.Scripts.ItemAddedProcessing.ItemLibrary">
-            <inheritdoc />
-        </member>
-        <member name="M:Jellyfin.Plugin.Newsletters.Scripts.ItemAddedProcessing.ItemLibrary.#ctor(MediaBrowser.Controller.Library.ILibraryManager)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.Scripts.ItemAddedProcessing.ItemLibrary"/> class.
-            </summary>
-            <param name="libraryManager">Instance of the <see cref="T:MediaBrowser.Controller.Library.ILibraryManager"/> interface.</param>
-        </member>
-        <member name="M:Jellyfin.Plugin.Newsletters.Scripts.ItemAddedProcessing.ItemLibrary.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:Jellyfin.Plugin.Newsletters.Scripts.ItemAddedProcessing.ItemLibrary.Dispose(System.Boolean)">
-            <summary>
-            Releases unmanaged and optionally managed resources.
-            </summary>
-            <param name="dispose"><c>true</c> to release both managed and unmanaged resources or <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:Jellyfin.Plugin.Newsletters.Scripts.SCRAPER.JsonFileObj.#ctor">
             <summary>
