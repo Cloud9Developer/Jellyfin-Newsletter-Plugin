@@ -40,6 +40,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
             config.ProgramDataPath = dataPaths.ProgramDataPath;
             config.ProgramSystemPath = dataPaths.ProgramSystemPath;
             config.SystemConfigurationFilePath = dataPaths.SystemConfigurationFilePath;
+            config.LogDirectoryPath = dataPaths.LogDirectoryPath;
 
             // Custom Paths
             config.MyDataDir = config.TempDirectory + "/Newsletters/";

@@ -119,6 +119,11 @@
             Gets or sets a string setting.
             </summary>
         </member>
+        <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.LogDirectoryPath">
+            <summary>
+            Gets or sets a string setting.
+            </summary>
+        </member>
         <member name="P:Jellyfin.Plugin.Newsletters.Configuration.PluginConfiguration.NewsletterFileName">
             <summary>
             Gets or sets a string setting.
@@ -150,6 +155,11 @@
             </summary>
         </member>
         <member name="T:Jellyfin.Plugin.Newsletters.LOGGER.Logger">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.LOGGER.Logger"/> class.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.Newsletters.LOGGER.Logger.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:Jellyfin.Plugin.Newsletters.LOGGER.Logger"/> class.
             </summary>

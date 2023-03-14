@@ -62,7 +62,8 @@ public class Scraper
                     "\n  NewsletterDir: " + config.NewsletterDir +
                     "\n  ProgramDataPath: " + config.ProgramDataPath +
                     "\n  ProgramSystemPath: " + config.ProgramSystemPath +
-                    "\n  SystemConfigurationFilePath: " + config.SystemConfigurationFilePath);
+                    "\n  SystemConfigurationFilePath: " + config.SystemConfigurationFilePath +
+                    "\n  LogDirectoryPath: " + config.LogDirectoryPath );
     }
 
     public Task GetSeriesData()
@@ -83,7 +84,7 @@ public class Scraper
         string[] mediaTypes = { "Series" };
         query.IncludeItemTypes = new[] { BaseItemKind.Episode };
         List<BaseItem> items = libManager.GetItemList(query);
-        logger.Info("NLP: Search Size: " + items.Count);
+        logger.Info("Scan Size: " + items.Count);
 
         foreach (BaseItem? item in libManager.GetItemList(query))
         {
