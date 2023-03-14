@@ -6,7 +6,7 @@
         "description": "Scan your libraries and send out Newsletters on what has been recently added",
         "owner": "Cloud9Developer",
         "category": "Newsletters",
-        "imageUrl": "https://raw.githubusercontent.com/ConfusedPolarBear/intro-skipper/master/images/logo.png",
+        "imageUrl": "",
         "versions": [
             {
                 "version": "0.0.0.1",
