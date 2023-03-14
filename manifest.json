@@ -12,7 +12,7 @@
                 "version": "0.0.5",
                 "changelog": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md",
                 "targetAbi": "10.8.0.0",
-                "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.0.5/Jellyfin.Plugin.Newsletters.dll",
+                "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.0.5/Newsletters-v0.0.5.zip",
                 "checksum": "e42fa802b3310865f3ae26c18549539f"
             },
             {
