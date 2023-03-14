@@ -22,13 +22,14 @@ This plugin automacially scans a users library (default every 4 hours), populate
 
 # Installation
 
-The current build file for this plugin is already uploaded here in `Jellyfin-Newsletter-Plugin/Jellyfin.Plugin.Newsletters/bin/Debug/net6.0/`
-Just copy create a folder in your Jellyfin Plugin directory (I named mine Newsletters_alpha) and copy the .dll file to that new folder. 
-
-Once copied, restart Jellyfin and you should see it in your plugins!
-
-*Note:* I am currently working on getting the Manifest.json file working. Once that is completed, users will then be able get updates automatically
-
+Manifest is up an running! You can now import the manifest in Jellyfin and this plugin will appear in the Catalog!
+- Go to "Plugins" on your "Dashboard"
+- Go to the "Repositories" tab
+- Click the '+' to add a new Repository
+    - Give it a name (i.e. Newsletters)
+    - In "Repository URL," put "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/manifest.json"
+    - Click "Save"
+- You should now see Jellyfin Newsletters in Catalog under the Category "Newsletters!"
 
 # Issues
 I expect there to be quite a few issues when people start using this plugin. Please leave a ticket in the Issues on this GitHub page and I will get to it as soon as I can. 
