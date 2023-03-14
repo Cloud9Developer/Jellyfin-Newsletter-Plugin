@@ -5,7 +5,7 @@
   },
   "projects": {
     "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Template/Jellyfin.Plugin.Template.csproj": {
-      "version": "0.0.0.1",
+      "version": "0.0.5",
       "restore": {
         "projectUniqueName": "/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Template/Jellyfin.Plugin.Template.csproj",
         "projectName": "Jellyfin.Plugin.Template",
