@@ -111,7 +111,6 @@ public class HtmlBuilder
         foreach (NlDetailsJson obj in list)
         {
             logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
-            logger.Debug("Generate HTML snippet: Season-" + obj.Season + " EpR-" + obj.EpisodeRange + " Ep-" + obj.Episode);
             html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
         }
 

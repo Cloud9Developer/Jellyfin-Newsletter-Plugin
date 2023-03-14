@@ -129,6 +129,8 @@ public class NewsletterDataGenerator
 
         string res = System.Text.Encoding.Default.GetString(response);
 
+        logger.Debug("Imgur Response: " + res);
+
         logger.Info("Imgur Uploaded! Link:");
         logger.Info(res.Split("<link>")[1].Split("</link>")[0]);
 
