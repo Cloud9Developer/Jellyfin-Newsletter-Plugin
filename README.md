@@ -2,16 +2,18 @@
 
 This is my first end-to-end C# project, but I hope you enjoy!
 
+# Description
+This plugin automacially scans a users library (default every 4 hours), populates a list of *recently added (not previously scanned)* media, converts that data into HTML format, and sends out emails to a provided list of recipients.
 
 # Current Limitations
-1. This plugin uses google's image search API to pull poster images for the newsletter. Google limits their API (for free accounts to 100/day from what I can tell).
-    - Sign up to get an API key in order to use this plugin here: https://support.google.com/googleapi/answer/6158862?hl=en
-    - You will also need to get a CX key. Follow the instructions here: https://stackoverflow.com/questions/6562125/getting-a-cx-id-for-custom-search-google-api-python
+1. This plugin uses Imgur's API to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 1,250/day. 
+    - **This plugin is configured to reference existing Images from previous scans (including current) as to not duplicate requests to Imgur and use up the daily upload limit**
+    - Sign up to get an API key in order to use this plugin.
+        - Helpful Links:
+            - https://dev.to/bearer/how-to-configure-the-imgur-api-2ap9
+            - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
 
-2. This plugin can only process series at this point in time. Series must follow standard naming practices:
-    - /PATH/TO/SERIES/My_Series/Season1/MySeries_Name-S1E01.mp4
-        - The important part of the above path is that the SeasonX folder is there, and the end of the filename '-S1E01.{ext}' since this plugin parses the filenames to get series name, Episode number and Season
-        - The number of digits for Season and Episode above shouldn't matter (i.e. 01, 001, 00001, etc.), but I've only tested with formatting S01E001)
+2. This plugin can only process series at this point in time.
 
 3. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
 
@@ -21,6 +23,8 @@ The current build file for this plugin is already uploaded here in `Jellyfin-New
 Just copy create a folder in your Jellyfin Plugin directory (I named mine Newsletters_alpha) and copy the .dll file to that new folder. 
 
 Once copied, restart Jellyfin and you should see it in your plugins!
+
+*Note:* I am currently working on getting the Manifest.json file working. Once that is completed, users will then be able get updates automatically
 
 
 # Issues
