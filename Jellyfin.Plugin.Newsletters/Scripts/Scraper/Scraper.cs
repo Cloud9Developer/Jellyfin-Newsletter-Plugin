@@ -29,8 +29,6 @@ public class Scraper
     // Global Vars
     // Readonly
     private readonly PluginConfiguration config;
-    // private readonly string archiveList;
-    // private readonly string currRunScanListDir;
     private readonly string currRunScanList;
     private readonly string archiveFile;
     private readonly string currNewsletterDataFile;
@@ -43,8 +41,6 @@ public class Scraper
     private NewsletterDataGenerator ng;
     private Logger logger;
 
-    // private List<string> fileList;
-
     public Scraper(ILibraryManager libraryManager)
     {
         logger = new Logger();
@@ -56,8 +52,6 @@ public class Scraper
         currNewsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
         Directory.CreateDirectory(config.MyDataDir);
 
-        // empty currrun database if it exists
-        // WriteFile(write, currRunScanList, string.Empty); // overwrite currscan data on run (testing purposes)
         ng = new NewsletterDataGenerator();
 
         logger.Info("Setting Config Paths: ");

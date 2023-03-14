@@ -48,37 +48,8 @@ public class ItemLibrary : IServerEntryPoint
         // _applicationHost = applicationHost;
 
         config = Plugin.Instance!.Configuration;
-        // myDataDir = config.TempDirectory + "/Newsletters";
-
-        // archiveFile = config.MyDataDir + config.ArchiveFileName; // curlist/archive
-        // currRunList = config.MyDataDir + config.CurrRunListFileName;
-        // newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
-
-        // newslettersDir = config.NewsletterDir; // newsletterdir
 
         logger.Info("ItemAddedManager");
-        // User user = new User();
-        // InternalItemsQuery query = new InternalItemsQuery();
-        // string[] mediaTypes = { "Series" };
-        // // query.MediaTypes = mediaTypes;
-        // query.IncludeItemTypes = new[] { BaseItemKind.Episode };
-        // // query.IsSeries = true;
-        // // Console.WriteLine(string.Join("\n\n", _libraryManager.GetItemList(query))); // gets list of BaseItems
-        // List<BaseItem> items = _libraryManager.GetItemList(query);
-
-        // config.LibManager = _libraryManager;
-
-        // foreach (BaseItem item in _libraryManager.GetItemList(query))
-        // {
-        //     // Console.WriteLine(item.Id);
-        //     Console.WriteLine("Name: " + item.Name);
-        //     Console.WriteLine(item.ParentId.ToString("N"));
-        //     Console.WriteLine(item.PhysicalLocations[0]);
-        //     Console.WriteLine("Still works");
-        //     Console.WriteLine("---------------");
-        // }
-
-        // Console.WriteLine("NLP: Search Size: " + items.Count);
     }
 
     public Task RunAsync()

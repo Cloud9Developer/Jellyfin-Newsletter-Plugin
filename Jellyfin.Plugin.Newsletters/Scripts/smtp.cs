@@ -59,14 +59,12 @@ public class Smtp : ControllerBase
             string body;
 
             HtmlBuilder hb = new HtmlBuilder();
-            // body = "<html> <div> <table style='margin-left: auto; margin-right: auto;'> <tr> <td width='100%' height='100%' style='vertical-align: top; background-color: #000000;'> <table id='InsertHere' name='MainTable' style='margin-left: auto; margin-right: auto; border-spacing: 0 5px; padding-left: 2%; padding-right: 2%; padding-bottom: 1%;'> <tr style='text-align: center;'> <td colspan='2'> <span><h1 id='Title' style='color:#FFFFFF;'>Jellyfin Newsletter</h1></span> </td> </tr> <!-- Fill this in from code --> REPLACEME <!-- Fill that in from code --> </table> </td> </tr> </table> </div> </html>";
 
             body = hb.GetDefaultHTMLBody();
             string builtString = hb.BuildDataHtmlStringFromNewsletterData();
             string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
 
             mail.From = new MailAddress(emailFromAddress, emailFromAddress);
-            // mail.To.Add(emailToAddress);
             mail.To.Clear();
             string[] emailArr = emailToAddress.Split(',');
 

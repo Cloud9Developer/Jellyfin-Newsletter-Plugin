@@ -60,13 +60,9 @@ public class NewsletterDataGenerator
 
     public Task GenerateDataForNextNewsletter()
     {
-        // progress.Report(25);
         archiveSeriesList = PopulateFromArchive(); // Files that shouldn't be processed again
-        // progress.Report(50);
         GenerateData();
-        // progress.Report(75);
         CopyCurrRunDataToNewsletterData();
-        // progress.Report(99);
 
         return Task.CompletedTask;
     }
@@ -116,17 +112,7 @@ public class NewsletterDataGenerator
 
     public string FetchImagePoster(string posterFilePath)
     {
-        // string url = "https://www.googleapis.com/customsearch/v1?key=" + config.ApiKey + "&cx=" + config.CXKey + "&num=1&searchType=image&fileType=jpg&q=" + string.Join("%", (title + " series + cover + art").Split(" "));
-        // string url = "http://" + GetIP() + ":8096/Items/1d288ad3613f82f523b6a9353f608bde/Images/Primary";
-
-        // local posters are located in /config/metadata/library/XX/{{ItemID}}/poster.jpg
-        // use config.ProgramDataPath (this points to /config)
-        // can parse all directories to get correct poster, but need to have ItemId
-        // then need to upload image to repo (imgur?) and get Imgurl from response (see link below for imgur api)
-        // https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139
-
         return UploadToImgur(posterFilePath);
-        // https://github.com/jellyfin/jellyfin/issues/2246
     }
 
     private string UploadToImgur(string posterFilePath)
