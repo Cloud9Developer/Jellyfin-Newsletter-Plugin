@@ -144,13 +144,16 @@ public class Scraper
     private string SetImageURL(JsonFileObj currObj)
     {
         // check if URL for series already exists in CurrList
-        foreach (string item in File.ReadAllText(currRunScanList).Split(";;;"))
+        if (File.Exists(currRunScanList))
         {
-            JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
-            if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+            foreach (string item in File.ReadAllText(currRunScanList).Split(";;;"))
             {
-                logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
-                return fileObj.ImageURL;
+                JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+                if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+                {
+                    logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    return fileObj.ImageURL;
+                }
             }
         }
 
