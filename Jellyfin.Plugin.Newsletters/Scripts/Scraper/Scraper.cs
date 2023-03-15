@@ -1,10 +1,11 @@
-#pragma warning disable 1591
+#pragma warning disable 1591, SA1005 // remove SA1005 to clean code
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Data.Enums;
@@ -38,11 +39,12 @@ public class Scraper
 
     // Non-readonly
     private int totalLibCount;
-    private static string append = "Append";
-    private static string write = "Overwrite";
+    // private static string append = "Append";
+    // private static string write = "Overwrite";
     private int currCount;
     private NewsletterDataGenerator ng;
     private SQLiteDatabase db;
+    private JsonFileObj jsonHelper;
     private Logger logger;
     private IProgress<double> progress;
     private CancellationToken cancelToken;
@@ -51,6 +53,7 @@ public class Scraper
     public Scraper(ILibraryManager libraryManager, IProgress<double> passedProgress, CancellationToken cancellationToken)
     {
         logger = new Logger();
+        jsonHelper = new JsonFileObj();
         progress = passedProgress;
         cancelToken = cancellationToken;
         config = Plugin.Instance!.Configuration;
@@ -79,17 +82,25 @@ public class Scraper
                     "\n  LogDirectoryPath: " + config.LogDirectoryPath );
     }
 
+    // This is the main function
     public Task GetSeriesData()
     {
-        // string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
         logger.Info("Gathering Data...");
+        try
+        {
+            db.CreateConnection();
+            BuildJsonObjsToCurrScanfile();
+            CopyCurrRunDataToNewsletterData();
+        }
+        catch (Exception e)
+        {
+            logger.Error("An error has occured: " + e);
+        }
+        finally
+        {
+            db.CloseConnection();
+        }
 
-        db.CreateConnection();
-        // db.CloseConnection();
-
-        BuildJsonObjsToCurrScanfile();
-        // CopyCurrRunDataToNewsletterData();
-        db.CloseConnection();
         return Task.CompletedTask;
     }
 
@@ -124,7 +135,8 @@ public class Scraper
                 JsonFileObj currFileObj = new JsonFileObj();
                 currFileObj.Filename = episode.PhysicalLocations[0];
                 currFileObj.Title = series.Name;
-                if (!AlreadyInArchive(archiveObj, currFileObj) && !AlreadyInCurrNewsletterData(currFileObj) && !AlreadyInCurrScanData(currFileObj))
+                // if (!AlreadyInArchive(archiveObj, currFileObj) && !AlreadyInCurrNewsletterData(currFileObj) && !AlreadyInCurrScanData(currFileObj))
+                if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && !InDatabase("CurrNewsletterData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && !InDatabase("ArchiveData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)))
                 {
                     try
                     {
@@ -166,8 +178,8 @@ public class Scraper
                     finally
                     {
                         // save to "database" : Table currRunScanList
-                        WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
-                        db.ExecuteSQL("INSERT INTO ArchiveData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath) " +
+                        // WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
+                        db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath) " +
                                 "VALUES (" +
                                 "'" + currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
                                 "'" + currFileObj.Title.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
@@ -190,14 +202,31 @@ public class Scraper
         }
     }
 
+    private bool InDatabase(string tableName, string fileName)
+    {
+        foreach (var row in db.Query("SELECT COUNT(*) FROM " + tableName + " WHERE Filename='" + fileName + "';"))
+        {
+            if (row is not null)
+            {
+                if (int.Parse(row[0].ToString(), CultureInfo.CurrentCulture) > 0)
+                {
+                    logger.Debug(tableName + " Size: " + row[0].ToString());
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private string SetImageURL(JsonFileObj currObj)
     {
-        // check if URL for series already exists in CurrList
-        if (File.Exists(currRunScanList)) // Database : If currRunScanList table exists
+        // check if URL for series already exists CurrRunData table
+        foreach (var row in db.Query("SELECT * FROM CurrRunData"))
         {
-            foreach (string item in File.ReadAllText(currRunScanList).Split(";;;"))
+            if (row is not null)
             {
-                JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+                JsonFileObj fileObj = jsonHelper.ConvertToObj(row);
                 if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
                 {
                     logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
@@ -206,33 +235,77 @@ public class Scraper
             }
         }
 
-        // check if URL for series already exists in CurrNewsletterData from Previous scan
-        if (File.Exists(currNewsletterDataFile)) // Database : If currNewsletterData table exists
+        // check if URL for series already exists CurrNewsletterData table
+        foreach (var row in db.Query("SELECT * FROM CurrNewsletterData"))
         {
-            foreach (string item in File.ReadAllText(currNewsletterDataFile).Split(";;;"))
+            if (row is not null)
             {
-                JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+                JsonFileObj fileObj = jsonHelper.ConvertToObj(row);
                 if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
                 {
-                    logger.Debug("Found Previous Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
                     return fileObj.ImageURL;
                 }
             }
         }
 
-        // check if URL for series already exists in Archive from Previous scan
-        if (File.Exists(archiveFile)) // Database : If archiveData table exists
+        // check if URL for series already exists ArchiveData table
+        foreach (var row in db.Query("SELECT * FROM ArchiveData"))
         {
-            foreach (string item in File.ReadAllText(archiveFile).Split(";;;"))
+            if (row is not null)
             {
-                JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+                JsonFileObj fileObj = jsonHelper.ConvertToObj(row);
                 if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
                 {
-                    logger.Debug("Found Previous Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
                     return fileObj.ImageURL;
                 }
             }
         }
+
+        // ----------
+
+        // check if URL for series already exists in CurrList
+        // if (File.Exists(currRunScanList)) // Database : If currRunScanList table exists
+        // {
+        //     foreach (string item in File.ReadAllText(currRunScanList).Split(";;;"))
+        //     {
+        //         JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+        //         if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+        //         {
+        //             logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+        //             return fileObj.ImageURL;
+        //         }
+        //     }
+        // }
+
+        // // check if URL for series already exists in CurrNewsletterData from Previous scan
+        // if (File.Exists(currNewsletterDataFile)) // Database : If currNewsletterData table exists
+        // {
+        //     foreach (string item in File.ReadAllText(currNewsletterDataFile).Split(";;;"))
+        //     {
+        //         JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+        //         if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+        //         {
+        //             logger.Debug("Found Previous Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+        //             return fileObj.ImageURL;
+        //         }
+        //     }
+        // }
+
+        // // check if URL for series already exists in Archive from Previous scan
+        // if (File.Exists(archiveFile)) // Database : If archiveData table exists
+        // {
+        //     foreach (string item in File.ReadAllText(archiveFile).Split(";;;"))
+        //     {
+        //         JsonFileObj? fileObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
+        //         if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+        //         {
+        //             logger.Debug("Found Previous Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+        //             return fileObj.ImageURL;
+        //         }
+        //     }
+        // }
 
         // string url = ng.FetchImagePoster(obj.Title);
         logger.Debug("Uploading poster...");
@@ -240,101 +313,106 @@ public class Scraper
         return ng.FetchImagePoster(currObj.PosterPath);
     }
 
-    private bool AlreadyInCurrScanData(JsonFileObj currFileObj)
-    {
-        List<JsonFileObj> currScanObj;
-        if (File.Exists(currNewsletterDataFile))
-        {
-            currScanObj = new List<JsonFileObj>();
-            StreamReader sr = new StreamReader(currNewsletterDataFile);
-            string nlFile = sr.ReadToEnd();
-            foreach (string ep in nlFile.Split(";;;"))
-            {
-                JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
-                if (currObj is not null)
-                {
-                    currScanObj.Add(currObj);
-                }
-            }
+    // private bool AlreadyInCurrScanData(JsonFileObj currFileObj)
+    // {
+    //     List<JsonFileObj> currScanObj;
+    //     if (File.Exists(currNewsletterDataFile))
+    //     {
+    //         currScanObj = new List<JsonFileObj>();
+    //         StreamReader sr = new StreamReader(currNewsletterDataFile);
+    //         string nlFile = sr.ReadToEnd();
+    //         foreach (string ep in nlFile.Split(";;;"))
+    //         {
+    //             JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
+    //             if (currObj is not null)
+    //             {
+    //                 currScanObj.Add(currObj);
+    //             }
+    //         }
 
-            sr.Close();
-            foreach (JsonFileObj element in currScanObj)
-            {
-                if (element.Filename == currFileObj.Filename)
-                {
-                    return true;
-                }
-            }
-        }
+    //         sr.Close();
+    //         foreach (JsonFileObj element in currScanObj)
+    //         {
+    //             if (element.Filename == currFileObj.Filename)
+    //             {
+    //                 return true;
+    //             }
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    private bool AlreadyInCurrNewsletterData(JsonFileObj currFileObj)
-    {
-        List<JsonFileObj> currNLObj;
-        if (File.Exists(currNewsletterDataFile))
-        {
-            currNLObj = new List<JsonFileObj>();
-            StreamReader sr = new StreamReader(currNewsletterDataFile);
-            string nlFile = sr.ReadToEnd();
-            foreach (string ep in nlFile.Split(";;;"))
-            {
-                JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
-                if (currObj is not null)
-                {
-                    currNLObj.Add(currObj);
-                }
-            }
+    // private bool AlreadyInCurrNewsletterData(JsonFileObj currFileObj)
+    // {
+    //     List<JsonFileObj> currNLObj;
+    //     if (File.Exists(currNewsletterDataFile))
+    //     {
+    //         currNLObj = new List<JsonFileObj>();
+    //         StreamReader sr = new StreamReader(currNewsletterDataFile);
+    //         string nlFile = sr.ReadToEnd();
+    //         foreach (string ep in nlFile.Split(";;;"))
+    //         {
+    //             JsonFileObj? currObj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
+    //             if (currObj is not null)
+    //             {
+    //                 currNLObj.Add(currObj);
+    //             }
+    //         }
 
-            sr.Close();
-            foreach (JsonFileObj element in currNLObj)
-            {
-                if (element.Filename == currFileObj.Filename)
-                {
-                    return true;
-                }
-            }
-        }
+    //         sr.Close();
+    //         foreach (JsonFileObj element in currNLObj)
+    //         {
+    //             if (element.Filename == currFileObj.Filename)
+    //             {
+    //                 return true;
+    //             }
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    private bool AlreadyInArchive(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)
-    {
-        foreach (JsonFileObj element in archiveObj)
-        {
-            if (element.Filename == currFileObj.Filename)
-            {
-                return true;
-            }
-        }
+    // private bool AlreadyInArchive(List<JsonFileObj> archiveObj, JsonFileObj currFileObj)
+    // {
+    //     foreach (JsonFileObj element in archiveObj)
+    //     {
+    //         if (element.Filename == currFileObj.Filename)
+    //         {
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
     private void CopyCurrRunDataToNewsletterData()
     {
-        if (File.Exists(currRunScanList)) // archiveFile
-        {
-            Stream input = File.OpenRead(currRunScanList);
-            Stream output = new FileStream(currNewsletterDataFile, FileMode.Append, FileAccess.Write, FileShare.None);
-            // Database : copy currRunScanList table entries to currNewsletterData table
-            input.CopyTo(output);
-            // Clear/Delete currRunScanList table
-            File.Delete(currRunScanList);
-        }
+        // -> copy CurrData Table to NewsletterDataTable
+        // -> clear CurrData table
+        db.ExecuteSQL("INSERT INTO CurrNewsletterData SELECT * FROM CurrRunData;");
+        db.ExecuteSQL("DELETE FROM CurrRunData;");
+
+        // if (File.Exists(currRunScanList)) // archiveFile
+        // {
+        //     Stream input = File.OpenRead(currRunScanList);
+        //     Stream output = new FileStream(currNewsletterDataFile, FileMode.Append, FileAccess.Write, FileShare.None);
+        //     // Database : copy currRunScanList table entries to currNewsletterData table
+        //     input.CopyTo(output);
+        //     // Clear/Delete currRunScanList table
+        //     File.Delete(currRunScanList);
+        // }
     }
 
-    private void WriteFile(string method, string path, string value)
-    {
-        if (method == append)
-        {
-            File.AppendAllText(path, value);
-        }
-        else if (method == write)
-        {
-            File.WriteAllText(path, value);
-        }
-    }
+    // private void WriteFile(string method, string path, string value)
+    // {
+    //     if (method == append)
+    //     {
+    //         File.AppendAllText(path, value);
+    //     }
+    //     else if (method == write)
+    //     {
+    //         File.WriteAllText(path, value);
+    //     }
+    // }
 }

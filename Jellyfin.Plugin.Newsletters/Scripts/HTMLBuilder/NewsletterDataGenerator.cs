@@ -118,17 +118,18 @@ public class NewsletterDataGenerator
 
     private string UploadToImgur(string posterFilePath)
     {
-        var w = new WebClient();
+        var wc = new WebClient();
 
         var values = new NameValueCollection()
         {
             { "image", Convert.ToBase64String(File.ReadAllBytes(posterFilePath)) }
         };
 
-        w.Headers.Add("Authorization", "Client-ID " + config.ApiKey);
+        wc.Headers.Add("Authorization", "Client-ID " + config.ApiKey);
+
         try
         {
-            byte[] response = w.UploadValues("https://api.imgur.com/3/upload.xml", values);
+            byte[] response = wc.UploadValues("https://api.imgur.com/3/upload.xml", values);
 
             string res = System.Text.Encoding.Default.GetString(response);
 

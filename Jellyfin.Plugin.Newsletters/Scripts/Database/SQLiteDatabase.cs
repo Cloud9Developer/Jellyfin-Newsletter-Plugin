@@ -55,7 +55,7 @@ public class SQLiteDatabase
             }
 
             // Example of looping through query, creating
-            // foreach (var row in Query("SELECT * FROM ArchiveData"))
+            // foreach (var row in Query("SELECT * FROM CurrRunData"))
             // {
             //     if (row is not null)
             //     {
@@ -63,7 +63,7 @@ public class SQLiteDatabase
             //         JsonFileObj newObj = helper.ConvertToObj(row);
             //         logger.Debug("NewObj: " + newObj.Filename);
             //         logger.Debug("Title: " + newObj.Title);
-            //         logger.Debug(row[0]);
+            //         // logger.Debug(row[0]);
             //     }
             // }
         }
@@ -105,14 +105,14 @@ public class SQLiteDatabase
 
         public IEnumerable<IReadOnlyList<ResultSetValue>> Query(string query)
         {
-            logger.Debug("Running Query: " + PrepareStatement(query));
+            logger.Debug("Running Query: " + query);
             return _db.Query(query);
         }
 
-        private IStatement PrepareStatement(string query)
-        {
-            return _db.PrepareStatement(query);
-        }
+        // private IStatement PrepareStatement(string query)
+        // {
+        //     return _db.PrepareStatement(query);
+        // }
 
         public void ExecuteSQL(string query)
         {
