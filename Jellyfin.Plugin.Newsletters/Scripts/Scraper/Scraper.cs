@@ -19,6 +19,8 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SQLitePCL;
+using SQLitePCL.pretty;
 
 // using Microsoft.Extensions.Logging;
 
@@ -91,16 +93,18 @@ public class Scraper
         string[] mediaTypes = { "Series" };
         query.IncludeItemTypes = new[] { BaseItemKind.Episode };
         List<BaseItem> items = libManager.GetItemList(query);
+
         totalLibCount = items.Count;
         logger.Info("Scan Size: " + totalLibCount);
 
-        foreach (BaseItem? item in libManager.GetItemList(query))
+        foreach (BaseItem? item in items)
         {
             progress.Report((currCount * 100) / totalLibCount);
             cancelToken.ThrowIfCancellationRequested();
             BaseItem episode = item;
             BaseItem season = item.GetParent();
             BaseItem series = item.GetParent().GetParent();
+            // logger.Info("Content Type: " + season.MediaType);
 
             if (item is not null)
             {
@@ -147,7 +151,7 @@ public class Scraper
                     }
                     finally
                     {
-                        // save to "database"
+                        // save to "database" : Table currRunScanList
                         WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
                     }
                 }
@@ -164,7 +168,7 @@ public class Scraper
     private string SetImageURL(JsonFileObj currObj)
     {
         // check if URL for series already exists in CurrList
-        if (File.Exists(currRunScanList))
+        if (File.Exists(currRunScanList)) // Database : If currRunScanList table exists
         {
             foreach (string item in File.ReadAllText(currRunScanList).Split(";;;"))
             {
@@ -178,7 +182,7 @@ public class Scraper
         }
 
         // check if URL for series already exists in CurrNewsletterData from Previous scan
-        if (File.Exists(currNewsletterDataFile))
+        if (File.Exists(currNewsletterDataFile)) // Database : If currNewsletterData table exists
         {
             foreach (string item in File.ReadAllText(currNewsletterDataFile).Split(";;;"))
             {
@@ -192,7 +196,7 @@ public class Scraper
         }
 
         // check if URL for series already exists in Archive from Previous scan
-        if (File.Exists(archiveFile))
+        if (File.Exists(archiveFile)) // Database : If archiveData table exists
         {
             foreach (string item in File.ReadAllText(archiveFile).Split(";;;"))
             {
@@ -290,7 +294,9 @@ public class Scraper
         {
             Stream input = File.OpenRead(currRunScanList);
             Stream output = new FileStream(currNewsletterDataFile, FileMode.Append, FileAccess.Write, FileShare.None);
+            // Database : copy currRunScanList table entries to currNewsletterData table
             input.CopyTo(output);
+            // Clear/Delete currRunScanList table
             File.Delete(currRunScanList);
         }
     }

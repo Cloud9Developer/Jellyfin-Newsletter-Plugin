@@ -38,8 +38,8 @@ public class NewsletterDataGenerator
     private Logger logger;
 
     // Non-readonly
-    private static string append = "Append";
-    private static string write = "Overwrite";
+    // private static string append = "Append";
+    // private static string write = "Overwrite";
     private List<JsonFileObj> archiveSeriesList;
     // private List<string> fileList;
 
@@ -165,15 +165,15 @@ public class NewsletterDataGenerator
         }
     }
 
-    private void WriteFile(string method, string path, string value)
-    {
-        if (method == append)
-        {
-            File.AppendAllText(path, value);
-        }
-        else if (method == write)
-        {
-            File.WriteAllText(path, value);
-        }
-    }
+    // private void WriteFile(string method, string path, string value)
+    // {
+    //     if (method == append)
+    //     {
+    //         File.AppendAllText(path, value);
+    //     }
+    //     else if (method == write)
+    //     {
+    //         File.WriteAllText(path, value);
+    //     }
+    // }
 }
