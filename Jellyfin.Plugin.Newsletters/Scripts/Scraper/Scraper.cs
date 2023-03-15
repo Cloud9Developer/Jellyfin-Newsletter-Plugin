@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Jellyfin.Data.Enums;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
+using Jellyfin.Plugin.Newsletters.Scripts.DATA;
+using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Scripts.NLDataGenerator;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
@@ -19,8 +21,6 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SQLitePCL;
-using SQLitePCL.pretty;
 
 // using Microsoft.Extensions.Logging;
 
@@ -42,9 +42,11 @@ public class Scraper
     private static string write = "Overwrite";
     private int currCount;
     private NewsletterDataGenerator ng;
+    private SQLiteDatabase db;
     private Logger logger;
     private IProgress<double> progress;
     private CancellationToken cancelToken;
+    private List<JsonFileObj> archiveObj;
 
     public Scraper(ILibraryManager libraryManager, IProgress<double> passedProgress, CancellationToken cancellationToken)
     {
@@ -62,6 +64,8 @@ public class Scraper
         Directory.CreateDirectory(config.MyDataDir);
 
         ng = new NewsletterDataGenerator();
+        db = new SQLiteDatabase();
+        archiveObj = ng.PopulateFromArchive();
 
         logger.Debug("Setting Config Paths: ");
         logger.Debug("\n  DataPath: " + config.DataPath +
@@ -80,14 +84,18 @@ public class Scraper
         // string filePath = config.MediaDir; // Prerolls works. Movies not due to spaces)
         logger.Info("Gathering Data...");
 
+        db.CreateConnection();
+        // db.CloseConnection();
+
         BuildJsonObjsToCurrScanfile();
-        CopyCurrRunDataToNewsletterData();
+        // CopyCurrRunDataToNewsletterData();
+        db.CloseConnection();
         return Task.CompletedTask;
     }
 
     private void BuildJsonObjsToCurrScanfile()
     {
-        List<JsonFileObj> archiveObj = ng.PopulateFromArchive();
+        // List<JsonFileObj> archiveObj = ng.PopulateFromArchive();
 
         InternalItemsQuery query = new InternalItemsQuery();
         string[] mediaTypes = { "Series" };
@@ -97,9 +105,14 @@ public class Scraper
         totalLibCount = items.Count;
         logger.Info("Scan Size: " + totalLibCount);
 
+        ScanSeries(items);
+    }
+
+    private void ScanSeries(List<BaseItem> items)
+    {
         foreach (BaseItem? item in items)
         {
-            progress.Report((currCount * 100) / totalLibCount);
+            progress.Report((double)((currCount * 100) / totalLibCount));
             cancelToken.ThrowIfCancellationRequested();
             BaseItem episode = item;
             BaseItem season = item.GetParent();
@@ -123,7 +136,8 @@ public class Scraper
                         currFileObj.SeriesOverview = series.Overview;
                         currFileObj.ItemID = series.Id.ToString("N");
                         currFileObj.PosterPath = series.PrimaryImagePath;
-                        string url = SetImageURL(currFileObj);
+                        // string url = SetImageURL(currFileObj);
+                        string url = "test";
                         if ((url == "429") || (url == "ERR"))
                         {
                             logger.Debug("URL is not atainable at this time. Stopping scan.. Will resume during next scan.");
@@ -153,6 +167,17 @@ public class Scraper
                     {
                         // save to "database" : Table currRunScanList
                         WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
+                        db.ExecuteSQL("INSERT INTO ArchiveData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath) " +
+                                "VALUES (" +
+                                "'" + currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
+                                "'" + currFileObj.Title.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
+                                currFileObj.Season + "," +
+                                currFileObj.Episode + "," +
+                                "'" + currFileObj.SeriesOverview.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
+                                "'" + currFileObj.ImageURL.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
+                                "'" + currFileObj.ItemID.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
+                                "'" + currFileObj.PosterPath.Replace("'", string.Empty, StringComparison.Ordinal) + "'" +
+                                ");");
                     }
                 }
                 else
@@ -312,44 +337,4 @@ public class Scraper
             File.WriteAllText(path, value);
         }
     }
-}
-
-public class JsonFileObj
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonFileObj"/> class.
-    /// </summary>
-    public JsonFileObj()
-    {
-        Filename = string.Empty;
-        Title = string.Empty;
-        // Season = string.Empty;
-        Season = 0;
-        Episode = 0;
-        // Episode = string.Empty;
-        SeriesOverview = string.Empty;
-        ImageURL = string.Empty;
-        ItemID = string.Empty;
-        PosterPath = string.Empty;
-    }
-
-    public string Filename { get; set; }
-
-    public string Title { get; set; }
-
-    // public string Season { get; set; }
-
-    public int Season { get; set; }
-
-    public int Episode { get; set; }
-
-    // public string Episode { get; set; }
-
-    public string SeriesOverview { get; set; }
-
-    public string ImageURL { get; set; }
-
-    public string ItemID { get; set; }
-
-    public string PosterPath { get; set; }
 }

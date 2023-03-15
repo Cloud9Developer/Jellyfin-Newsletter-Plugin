@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
+using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;

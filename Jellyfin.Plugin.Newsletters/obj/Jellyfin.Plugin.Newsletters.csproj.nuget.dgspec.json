@@ -1,0 +1,98 @@
+{
+  "format": 1,
+  "restore": {
+    "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj": {}
+  },
+  "projects": {
+    "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj": {
+      "version": "0.0.5",
+      "restore": {
+        "projectUniqueName": "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
+        "projectName": "Jellyfin.Plugin.Newsletters",
+        "projectPath": "/Development/Jellyfin.Plugin.Newsletters/Jellyfin.Plugin.Newsletters.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/Development/Jellyfin.Plugin.Newsletters/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/root/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Jellyfin.Controller": {
+              "target": "Package",
+              "version": "[10.8.0, )"
+            },
+            "Jellyfin.Model": {
+              "target": "Package",
+              "version": "[10.8.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "SQLitePCL.pretty.netstandard": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "SerilogAnalyzer": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[0.15.0, )"
+            },
+            "SmartAnalyzers.MultithreadingAnalyzer": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.1.31, )"
+            },
+            "StyleCop.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.2.0-beta.376, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.406/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

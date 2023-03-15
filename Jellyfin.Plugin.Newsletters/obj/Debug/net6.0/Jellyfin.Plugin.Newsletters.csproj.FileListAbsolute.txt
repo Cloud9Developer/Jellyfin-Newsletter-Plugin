@@ -1,0 +1,14 @@
+/Development/Jellyfin.Plugin.Newsletters/bin/Debug/net6.0/Jellyfin.Plugin.Newsletters.deps.json
+/Development/Jellyfin.Plugin.Newsletters/bin/Debug/net6.0/Jellyfin.Plugin.Newsletters.dll
+/Development/Jellyfin.Plugin.Newsletters/bin/Debug/net6.0/Jellyfin.Plugin.Newsletters.pdb
+/Development/Jellyfin.Plugin.Newsletters/bin/Debug/net6.0/Jellyfin.Plugin.Newsletters.xml
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.csproj.AssemblyReference.cache
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.GeneratedMSBuildEditorConfig.editorconfig
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.AssemblyInfoInputs.cache
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.AssemblyInfo.cs
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.csproj.CoreCompileInputs.cache
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.dll
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/refint/Jellyfin.Plugin.Newsletters.dll
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.xml
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/Jellyfin.Plugin.Newsletters.pdb
+/Development/Jellyfin.Plugin.Newsletters/obj/Debug/net6.0/ref/Jellyfin.Plugin.Newsletters.dll
