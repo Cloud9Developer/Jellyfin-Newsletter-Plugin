@@ -30,10 +30,7 @@ public class Logger
         PluginConfiguration config = Plugin.Instance!.Configuration;
         if (config.DebugMode)
         {
-            string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [DEBUG] ";
-            Console.WriteLine(logMsgPrefix + msg);
-            File.AppendAllText(logFile, logMsgPrefix + msg);
-            File.AppendAllText(logFile, "\n");
+            Info(msg);
         }
     }
 
@@ -42,10 +39,7 @@ public class Logger
     /// </summary>
     public void Info(object msg)
     {
-        string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [INFO] ";
-        Console.WriteLine(logMsgPrefix + msg);
-        File.AppendAllText(logFile, logMsgPrefix + msg);
-        File.AppendAllText(logFile, "\n");
+        Inform(msg, "INFO");
     }
 
     /// <summary>
@@ -53,10 +47,7 @@ public class Logger
     /// </summary>
     public void Warn(object msg)
     {
-        string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [WARN] ";
-        Console.WriteLine(logMsgPrefix + msg);
-        File.AppendAllText(logFile, logMsgPrefix + msg);
-        File.AppendAllText(logFile, "\n");
+        Inform(msg, "WARN");
     }
 
     /// <summary>
@@ -64,10 +55,19 @@ public class Logger
     /// </summary>
     public void Error(object msg)
     {
-        string logMsgPrefix = "[NLP]: " + GetDateTime() + " - [ERR] ";
-        Console.WriteLine(logMsgPrefix + msg);
-        File.AppendAllText(logFile, logMsgPrefix + msg);
-        File.AppendAllText(logFile, "\n");
+        Inform(msg, "ERR");
+    }
+
+    /// <summary>
+    /// Inform specific type of warning into the logs.
+    /// </summary>
+    /// <param name="msg">The message to infrom into the logs.</param>
+    /// <param name="type">Type of warning ("ERR", "WARN", "INFO").</param>
+    public void Inform(object msg, string type)
+    {
+        string logMsgPrefix = $"[NLP]: {GetDateTime()} - [{type}] ";
+        Console.WriteLine($"{logMsgPrefix}{msg}");
+        File.AppendAllText(logFile, $"{logMsgPrefix}{msg}\n");
     }
 
     private string GetDateTime()
