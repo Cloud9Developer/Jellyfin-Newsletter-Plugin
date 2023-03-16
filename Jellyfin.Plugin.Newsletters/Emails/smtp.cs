@@ -60,7 +60,8 @@ public class Smtp : ControllerBase
                 string smtpAddress = config.SMTPServer;
                 int portNumber = config.SMTPPort;
                 bool enableSSL = true;
-                string emailFromAddress = config.SMTPUser;
+                string emailFromAddress = config.FromAddr;
+                string username = config.SMTPUser;
                 string password = config.SMTPPass;
                 string emailToAddress = config.ToAddr;
                 string subject = config.Subject;
@@ -74,19 +75,18 @@ public class Smtp : ControllerBase
 
                 mail.From = new MailAddress(emailFromAddress, emailFromAddress);
                 mail.To.Clear();
-                string[] emailArr = emailToAddress.Split(',');
+                mail.Subject = subject;
+                mail.Body = finalBody;
+                mail.IsBodyHtml = true;
 
-                foreach (string email in emailArr)
+                foreach (string email in emailToAddress.Split(','))
                 {
                     mail.Bcc.Add(email.Trim());
                 }
 
-                mail.Subject = subject;
-                mail.Body = finalBody;
-                mail.IsBodyHtml = true;
                 // mail.Attachments.Add(new Attachment("D:\\TestFile.txt"));//--Uncomment this to send any attachment
                 SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
-                smtp.Credentials = new NetworkCredential(emailFromAddress, password);
+                smtp.Credentials = new NetworkCredential(username, password);
                 smtp.EnableSsl = enableSSL;
                 smtp.Send(mail);
 

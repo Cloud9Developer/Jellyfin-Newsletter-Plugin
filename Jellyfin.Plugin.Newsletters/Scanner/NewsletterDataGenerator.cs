@@ -84,14 +84,15 @@ public class NewsletterDataGenerator
     public List<JsonFileObj> PopulateFromArchive(SQLiteDatabase database)
     {
         List<JsonFileObj> myObj = new List<JsonFileObj>();
+        JsonFileObj helper, currArcObj;
 
         foreach (var row in database.Query("SELECT * FROM ArchiveData;"))
         {
             logger.Debug("Inside of foreach..");
             if (row is not null)
             {
-                JsonFileObj helper = new JsonFileObj();
-                JsonFileObj currArcObj = helper.ConvertToObj(row);
+                helper = new JsonFileObj();
+                currArcObj = helper.ConvertToObj(row);
                 myObj.Add(currArcObj);
             }
         }
@@ -108,9 +109,9 @@ public class NewsletterDataGenerator
 
     private string UploadToImgur(string posterFilePath)
     {
-        var wc = new WebClient();
+        WebClient wc = new();
 
-        var values = new NameValueCollection()
+        NameValueCollection values = new()
         {
             { "image", Convert.ToBase64String(File.ReadAllBytes(posterFilePath)) }
         };
