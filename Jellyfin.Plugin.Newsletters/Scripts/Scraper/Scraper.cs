@@ -110,23 +110,24 @@ public class Scraper
         string[] mediaTypes = { "Series" };
         query.IncludeItemTypes = new[] { BaseItemKind.Episode };
         List<BaseItem> items = libManager.GetItemList(query);
+        BaseItem episode, season, series;
+        logger.Info($"Scan Size: {items.Count}");
 
-        totalLibCount = items.Count;
-        logger.Info("Scan Size: " + totalLibCount);
-
-        ScanSeries(items);
-    }
-
-    private void ScanSeries(List<BaseItem> items)
-    {
         foreach (BaseItem? item in items)
         {
-            progress.Report((double)((currCount * 100) / totalLibCount));
-            cancelToken.ThrowIfCancellationRequested();
-            BaseItem episode = item;
-            BaseItem season = item.GetParent();
-            BaseItem series = item.GetParent().GetParent();
-            // logger.Info("Content Type: " + season.MediaType);
+            episode = item;
+            season = item.GetParent();
+            series = item.GetParent().GetParent();
+
+            logger.Debug($"Series: {series.Name}"); // Title
+            logger.Debug($"Season: {season.Name}"); // Season
+            logger.Debug($"Episode Name: {episode.Name}"); // episode Name
+            logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
+            logger.Debug($"Series Overview: {series.Overview}"); // series overview
+            logger.Debug($"ImageInfos: {series.PrimaryImagePath}");
+            logger.Debug(series.Id.ToString("N")); // series ItemId
+            logger.Debug(episode.PhysicalLocations[0]); // Filepath
+            logger.Debug("---------------");
 
             if (item is not null)
             {
@@ -159,17 +160,7 @@ public class Scraper
                     }
                     catch (Exception e)
                     {
-                        logger.Error("Encountered an error parsing: " + currFileObj.Filename);
-                        logger.Debug("Series: " + series.Name); // Title
-                        logger.Debug("Season: " + season.Name); // Season
-                        logger.Debug("Episode Name: " + episode.Name); // episode Name
-                        logger.Debug("Episode Number: " + episode.IndexNumber); // episode Name
-                        logger.Debug("Series Overview: " + series.Overview); // series overview
-                        logger.Debug("ImageInfos: " + series.PrimaryImagePath);
-                        logger.Debug(series.Id.ToString("N")); // series ItemId
-                        logger.Debug(episode.PhysicalLocations[0]); // Filepath
-                        logger.Debug("---------------");
-                        logger.Debug("Error message:");
+                        logger.Error($"Encountered an error parsing: {currFileObj.Filename}");
                         logger.Error(e);
                     }
                     finally
