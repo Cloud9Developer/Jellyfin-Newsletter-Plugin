@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
+using Jellyfin.Plugin.Newsletters.Scripts.DATA;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
 using MediaBrowser.Common.Configuration;
@@ -37,6 +39,7 @@ public class NewsletterDataGenerator
     private readonly string archiveFile;
     private readonly string myDataDir;
     private Logger logger;
+    private SQLiteDatabase db;
 
     // Non-readonly
     // private static string append = "Append";
@@ -47,6 +50,7 @@ public class NewsletterDataGenerator
     public NewsletterDataGenerator()
     {
         logger = new Logger();
+        db = new SQLiteDatabase();
         config = Plugin.Instance!.Configuration;
         myDataDir = config.TempDirectory + "/Newsletters";
 
@@ -61,31 +65,58 @@ public class NewsletterDataGenerator
 
     public Task GenerateDataForNextNewsletter()
     {
-        archiveSeriesList = PopulateFromArchive(); // Files that shouldn't be processed again
-        GenerateData();
-        CopyCurrRunDataToNewsletterData();
+        try
+        {
+            db.CreateConnection();
+            archiveSeriesList = PopulateFromArchive(db); // Files that shouldn't be processed again
+            // GenerateData();
+            CopyCurrRunDataToNewsletterData();
+        }
+        catch (Exception e)
+        {
+            logger.Error("An error has occured: " + e);
+        }
+        finally
+        {
+            db.CloseConnection();
+        }
 
         return Task.CompletedTask;
     }
 
-    public List<JsonFileObj> PopulateFromArchive()
+    public List<JsonFileObj> PopulateFromArchive(SQLiteDatabase database)
     {
         List<JsonFileObj> myObj = new List<JsonFileObj>();
-        if (File.Exists(archiveFile))
-        {
-            StreamReader sr = new StreamReader(archiveFile);
-            string arFile = sr.ReadToEnd();
-            foreach (string series in arFile.Split(";;;"))
-            {
-                JsonFileObj? currArcObj = JsonConvert.DeserializeObject<JsonFileObj?>(series);
-                if (currArcObj is not null)
-                {
-                    myObj.Add(currArcObj);
-                }
-            }
 
-            sr.Close();
+        foreach (var row in database.Query("SELECT * FROM ArchiveData;"))
+        {
+            logger.Debug("Inside of foreach..");
+            if (row is not null)
+            {
+                JsonFileObj helper = new JsonFileObj();
+                JsonFileObj currArcObj = helper.ConvertToObj(row);
+                myObj.Add(currArcObj);
+                // logger.Debug(row[0]);
+            }
         }
+
+        // ------
+        // if (File.Exists(archiveFile))
+        // {
+        //     StreamReader sr = new StreamReader(archiveFile);
+        //     string arFile = sr.ReadToEnd();
+        //     foreach (string series in arFile.Split(";;;"))
+        //     {
+        //         JsonFileObj? currArcObj = JsonConvert.DeserializeObject<JsonFileObj?>(series);
+        //         if (currArcObj is not null)
+        //         {
+        //             myObj.Add(currArcObj);
+        //         }
+        //     }
+
+        // sr.Close();
+        // }
+        logger.Debug("Returning ArchObj");
 
         return myObj;
     }

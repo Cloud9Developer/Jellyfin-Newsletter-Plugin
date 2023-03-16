@@ -48,7 +48,7 @@ public class Scraper
     private Logger logger;
     private IProgress<double> progress;
     private CancellationToken cancelToken;
-    private List<JsonFileObj> archiveObj;
+    private List<JsonFileObj>? archiveObj;
 
     public Scraper(ILibraryManager libraryManager, IProgress<double> passedProgress, CancellationToken cancellationToken)
     {
@@ -68,7 +68,6 @@ public class Scraper
 
         ng = new NewsletterDataGenerator();
         db = new SQLiteDatabase();
-        archiveObj = ng.PopulateFromArchive();
 
         logger.Debug("Setting Config Paths: ");
         logger.Debug("\n  DataPath: " + config.DataPath +
@@ -89,6 +88,7 @@ public class Scraper
         try
         {
             db.CreateConnection();
+            archiveObj = ng.PopulateFromArchive(db);
             BuildJsonObjsToCurrScanfile();
             CopyCurrRunDataToNewsletterData();
         }
@@ -222,7 +222,7 @@ public class Scraper
     private string SetImageURL(JsonFileObj currObj)
     {
         // check if URL for series already exists CurrRunData table
-        foreach (var row in db.Query("SELECT * FROM CurrRunData"))
+        foreach (var row in db.Query("SELECT * FROM CurrRunData;"))
         {
             if (row is not null)
             {
@@ -236,7 +236,7 @@ public class Scraper
         }
 
         // check if URL for series already exists CurrNewsletterData table
-        foreach (var row in db.Query("SELECT * FROM CurrNewsletterData"))
+        foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
         {
             if (row is not null)
             {
@@ -250,7 +250,7 @@ public class Scraper
         }
 
         // check if URL for series already exists ArchiveData table
-        foreach (var row in db.Query("SELECT * FROM ArchiveData"))
+        foreach (var row in db.Query("SELECT * FROM ArchiveData;"))
         {
             if (row is not null)
             {
