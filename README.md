@@ -1,12 +1,15 @@
 # Jellyfin Newsletter Plugin
-![Newsletter Logo](https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewslettersLogo.png?raw=true)
-
+<p align='center'>
+    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewslettersLogo.png?raw=true'/><br>
+</p>
 This is my first end-to-end C# project, but I hope you enjoy!
 
 # Description
 This plugin automacially scans a users library (default every 4 hours), populates a list of *recently added (not previously scanned)* media, converts that data into HTML format, and sends out emails to a provided list of recipients.
 
-![Newsletter Example](https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewsletterExample.png?raw=true)
+<p align='center'>
+    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewsletterExample.png?raw=true'/><br>
+</p>
 
 # Current Limitations
 1. This plugin uses Imgur's API to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 12,500/day. 
