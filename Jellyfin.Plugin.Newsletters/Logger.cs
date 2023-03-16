@@ -19,7 +19,7 @@ public class Logger
     public Logger()
     {
         config = Plugin.Instance!.Configuration;
-        logFile = config.LogDirectoryPath + "/" + GetDate() + "_Newsletter.log";
+        logFile = $"{config.LogDirectoryPath}/{GetDate()}_Newsletter.log";
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class Logger
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Info"/> class.
+    /// Inform info into the logs.
     /// </summary>
     public void Info(object msg)
     {
@@ -43,7 +43,7 @@ public class Logger
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Warn"/> class.
+    /// Inform warn into the logs.
     /// </summary>
     public void Warn(object msg)
     {
@@ -51,7 +51,7 @@ public class Logger
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Error"/> class.
+    /// Inform error into the logs.
     /// </summary>
     public void Error(object msg)
     {
@@ -63,7 +63,7 @@ public class Logger
     /// </summary>
     /// <param name="msg">The message to infrom into the logs.</param>
     /// <param name="type">Type of warning ("ERR", "WARN", "INFO").</param>
-    public void Inform(object msg, string type)
+    private void Inform(object msg, string type)
     {
         string logMsgPrefix = $"[NLP]: {GetDateTime()} - [{type}] ";
         Console.WriteLine($"{logMsgPrefix}{msg}");

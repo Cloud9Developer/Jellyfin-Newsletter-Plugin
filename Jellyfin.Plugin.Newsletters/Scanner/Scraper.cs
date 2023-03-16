@@ -209,12 +209,14 @@ public class Scraper
 
     private string SetImageURL(JsonFileObj currObj)
     {
+        JsonFileObj fileObj;
+
         // check if URL for series already exists CurrRunData table
         foreach (var row in db.Query("SELECT * FROM CurrRunData;"))
         {
             if (row is not null)
             {
-                JsonFileObj fileObj = jsonHelper.ConvertToObj(row);
+                fileObj = jsonHelper.ConvertToObj(row);
                 if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
                 {
                     logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
@@ -228,7 +230,7 @@ public class Scraper
         {
             if (row is not null)
             {
-                JsonFileObj fileObj = jsonHelper.ConvertToObj(row);
+                fileObj = jsonHelper.ConvertToObj(row);
                 if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
                 {
                     logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
@@ -242,7 +244,7 @@ public class Scraper
         {
             if (row is not null)
             {
-                JsonFileObj fileObj = jsonHelper.ConvertToObj(row);
+                fileObj = jsonHelper.ConvertToObj(row);
                 if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
                 {
                     logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
