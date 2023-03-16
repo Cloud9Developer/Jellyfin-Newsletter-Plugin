@@ -94,7 +94,7 @@ public class Smtp : ControllerBase
             }
             else
             {
-                logger.Info("There is no Newsletter data.. Have I scanned or sent out a newsletter recently recently?");
+                logger.Info("There is no Newsletter data.. Have I scanned or sent out a newsletter recently?");
             }
         }
         catch (Exception e)
