@@ -73,9 +73,7 @@ public class JsonFileObj
             ItemID = row[6].ToString(),
             PosterPath = row[7].ToString()
         };
-        // obj.Filename = row[0].ToString();
-        // obj.Title = row[1].ToString();
-        // logger.Debug("Converted to OBJ: " + row[0].ToString());
+
         return obj;
     }
 }

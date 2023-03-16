@@ -42,8 +42,6 @@ public class NewsletterDataGenerator
     private SQLiteDatabase db;
 
     // Non-readonly
-    // private static string append = "Append";
-    // private static string write = "Overwrite";
     private List<JsonFileObj> archiveSeriesList;
     // private List<string> fileList;
 
@@ -69,7 +67,6 @@ public class NewsletterDataGenerator
         {
             db.CreateConnection();
             archiveSeriesList = PopulateFromArchive(db); // Files that shouldn't be processed again
-            // GenerateData();
             CopyCurrRunDataToNewsletterData();
         }
         catch (Exception e)
@@ -96,50 +93,12 @@ public class NewsletterDataGenerator
                 JsonFileObj helper = new JsonFileObj();
                 JsonFileObj currArcObj = helper.ConvertToObj(row);
                 myObj.Add(currArcObj);
-                // logger.Debug(row[0]);
             }
         }
 
-        // ------
-        // if (File.Exists(archiveFile))
-        // {
-        //     StreamReader sr = new StreamReader(archiveFile);
-        //     string arFile = sr.ReadToEnd();
-        //     foreach (string series in arFile.Split(";;;"))
-        //     {
-        //         JsonFileObj? currArcObj = JsonConvert.DeserializeObject<JsonFileObj?>(series);
-        //         if (currArcObj is not null)
-        //         {
-        //             myObj.Add(currArcObj);
-        //         }
-        //     }
-
-        // sr.Close();
-        // }
         logger.Debug("Returning ArchObj");
 
         return myObj;
-    }
-
-    private void GenerateData()
-    {
-        StreamReader sr = new StreamReader(currRunList); // curlist/archive
-        string readScrapeFile = sr.ReadToEnd();
-
-        foreach (string? ep in readScrapeFile.Split(";;;"))
-        {
-            JsonFileObj? obj = JsonConvert.DeserializeObject<JsonFileObj?>(ep);
-            if (obj is not null)
-            {
-                JsonFileObj currObj = new JsonFileObj();
-                currObj.Title = obj.Title;
-                archiveSeriesList.Add(currObj);
-            }
-
-            break;
-        }
-
-        sr.Close();
     }
 
     public string FetchImagePoster(string posterFilePath)
@@ -197,16 +156,4 @@ public class NewsletterDataGenerator
             File.Delete(currRunList);
         }
     }
-
-    // private void WriteFile(string method, string path, string value)
-    // {
-    //     if (method == append)
-    //     {
-    //         File.AppendAllText(path, value);
-    //     }
-    //     else if (method == write)
-    //     {
-    //         File.WriteAllText(path, value);
-    //     }
-    // }
 }

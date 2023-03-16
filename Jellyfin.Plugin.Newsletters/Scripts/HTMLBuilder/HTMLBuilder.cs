@@ -138,18 +138,6 @@ public class HtmlBuilder
         List<NlDetailsJson> compiledList = new List<NlDetailsJson>();
         List<NlDetailsJson> finalList = new List<NlDetailsJson>();
 
-                                // "Filename TEXT NOT NULL," +
-                                // "Title TEXT," +
-                                // "Season INT," +
-                                // "Episode INT," +
-                                // "SeriesOverview TEXT," +
-                                // "ImageURL TEXT," +
-                                // "ItemID TEXT," +
-                                // "PosterPath TEXT," +
-                                // "PRIMARY KEY (Filename)" +
-
-        // --------
-
         foreach (var row in db.Query("SELECT * FROM CurrNewsletterData WHERE Title='" + currObj.Title + "';"))
         {
             if (row is not null)
@@ -315,12 +303,6 @@ public class HtmlBuilder
         // copy tables
         db.ExecuteSQL("INSERT INTO ArchiveData SELECT * FROM CurrNewsletterData;");
         db.ExecuteSQL("DELETE FROM CurrNewsletterData;");
-
-        // -------
-        // Stream input = File.OpenRead(newsletterDataFile);
-        // Stream output = new FileStream(archiveFile, FileMode.Append, FileAccess.Write, FileShare.None);
-        // input.CopyTo(output);
-        // File.Delete(currRunList);
     }
 
     private void WriteFile(string method, string path, string value)
@@ -334,26 +316,4 @@ public class HtmlBuilder
             File.WriteAllText(path, value);
         }
     }
-}
-
-public class NlDetailsJson
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NlDetailsJson"/> class.
-    /// </summary>
-    public NlDetailsJson()
-    {
-        Title = string.Empty;
-        Season = 0;
-        Episode = 0;
-        EpisodeRange = string.Empty;
-    }
-
-    public string Title { get; set; }
-
-    public int Season { get; set; }
-
-    public int Episode { get; set; }
-
-    public string EpisodeRange { get; set; }
 }
