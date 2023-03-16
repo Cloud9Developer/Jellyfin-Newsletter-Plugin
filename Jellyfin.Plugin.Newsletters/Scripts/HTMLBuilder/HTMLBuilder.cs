@@ -118,33 +118,6 @@ public class HtmlBuilder
             db.CloseConnection();
         }
 
-        // -- old file fetcher
-        // StreamReader sr = new StreamReader(newsletterDataFile);
-        // string readDataFile = sr.ReadToEnd();
-
-        // foreach (string? item in readDataFile.Split(";;;"))
-        // {
-        //     JsonFileObj? obj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
-        //     if (obj is not null)
-        //     {
-        //         // scan through all items and get all Season numbers and Episodes
-        //         // (string seasonInfo, string episodeInfo) = ParseSeriesInfo(obj, readDataFile);
-        //         if (completed.Contains(obj.Title))
-        //         {
-        //             continue;
-        //         }
-
-        //         string seaEpsHtml = string.Empty;
-        //         List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(obj, readDataFile);
-        //         seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
-
-        //         builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + obj.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + obj.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + obj.SeriesOverview + "</div> </p> </td> </tr>";
-        //         completed.Add(obj.Title);
-        //     }
-        // }
-
-        // sr.Close();
-
         return builtHTMLString;
     }
 
@@ -165,27 +138,19 @@ public class HtmlBuilder
         List<NlDetailsJson> compiledList = new List<NlDetailsJson>();
         List<NlDetailsJson> finalList = new List<NlDetailsJson>();
 
-        // foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
-        // {
-        //     if (row is not null)
-        //     {
-        //         JsonFileObj helper = new JsonFileObj();
-        //         JsonFileObj itemObj = helper.ConvertToObj(row);
-
-        //         NlDetailsJson tempVar = new NlDetailsJson()
-        //         {
-        //             Season = itemObj.Season,
-        //             Episode = itemObj.Episode
-        //         };
-
-        //         logger.Debug("tempVar.Season: " + tempVar.Season + " : tempVar.Episode: " + tempVar.Episode);
-        //         compiledList.Add(tempVar);
-        //     }
-        // }
+                                // "Filename TEXT NOT NULL," +
+                                // "Title TEXT," +
+                                // "Season INT," +
+                                // "Episode INT," +
+                                // "SeriesOverview TEXT," +
+                                // "ImageURL TEXT," +
+                                // "ItemID TEXT," +
+                                // "PosterPath TEXT," +
+                                // "PRIMARY KEY (Filename)" +
 
         // --------
 
-        foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
+        foreach (var row in db.Query("SELECT * FROM CurrNewsletterData WHERE Title='" + currObj.Title + "';"))
         {
             if (row is not null)
             {
@@ -194,6 +159,7 @@ public class HtmlBuilder
 
                 NlDetailsJson tempVar = new NlDetailsJson()
                 {
+                    Title = itemObj.Title,
                     Season = itemObj.Season,
                     Episode = itemObj.Episode
                 };
@@ -377,10 +343,13 @@ public class NlDetailsJson
     /// </summary>
     public NlDetailsJson()
     {
+        Title = string.Empty;
         Season = 0;
         Episode = 0;
         EpisodeRange = string.Empty;
     }
+
+    public string Title { get; set; }
 
     public int Season { get; set; }
 

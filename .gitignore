@@ -1,2 +1,3 @@
-Jellyfin.Plugin.Newsletters/bin/*
 */.DS_Store
+Jellyfin.Plugin.Newsletters/bin/*
+Jellyfin.Plugin.Newsletters/obj/*

@@ -148,11 +148,11 @@ public class Scraper
                         currFileObj.SeriesOverview = series.Overview;
                         currFileObj.ItemID = series.Id.ToString("N");
                         currFileObj.PosterPath = series.PrimaryImagePath;
-                        // string url = SetImageURL(currFileObj);
-                        string url = "test";
+                        string url = SetImageURL(currFileObj);
+
                         if ((url == "429") || (url == "ERR"))
                         {
-                            logger.Debug("URL is not atainable at this time. Stopping scan.. Will resume during next scan.");
+                            logger.Debug("URL is not attainable at this time. Stopping scan.. Will resume during next scan.");
                             logger.Debug("Not processing current file: " + currFileObj.Filename);
                             break;
                         }
