@@ -1,4 +1,4 @@
-#pragma warning disable 1591, SYSLIB0014, CA1002, CS0162
+#pragma warning disable 1591, SYSLIB0014, CA1002, CS0162, SA1005 // remove SA1005 for cleanup
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -11,6 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
+using Jellyfin.Plugin.Newsletters.Scripts.DATA;
+using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
@@ -35,6 +37,8 @@ public class HtmlBuilder
 
     private string emailBody;
     private Logger logger;
+    private SQLiteDatabase db;
+    private JsonFileObj jsonHelper;
 
     // Non-readonly
     private static string append = "Append";
@@ -44,6 +48,8 @@ public class HtmlBuilder
     public HtmlBuilder()
     {
         logger = new Logger();
+        jsonHelper = new JsonFileObj();
+        db = new SQLiteDatabase();
         config = Plugin.Instance!.Configuration;
         newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
         emailBody = config.Body;
@@ -74,33 +80,43 @@ public class HtmlBuilder
 
     public string BuildDataHtmlStringFromNewsletterData()
     {
-        string builtHTMLString = string.Empty;
         List<string> completed = new List<string>();
-        StreamReader sr = new StreamReader(newsletterDataFile);
-        string readDataFile = sr.ReadToEnd();
+        string builtHTMLString = string.Empty;
+        // pull data from CurrNewsletterData table
 
-        foreach (string? item in readDataFile.Split(";;;"))
+        try
         {
-            JsonFileObj? obj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
-            if (obj is not null)
+            db.CreateConnection();
+
+            foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
             {
-                // scan through all items and get all Season numbers and Episodes
-                // (string seasonInfo, string episodeInfo) = ParseSeriesInfo(obj, readDataFile);
-                if (completed.Contains(obj.Title))
+                if (row is not null)
                 {
-                    continue;
+                    JsonFileObj obj = jsonHelper.ConvertToObj(row);
+                    // scan through all items and get all Season numbers and Episodes
+                    // (string seasonInfo, string episodeInfo) = ParseSeriesInfo(obj, readDataFile);
+                    if (completed.Contains(obj.Title))
+                    {
+                        continue;
+                    }
+
+                    string seaEpsHtml = string.Empty;
+                    List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(obj); // , readDataFile); readin archive in ParseSeriesInfo for nlData
+                    seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
+
+                    builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + obj.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + obj.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + obj.SeriesOverview + "</div> </p> </td> </tr>";
+                    completed.Add(obj.Title);
                 }
-
-                string seaEpsHtml = string.Empty;
-                List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(obj, readDataFile);
-                seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
-
-                builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + obj.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + obj.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + obj.SeriesOverview + "</div> </p> </td> </tr>";
-                completed.Add(obj.Title);
             }
         }
-
-        sr.Close();
+        catch (Exception e)
+        {
+            logger.Error("An error has occured: " + e);
+        }
+        finally
+        {
+            db.CloseConnection();
+        }
 
         return builtHTMLString;
     }
@@ -111,33 +127,37 @@ public class HtmlBuilder
         foreach (NlDetailsJson obj in list)
         {
             logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
-            logger.Debug("Generate HTML snippet: Season-" + obj.Season + " EpR-" + obj.EpisodeRange + " Ep-" + obj.Episode);
             html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
         }
 
         return html;
     }
 
-    private List<NlDetailsJson> ParseSeriesInfo(JsonFileObj currObj, string nlData)
+    private List<NlDetailsJson> ParseSeriesInfo(JsonFileObj currObj)
     {
         List<NlDetailsJson> compiledList = new List<NlDetailsJson>();
         List<NlDetailsJson> finalList = new List<NlDetailsJson>();
 
-        foreach (string? item in nlData.Split(";;;"))
+        foreach (var row in db.Query("SELECT * FROM CurrNewsletterData WHERE Title='" + currObj.Title + "';"))
         {
-            JsonFileObj? itemObj = JsonConvert.DeserializeObject<JsonFileObj?>(item);
-            if (itemObj is not null)
+            if (row is not null)
             {
-                if (itemObj.Title == currObj.Title)
+                JsonFileObj helper = new JsonFileObj();
+                JsonFileObj itemObj = helper.ConvertToObj(row);
+
+                NlDetailsJson tempVar = new NlDetailsJson()
                 {
-                    NlDetailsJson tempVar = new NlDetailsJson();
-                    tempVar.Season = itemObj.Season;
-                    tempVar.Episode = itemObj.Episode;
-                    logger.Debug("tempVar.Season: " + tempVar.Season + " : tempVar.Episode: " + tempVar.Episode);
-                    compiledList.Add(tempVar);
-                }
+                    Title = itemObj.Title,
+                    Season = itemObj.Season,
+                    Episode = itemObj.Episode
+                };
+
+                logger.Debug("tempVar.Season: " + tempVar.Season + " : tempVar.Episode: " + tempVar.Episode);
+                compiledList.Add(tempVar);
             }
         }
+
+        // Old File fetcher
 
         List<int> tempEpsList = new List<int>();
         NlDetailsJson currSeriesDetailsObj = new NlDetailsJson();
@@ -264,10 +284,8 @@ public class HtmlBuilder
 
     public void CleanUp(string htmlBody)
     {
-        // create html from body of email
+        // save newsletter to file
         logger.Info("Saving HTML file");
-
-        // save to "Database"
         WriteFile(write, newsletterHTMLFile, htmlBody);
 
         // append newsletter cycle data to Archive.txt
@@ -280,12 +298,11 @@ public class HtmlBuilder
     private void CopyNewsletterDataToArchive()
     {
         string archiveFile = config.MyDataDir + config.ArchiveFileName;
-        logger.Info("Appending NewsletterData for Current Newsletter Cycle to Archive file: " + archiveFile);
+        logger.Info("Appending NewsletterData for Current Newsletter Cycle to Archive Database..");
 
-        Stream input = File.OpenRead(newsletterDataFile);
-        Stream output = new FileStream(archiveFile, FileMode.Append, FileAccess.Write, FileShare.None);
-        input.CopyTo(output);
-        // File.Delete(currRunList);
+        // copy tables
+        db.ExecuteSQL("INSERT INTO ArchiveData SELECT * FROM CurrNewsletterData;");
+        db.ExecuteSQL("DELETE FROM CurrNewsletterData;");
     }
 
     private void WriteFile(string method, string path, string value)
@@ -299,23 +316,4 @@ public class HtmlBuilder
             File.WriteAllText(path, value);
         }
     }
-}
-
-public class NlDetailsJson
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NlDetailsJson"/> class.
-    /// </summary>
-    public NlDetailsJson()
-    {
-        Season = 0;
-        Episode = 0;
-        EpisodeRange = string.Empty;
-    }
-
-    public int Season { get; set; }
-
-    public int Episode { get; set; }
-
-    public string EpisodeRange { get; set; }
 }

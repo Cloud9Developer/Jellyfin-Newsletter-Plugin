@@ -44,7 +44,7 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
             yield return new TaskTriggerInfo
             {
                 Type = TaskTriggerInfo.TriggerInterval,
-                IntervalTicks = TimeSpan.FromHours(4).Ticks
+                IntervalTicks = TimeSpan.FromHours(1).Ticks
             };
         }
 
@@ -56,7 +56,7 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
             // _scanner
             // ILibraryManager libManager = _scanner.GetLibrary();
             // Scraper myScraper = new Scraper();
-            Scraper myScraper = new Scraper(_libraryManager);
+            Scraper myScraper = new Scraper(_libraryManager, progress, cancellationToken);
             return myScraper.GetSeriesData(); // .ConfigureAwait(false);
             // return Task.CompletedTask;
         }
