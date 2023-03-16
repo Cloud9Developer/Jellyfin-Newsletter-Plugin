@@ -61,7 +61,7 @@ public class Smtp : ControllerBase
                 int portNumber = config.SMTPPort;
                 bool enableSSL = true;
                 string emailFromAddress = config.FromAddr;
-                string username = config.SMTPServer;
+                string username = config.SMTPUser;
                 string password = config.SMTPPass;
                 string emailToAddress = config.ToAddr;
                 string subject = config.Subject;
