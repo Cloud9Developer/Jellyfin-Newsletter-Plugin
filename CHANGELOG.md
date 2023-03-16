@@ -1,3 +1,13 @@
+# 0.3.0
+- Major overhaul to backend data processing
+    - Now implementing SQLite services instead of TXT formatting.
+        - ***This will affect current users! Scans prior to this release will not be imported over. I apologize for this inconvenience***
+- Added a catch to Imgur's upload limit.
+    - Processing will now stop when limit is reached, and resume on the next scan
+- Progress bar functionality is now operational in Scheduled Tasks
+- Code cleanup
+- Merged cleanup/readability submitted by **tsfoni**
+
 # 0.0.5
 - Major overhaul to backend file processing
     - Removed requirement/limitation on google image search API
