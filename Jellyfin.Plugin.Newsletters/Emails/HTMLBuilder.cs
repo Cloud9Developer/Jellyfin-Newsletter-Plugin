@@ -11,9 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
-using Jellyfin.Plugin.Newsletters.Scripts.DATA;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
+using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller;
@@ -24,7 +24,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder;
+namespace Jellyfin.Plugin.Newsletters.Emails.HTMLBuilder;
 
 public class HtmlBuilder
 {
@@ -203,8 +203,13 @@ public class HtmlBuilder
                 {
                     currSeriesDetailsObj.EpisodeRange = tempEpsList.First() + " - " + tempEpsList.Last();
                 }
+                else if (tempEpsList.First() == tempEpsList.Last())
+                {
+                    currSeriesDetailsObj.EpisodeRange = tempEpsList.First().ToString(System.Globalization.CultureInfo.CurrentCulture);
+                }
                 else
                 {
+                    // better numbering here
                     currSeriesDetailsObj.EpisodeRange = string.Join(", ", tempEpsList);
                 }
 

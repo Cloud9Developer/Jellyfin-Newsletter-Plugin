@@ -9,7 +9,7 @@ using MediaBrowser.Common.Configuration;
 using SQLitePCL;
 using SQLitePCL.pretty;
 
-namespace Jellyfin.Plugin.Newsletters.Scripts.DATA;
+namespace Jellyfin.Plugin.Newsletters.Shared.DATA;
 
 public class SQLiteDatabase
     {

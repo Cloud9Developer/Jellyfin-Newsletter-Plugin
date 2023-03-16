@@ -12,9 +12,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
-using Jellyfin.Plugin.Newsletters.Scripts.DATA;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Scripts.SCRAPER;
+using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller;
@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.Newsletters.Scripts.NLDataGenerator;
+namespace Jellyfin.Plugin.Newsletters.Scanner.NLDataGenerator;
 
 public class NewsletterDataGenerator
 {

@@ -7,9 +7,9 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
+using Jellyfin.Plugin.Newsletters.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.LOGGER;
-using Jellyfin.Plugin.Newsletters.Scripts.DATA;
-using Jellyfin.Plugin.Newsletters.Scripts.HTMLBuilder;
+using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 
 // using System.Net.NetworkCredential;
 
-namespace Jellyfin.Plugin.Newsletters.Scripts;
+namespace Jellyfin.Plugin.Newsletters.Emails.EMAIL;
 
 /// <summary>
 /// Interaction logic for SendMail.xaml.
