@@ -18,6 +18,7 @@ This plugin automacially scans a users library (default every 4 hours), populate
             - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
 
 2. This plugin can only process series at this point in time.
+    - I do plan on adding this functionality in a near-future release
 
 3. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
 
@@ -37,5 +38,4 @@ I expect there to be quite a few issues when people start using this plugin. Ple
 Please be patient with me though, since I did this on the side of my normal job. But I will try to fix any issues that come up to the best of my ability and as fast as I can!
 
 ## Known Issues
-- When Imgur API reaches it's user limit, all scanned items will have a blank poster image. 
-    - This will be fixed in the next release by stopping the current scan, finishing the work on the current scan data, and when the next scheduled scan is run, resume from where it left off
+- 'From Address' in setting/config page does nothing right now
