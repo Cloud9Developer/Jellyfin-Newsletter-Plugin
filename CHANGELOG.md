@@ -1,3 +1,9 @@
+# 0.3.1
+- Fixed/cleaned newsletter episode formatting/counting and ranges
+- Updated Logo
+- Updated Template HTML to match what is currently being used
+- Cleanup
+
 # 0.3.0
 - Major overhaul to backend data processing
     - Now implementing SQLite services instead of TXT formatting.
