@@ -1,5 +1,6 @@
-# TBD
+# 0.3.3
 - Added Test Mail button (tsfoni)
+- Fixed issue where sometimes episode list would cause error due to empty list
 
 # 0.3.2
 - Fixed/cleaned newsletter episode formatting/counting and ranges
