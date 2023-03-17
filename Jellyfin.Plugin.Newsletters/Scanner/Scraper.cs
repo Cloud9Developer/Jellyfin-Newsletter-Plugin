@@ -115,22 +115,31 @@ public class Scraper
 
         foreach (BaseItem item in items)
         {
-            episode = item;
-            season = item.GetParent();
-            series = item.GetParent().GetParent();
-
-            logger.Debug($"Series: {series.Name}"); // Title
-            logger.Debug($"Season: {season.Name}"); // Season
-            logger.Debug($"Episode Name: {episode.Name}"); // episode Name
-            logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
-            logger.Debug($"Series Overview: {series.Overview}"); // series overview
-            logger.Debug($"ImageInfos: {series.PrimaryImagePath}");
-            logger.Debug(series.Id.ToString("N")); // series ItemId
-            logger.Debug(episode.PhysicalLocations[0]); // Filepath
-            logger.Debug("---------------");
-
             if (item is not null)
             {
+                try
+                {
+                    episode = item;
+                    season = item.GetParent();
+                    series = item.GetParent().GetParent();
+
+                    logger.Debug($"Series: {series.Name}"); // Title
+                    logger.Debug($"Season: {season.Name}"); // Season
+                    logger.Debug($"Episode Name: {episode.Name}"); // episode Name
+                    logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
+                    logger.Debug($"Series Overview: {series.Overview}"); // series overview
+                    logger.Debug($"ImageInfos: {series.PrimaryImagePath}");
+                    logger.Debug(series.Id.ToString("N")); // series ItemId
+                    logger.Debug(episode.PhysicalLocations[0]); // Filepath
+                    logger.Debug("---------------");
+                }
+                catch (Exception e)
+                {
+                    logger.Error("Error processing your file..");
+                    logger.Error(e);
+                    continue;
+                }
+
                 JsonFileObj currFileObj = new JsonFileObj();
                 currFileObj.Filename = episode.PhysicalLocations[0];
                 currFileObj.Title = series.Name;
@@ -283,6 +292,7 @@ public class Scraper
     private string SetImageURL(JsonFileObj currObj)
     {
         JsonFileObj fileObj;
+        string currTitle = currObj.Title.Replace("'", string.Empty, StringComparison.Ordinal);
 
         // check if URL for series already exists CurrRunData table
         foreach (var row in db.Query("SELECT * FROM CurrRunData;"))
@@ -290,9 +300,9 @@ public class Scraper
             if (row is not null)
             {
                 fileObj = jsonHelper.ConvertToObj(row);
-                if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+                if ((fileObj is not null) && (fileObj.Title == currTitle) && (fileObj.ImageURL.Length > 0))
                 {
-                    logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    logger.Debug("Found Current Scan of URL for " + currTitle + " :: " + fileObj.ImageURL);
                     return fileObj.ImageURL;
                 }
             }
@@ -304,9 +314,9 @@ public class Scraper
             if (row is not null)
             {
                 fileObj = jsonHelper.ConvertToObj(row);
-                if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+                if ((fileObj is not null) && (fileObj.Title == currTitle) && (fileObj.ImageURL.Length > 0))
                 {
-                    logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    logger.Debug("Found Current Scan of URL for " + currTitle + " :: " + fileObj.ImageURL);
                     return fileObj.ImageURL;
                 }
             }
@@ -318,9 +328,9 @@ public class Scraper
             if (row is not null)
             {
                 fileObj = jsonHelper.ConvertToObj(row);
-                if ((fileObj is not null) && (fileObj.Title == currObj.Title) && (fileObj.ImageURL.Length > 0))
+                if ((fileObj is not null) && (fileObj.Title == currTitle) && (fileObj.ImageURL.Length > 0))
                 {
-                    logger.Debug("Found Current Scan of URL for " + currObj.Title + " :: " + fileObj.ImageURL);
+                    logger.Debug("Found Current Scan of URL for " + currTitle + " :: " + fileObj.ImageURL);
                     return fileObj.ImageURL;
                 }
             }
