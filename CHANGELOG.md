@@ -1,5 +1,7 @@
 # 0.3.1
 - Fixed/cleaned newsletter episode formatting/counting and ranges
+- Re-org of some logic to catch more errors
+    - This will allow scan to continue even after error occurs instead of halting the scan
 - Updated Logo
 - Updated Template HTML to match what is currently being used
 - Cleanup
