@@ -1,12 +1,15 @@
 # Jellyfin Newsletter Plugin
-![Newsletter Logo](https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewslettersLogo.png?raw=true)
-
+<p align='center'>
+    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewslettersLogo.png?raw=true'/><br>
+</p>
 This is my first end-to-end C# project, but I hope you enjoy!
 
 # Description
 This plugin automacially scans a users library (default every 4 hours), populates a list of *recently added (not previously scanned)* media, converts that data into HTML format, and sends out emails to a provided list of recipients.
 
-![Newsletter Example](https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewsletterExample.png?raw=true)
+<p align='center'>
+    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewsletterExample.png?raw=true'/><br>
+</p>
 
 # Current Limitations
 1. This plugin uses Imgur's API to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 12,500/day. 
@@ -22,6 +25,43 @@ This plugin automacially scans a users library (default every 4 hours), populate
 
 3. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
 
+# File Structure
+To ensure proper images are being pulled from Jellyfin's database, ensure you follow the standard Organization Scheme for naming and organizing your files. https://jellyfin.org/docs/general/server/media/books
+
+If this format isn't followed properly, Jellyfin may have issue correctly saving the item's data in the proper database (the database that this plugin uses).
+
+```
+Shows
+├── Series (2010)
+│   ├── Season 00
+│   │   ├── Some Special.mkv
+│   │   ├── Episode S00E01.mkv
+│   │   └── Episode S00E02.mkv
+│   ├── Season 01
+│   │   ├── Episode S01E01-E02.mkv
+│   │   ├── Episode S01E03.mkv
+│   │   └── Episode S01E04.mkv
+│   └── Season 02
+│       ├── Episode S02E01.mkv
+│       ├── Episode S02E02.mkv
+│       ├── Episode S02E03 Part 1.mkv
+│       └── Episode S02E03 Part 2.mkv
+└── Series (2018)
+    ├── Episode S01E01.mkv
+    ├── Episode S01E02.mkv
+    ├── Episode S02E01-E02.mkv
+    └── Episode S02E03.mkv
+
+***(NOT YET SUPPORTED)***
+Movies
+├── Film (1990).mp4
+├── Film (1994).mp4
+├── Film (2008)
+│   └── Film.mkv
+└── Film (2010)
+    ├── Film-cd1.avi
+    └── Film-cd2.avi
+```
 # Testing/Run Frequency
 
 Testing and Frequency can be managed through your Dashboard > Scheduled Tasks

@@ -198,107 +198,112 @@ public class HtmlBuilder
             {
                 // process season, them increment
                 logger.Debug("EndOfSeason()");
-                tempEpsList.Sort();
-                if (IsIncremental(tempEpsList))
+                logger.Debug($"tempEpsList Size: {tempEpsList.Count}");
+                if (tempEpsList.Count != 0)
                 {
-                    currSeriesDetailsObj.EpisodeRange = tempEpsList.First() + " - " + tempEpsList.Last();
-                }
-                else if (tempEpsList.First() == tempEpsList.Last())
-                {
-                    currSeriesDetailsObj.EpisodeRange = tempEpsList.First().ToString(System.Globalization.CultureInfo.CurrentCulture);
-                }
-                else
-                {
-                    string epList = string.Empty;
-                    int firstRangeEp, prevEp;
-                    firstRangeEp = prevEp = -1;
-
-                    bool IsNext(int prev, int curr)
+                    logger.Debug("tempEpsList is populated");
+                    tempEpsList.Sort();
+                    if (IsIncremental(tempEpsList))
                     {
-                        logger.Debug("Checking Prev and Curr..");
-                        logger.Debug($"prev: {prev} :: curr: {curr}");
-                        logger.Debug(prev + 1);
-                        if (curr == prev + 1)
+                        currSeriesDetailsObj.EpisodeRange = tempEpsList.First() + " - " + tempEpsList.Last();
+                    }
+                    else if (tempEpsList.First() == tempEpsList.Last())
+                    {
+                        currSeriesDetailsObj.EpisodeRange = tempEpsList.First().ToString(System.Globalization.CultureInfo.CurrentCulture);
+                    }
+                    else
+                    {
+                        string epList = string.Empty;
+                        int firstRangeEp, prevEp;
+                        firstRangeEp = prevEp = -1;
+
+                        bool IsNext(int prev, int curr)
                         {
-                            return true;
+                            logger.Debug("Checking Prev and Curr..");
+                            logger.Debug($"prev: {prev} :: curr: {curr}");
+                            logger.Debug(prev + 1);
+                            if (curr == prev + 1)
+                            {
+                                return true;
+                            }
+
+                            return false;
                         }
 
-                        return false;
+                        string ProcessEpString(int firstRangeEp, int prevEp)
+                        {
+                            if (firstRangeEp == prevEp)
+                            {
+                                epList += firstRangeEp + ",";
+                            }
+                            else
+                            {
+                                epList += firstRangeEp + "-" + prevEp + ",";
+                            }
+
+                            return epList;
+                        }
+
+                        foreach (int ep in tempEpsList)
+                        {
+                            logger.Debug("-------------------");
+                            logger.Debug($"FOREACH firstRangeEp :: prevEp :: ep = {firstRangeEp} :: {prevEp} :: {ep} ");
+                            logger.Debug(ep == tempEpsList.Last());
+                            // if first passthrough
+                            if (firstRangeEp == -1)
+                            {
+                                logger.Debug("First pass of episode list");
+                                firstRangeEp = prevEp = ep;
+                                continue;
+                            }
+
+                            // If incremental
+                            if (IsNext(prevEp, ep) && (ep != tempEpsList.Last()))
+                            {
+                                logger.Debug("Is Next and Isn't last");
+                                prevEp = ep;
+                                continue;
+                            }
+                            else if (IsNext(prevEp, ep) && (ep == tempEpsList.Last()))
+                            {
+                                logger.Debug("Is Next and Is last");
+                                prevEp = ep;
+                                ProcessEpString(firstRangeEp, prevEp);
+                            }
+                            else if (!IsNext(prevEp, ep) && (ep == tempEpsList.Last()))
+                            {
+                                logger.Debug("Isn't Next and Is last");
+                                // process previous
+                                ProcessEpString(firstRangeEp, prevEp);
+                                // process last episode
+                                epList += ep;
+                                continue;
+                            }
+                            else
+                            {
+                                logger.Debug("Isn't Next and Isn't last");
+                                ProcessEpString(firstRangeEp, prevEp);
+                                firstRangeEp = prevEp = ep;
+                            }
+                        }
+
+                        // better numbering here
+                        logger.Debug($"epList: {epList}");
+                        currSeriesDetailsObj.EpisodeRange = epList.TrimEnd(',');
                     }
 
-                    string ProcessEpString(int firstRangeEp, int prevEp)
-                    {
-                        if (firstRangeEp == prevEp)
-                        {
-                            epList += firstRangeEp + ",";
-                        }
-                        else
-                        {
-                            epList += firstRangeEp + "-" + prevEp + ",";
-                        }
+                    logger.Debug("Adding to finalListObj: " + JsonConvert.SerializeObject(currSeriesDetailsObj));
+                    // finalList.Add(currSeriesDetailsObj);
+                    finalList.Add(CopyJsonFromExisting(currSeriesDetailsObj));
 
-                        return epList;
-                    }
+                    // increment season
+                    currSeriesDetailsObj.Season = currSeason = item.Season;
+                    currSeriesDetailsObj.EpisodeRange = string.Empty;
 
-                    foreach (int ep in tempEpsList)
-                    {
-                        logger.Debug("-------------------");
-                        logger.Debug($"FOREACH firstRangeEp :: prevEp :: ep = {firstRangeEp} :: {prevEp} :: {ep} ");
-                        logger.Debug(ep == tempEpsList.Last());
-                        // if first passthrough
-                        if (firstRangeEp == -1)
-                        {
-                            logger.Debug("First pass of episode list");
-                            firstRangeEp = prevEp = ep;
-                            continue;
-                        }
-
-                        // If incremental
-                        if (IsNext(prevEp, ep) && (ep != tempEpsList.Last()))
-                        {
-                            logger.Debug("Is Next and Isn't last");
-                            prevEp = ep;
-                            continue;
-                        }
-                        else if (IsNext(prevEp, ep) && (ep == tempEpsList.Last()))
-                        {
-                            logger.Debug("Is Next and Is last");
-                            prevEp = ep;
-                            ProcessEpString(firstRangeEp, prevEp);
-                        }
-                        else if (!IsNext(prevEp, ep) && (ep == tempEpsList.Last()))
-                        {
-                            logger.Debug("Isn't Next and Is last");
-                            // process previous
-                            ProcessEpString(firstRangeEp, prevEp);
-                            // process last episode
-                            epList += ep;
-                            continue;
-                        }
-                        else
-                        {
-                            logger.Debug("Isn't Next and Isn't last");
-                            ProcessEpString(firstRangeEp, prevEp);
-                            firstRangeEp = prevEp = ep;
-                        }
-                    }
-
-                    // better numbering here
-                    logger.Debug($"epList: {epList}");
-                    currSeriesDetailsObj.EpisodeRange = epList.TrimEnd(',');
+                    // currSeason = item.Season;
+                    tempEpsList.Clear();
+                    newSeason = true;
                 }
-
-                logger.Debug("Adding to finalListObj: " + JsonConvert.SerializeObject(currSeriesDetailsObj));
-                // finalList.Add(currSeriesDetailsObj);
-                finalList.Add(CopyJsonFromExisting(currSeriesDetailsObj));
-
-                // increment season
-                currSeriesDetailsObj.Season = currSeason = item.Season;
-                currSeriesDetailsObj.EpisodeRange = string.Empty;
-
-                // currSeason = item.Season;
-                tempEpsList.Clear();
-                newSeason = true;
             }
 
             logger.Debug("CurrItem Season/Episode number: " + item.Season + "/" + item.Episode);
