@@ -30,6 +30,7 @@ To ensure proper images are being pulled from Jellyfin's database, ensure you fo
 
 If this format isn't followed properly, Jellyfin may have issue correctly saving the item's data in the proper database (the database that this plugin uses).
 
+```
 Shows
 ├── Series (2010)
 │   ├── Season 00
@@ -60,7 +61,7 @@ Movies
 └── Film (2010)
     ├── Film-cd1.avi
     └── Film-cd2.avi
-
+```
 # Testing/Run Frequency
 
 Testing and Frequency can be managed through your Dashboard > Scheduled Tasks
