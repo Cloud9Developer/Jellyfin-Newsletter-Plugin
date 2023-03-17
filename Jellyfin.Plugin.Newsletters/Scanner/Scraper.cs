@@ -1,4 +1,4 @@
-#pragma warning disable 1591, SA1005 // remove SA1005 to clean code
+#pragma warning disable 1591, CA1002, SA1005 // remove SA1005 to clean code
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -104,26 +104,54 @@ public class Scraper
 
     private void BuildJsonObjsToCurrScanfile()
     {
-        // List<JsonFileObj> archiveObj = ng.PopulateFromArchive();
+        if (!config.SeriesEnabled && !config.MoviesEnabled)
+        {
+            logger.Info("No Libraries Enabled In Config!");
+        }
 
-        InternalItemsQuery query = new InternalItemsQuery();
-        string[] mediaTypes = { "Series" };
-        query.IncludeItemTypes = new[] { BaseItemKind.Episode };
-        List<BaseItem> items = libManager.GetItemList(query);
+        if (config.SeriesEnabled)
+        {
+            InternalItemsQuery series = new InternalItemsQuery();
+            series.IncludeItemTypes = new[] { BaseItemKind.Episode };
+            BuildObjs(libManager.GetItemList(series), "Series"); // populate series
+        }
+
+        if (config.MoviesEnabled)
+        {
+            InternalItemsQuery movie = new InternalItemsQuery();
+            movie.IncludeItemTypes = new[] { BaseItemKind.Movie };
+            BuildObjs(libManager.GetItemList(movie), "Movie"); // populate movies
+        }
+    }
+
+    public void BuildObjs(List<BaseItem> items, string type)
+    {
+        logger.Info($"Parsing {type}..");
         BaseItem episode, season, series;
-        logger.Info($"Scan Size: {items.Count}");
-
+        logger.Info($"{type} Scan Size: {items.Count}");
         foreach (BaseItem item in items)
         {
             if (item is not null)
             {
                 try
                 {
-                    episode = item;
-                    season = item.GetParent();
-                    series = item.GetParent().GetParent();
+                    if (type == "Series")
+                    {
+                        episode = item;
+                        season = item.GetParent();
+                        series = item.GetParent().GetParent();
+                    }
+                    else if (type == "Movie")
+                    {
+                        episode = season = series = item;
+                    }
+                    else
+                    {
+                        logger.Error("Something went wrong..");
+                        continue;
+                    }
 
-                    logger.Debug($"Series: {series.Name}"); // Title
+                    logger.Debug($"{type}: {series.Name}"); // Title
                     logger.Debug($"Season: {season.Name}"); // Season
                     logger.Debug($"Episode Name: {episode.Name}"); // episode Name
                     logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
@@ -143,6 +171,7 @@ public class Scraper
                 JsonFileObj currFileObj = new JsonFileObj();
                 currFileObj.Filename = episode.PhysicalLocations[0];
                 currFileObj.Title = series.Name;
+                currFileObj.Type = type;
                 if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && !InDatabase("CurrNewsletterData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && !InDatabase("ArchiveData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)))
                 {
                     try
@@ -213,7 +242,7 @@ public class Scraper
                         // WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
                         logger.Debug("Adding to CurrRunData DB...");
                         currFileObj = NoNull(currFileObj);
-                        db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath) " +
+                        db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type) " +
                                 "VALUES (" +
                                 "'" + currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
                                 "'" + currFileObj.Title.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
@@ -222,7 +251,8 @@ public class Scraper
                                 "'" + currFileObj.SeriesOverview.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
                                 "'" + currFileObj.ImageURL.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
                                 "'" + currFileObj.ItemID.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.PosterPath.Replace("'", string.Empty, StringComparison.Ordinal) + "'" +
+                                "'" + currFileObj.PosterPath.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
+                                "'" + currFileObj.Type.Replace("'", string.Empty, StringComparison.Ordinal) + "'" +
                                 ");");
                         logger.Debug("Complete!");
                     }

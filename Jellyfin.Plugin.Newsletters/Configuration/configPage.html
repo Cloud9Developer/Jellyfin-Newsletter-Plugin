@@ -9,13 +9,13 @@
         <div data-role="content">
             <div class="content-primary">
                 <form id="NewsletterConfigForm">
+                    <div class="checkboxContainer checkboxContainer-withDescription">
+                        <label class="emby-checkbox-label">
+                            <input id="DebugMode" name="DebugMode" type="checkbox" is="emby-checkbox" />
+                            <span>Debug Mode</span>
+                        </label>
+                    </div>
                     <div id="OutboundEmailDetails">
-                        <div class="checkboxContainer checkboxContainer-withDescription">
-                            <label class="emby-checkbox-label">
-                                <input id="DebugMode" name="DebugMode" type="checkbox" is="emby-checkbox" />
-                                <span>Debug Mode</span>
-                            </label>
-                        </div>
                         <div class="inputContainer" id="ToAddress">
                             <label class="inputLabel inputLabelUnfocused" for="ToAddr">To Address:</label>
                             <input id="ToAddr" name="ToAddr" type="text" is="emby-input" />
@@ -36,6 +36,29 @@
                             <input id="Body" name="Body" type="text" is="emby-input" />
                             <div class="fieldDescription">Body of the email. Defaults to a predefined template</div>
                         </div>
+                    </div>
+                    <div id="LibrarySelection">
+                        <table>
+                            <th>Types of items to scan:</th>
+                            <tr>
+                                <td>
+                                    <div class="checkboxContainer checkboxContainer-withDescription">
+                                        <label class="emby-checkbox-label">
+                                            <input id="SeriesEnabled" name="SeriesEnabled" type="checkbox" is="emby-checkbox" />
+                                            <span>Series</span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="checkboxContainer checkboxContainer-withDescription">
+                                        <label class="emby-checkbox-label">
+                                            <input id="MoviesEnabled" name="MoviesEnabled" type="checkbox" is="emby-checkbox" />
+                                            <span>Movies</span>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                     <!-- Scraper configuration Details -->
                     <div id="HiddenDetails" name="ScraperConfig">
@@ -107,6 +130,9 @@
             #testButton {
                 background: #C1C1BF;
             }
+            td {
+                padding-right: 10px;
+            }
         </style>
         <script type="text/javascript">
             var NewsletterConfig = {
@@ -131,7 +157,10 @@
                     config.MediaDir = document.querySelector('#MediaDir').value;
                     config.ApiKey = document.querySelector('#ApiKey').value;
                     config.CXKey = document.querySelector('#CXKey').value;
-                    // console.log("HERE: ",config);
+                    // console.log("HERE: ",config); SeriesEnabled MoviesEnabled
+                    //librariesEnabled
+                    config.SeriesEnabled = document.querySelector('#SeriesEnabled').checked;
+                    config.MoviesEnabled = document.querySelector('#MoviesEnabled').checked;
 
                     ApiClient.updatePluginConfiguration(NewsletterConfig.pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
@@ -159,6 +188,10 @@
                     document.querySelector('#MediaDir').value = config.MediaDir;
                     document.querySelector('#ApiKey').value = config.ApiKey;
                     document.querySelector('#CXKey').value = config.CXKey;
+                    //librariesEnabled
+                    document.querySelector('#SeriesEnabled').checked = config.SeriesEnabled;
+                    document.querySelector('#MoviesEnabled').checked = config.MoviesEnabled;
+
                     Dashboard.hideLoadingMsg();
                 });
 
@@ -182,7 +215,7 @@
             // button to test configration (NOT FUNCTIONAL)
             document.querySelector('#testButton')
                 .addEventListener('click', function(e) {
-                // Dashboard.showLoadingMsg();
+                Dashboard.showLoadingMsg();
                 // saveConfig();
                 console.log("Test mail button pressed!");
                 // Configure test notification
@@ -194,6 +227,7 @@
                     let data = JSON.stringify(config);
                     ApiClient.ajax({ type: 'POST', url, data, contentType: 'application/json' });
                 });
+                Dashboard.hideLoadingMsg();
 
 
                 

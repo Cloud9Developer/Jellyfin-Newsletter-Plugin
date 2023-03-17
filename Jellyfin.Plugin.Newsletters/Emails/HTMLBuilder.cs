@@ -92,20 +92,24 @@ public class HtmlBuilder
             {
                 if (row is not null)
                 {
-                    JsonFileObj obj = jsonHelper.ConvertToObj(row);
+                    JsonFileObj item = jsonHelper.ConvertToObj(row);
                     // scan through all items and get all Season numbers and Episodes
                     // (string seasonInfo, string episodeInfo) = ParseSeriesInfo(obj, readDataFile);
-                    if (completed.Contains(obj.Title))
+                    if (completed.Contains(item.Title))
                     {
                         continue;
                     }
 
                     string seaEpsHtml = string.Empty;
-                    List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(obj); // , readDataFile); readin archive in ParseSeriesInfo for nlData
-                    seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
+                    if (item.Type == "Series")
+                    {
+                        // for series only
+                        List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(item);
+                        seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
+                    }
 
-                    builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + obj.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + obj.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + obj.SeriesOverview + "</div> </p> </td> </tr>";
-                    completed.Add(obj.Title);
+                    builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + item.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + item.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + item.SeriesOverview + "</div> </p> </td> </tr>";
+                    completed.Add(item.Title);
                 }
             }
         }
@@ -156,8 +160,6 @@ public class HtmlBuilder
                 compiledList.Add(tempVar);
             }
         }
-
-        // Old File fetcher
 
         List<int> tempEpsList = new List<int>();
         NlDetailsJson currSeriesDetailsObj = new NlDetailsJson();
