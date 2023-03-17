@@ -1,3 +1,6 @@
+# TBD
+- Added Test Mail button (tsfoni)
+
 # 0.3.2
 - Fixed/cleaned newsletter episode formatting/counting and ranges
 - Re-org of some logic to catch more errors
