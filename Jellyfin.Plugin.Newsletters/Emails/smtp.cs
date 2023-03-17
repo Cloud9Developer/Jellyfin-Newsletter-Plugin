@@ -43,6 +43,39 @@ public class Smtp : ControllerBase
         newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
     }
 
+    [HttpPost("SendTestMail")]
+    public void SendTestMail()
+    {
+        MailMessage mail;
+        SmtpClient smtp;
+
+        try
+        {
+            logger.Debug("Sending out test mail!");
+            mail = new MailMessage();
+
+            mail.From = new MailAddress(config.FromAddr);
+            mail.To.Clear();
+            mail.Subject = "Jellyfin Newsletters - Test";
+            mail.Body = "Success! You have properly configured your email notification settings";
+            mail.IsBodyHtml = false;
+
+            foreach (string email in config.ToAddr.Split(','))
+            {
+                mail.Bcc.Add(email.Trim());
+            }
+
+            smtp = new SmtpClient(config.SMTPServer, config.SMTPPort);
+            smtp.Credentials = new NetworkCredential(config.SMTPUser, config.SMTPPass);
+            smtp.EnableSsl = true;
+            smtp.Send(mail);
+        }
+        catch (Exception e)
+        {
+            logger.Error("An error has occured: " + e);
+        }
+    }
+
     [HttpPost("SendSmtp")]
     // [ProducesResponseType(StatusCodes.Status201Created)]
     // [ProducesResponseType(StatusCodes.Status400BadRequest)]
