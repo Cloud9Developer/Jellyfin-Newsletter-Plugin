@@ -95,6 +95,10 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
 ### Subject
 - The subject of the email
 
+### Library Selection
+- Select the item types you want to scan
+    - NOTE: this is Item types, not libraries
+
 ## Scraper/Scanner Config
 
 ### Scraper Config > Imgur API Key
