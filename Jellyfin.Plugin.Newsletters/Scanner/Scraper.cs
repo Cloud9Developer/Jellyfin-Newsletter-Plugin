@@ -46,7 +46,7 @@ public class Scraper
     private Logger logger;
     private IProgress<double> progress;
     private CancellationToken cancelToken;
-    private List<JsonFileObj>? archiveObj;
+    // private List<JsonFileObj> archiveObj;
 
     public Scraper(ILibraryManager libraryManager, IProgress<double> passedProgress, CancellationToken cancellationToken)
     {
@@ -86,7 +86,7 @@ public class Scraper
         try
         {
             db.CreateConnection();
-            archiveObj = ng.PopulateFromArchive(db);
+            // archiveObj = ng.PopulateFromArchive(db);
             BuildJsonObjsToCurrScanfile();
             CopyCurrRunDataToNewsletterData();
         }
@@ -113,7 +113,7 @@ public class Scraper
         BaseItem episode, season, series;
         logger.Info($"Scan Size: {items.Count}");
 
-        foreach (BaseItem? item in items)
+        foreach (BaseItem item in items)
         {
             episode = item;
             season = item.GetParent();
@@ -145,18 +145,53 @@ public class Scraper
 
                         currFileObj.SeriesOverview = series.Overview;
                         currFileObj.ItemID = series.Id.ToString("N");
-                        currFileObj.PosterPath = series.PrimaryImagePath;
-                        string url = SetImageURL(currFileObj);
 
-                        if ((url == "429") || (url == "ERR"))
+                        logger.Debug("Checking if Primary Image Exists for series");
+                        if (series.PrimaryImagePath != null)
                         {
-                            logger.Debug("URL is not attainable at this time. Stopping scan.. Will resume during next scan.");
-                            logger.Debug("Not processing current file: " + currFileObj.Filename);
-                            break;
+                            logger.Debug("Primary Image series found!");
+                            currFileObj.PosterPath = series.PrimaryImagePath;
+                        }
+                        else if (episode.PrimaryImagePath != null)
+                        {
+                            logger.Debug("Primary Image series not found. Pulling from Episode");
+                            currFileObj.PosterPath = episode.PrimaryImagePath;
+                        }
+                        else
+                        {
+                            logger.Warn("Primary Poster not found..");
+                            logger.Warn("This may be due to filesystem not being formatted properly.");
+                            logger.Warn($"Make sure {currFileObj.Filename} follows the correct formatting below:");
+                            logger.Warn(".../MyLibraryName/Series_Name/Season#_or_Specials/Episode.{ext}");
                         }
 
-                        currFileObj.ImageURL = url;
-                        currFileObj.Season = int.Parse(season.Name.Split(' ')[1], CultureInfo.CurrentCulture);
+                        logger.Debug("Checking if PosterPath Exists");
+                        if ((currFileObj.PosterPath != null) && (currFileObj.PosterPath.Length > 0))
+                        {
+                            string url = SetImageURL(currFileObj);
+
+                            if ((url == "429") || (url == "ERR"))
+                            {
+                                logger.Debug("URL is not attainable at this time. Stopping scan.. Will resume during next scan.");
+                                logger.Debug("Not processing current file: " + currFileObj.Filename);
+                                break;
+                            }
+
+                            currFileObj.ImageURL = url;
+                        }
+
+                        logger.Debug("Parsing Season Number");
+                        try
+                        {
+                            currFileObj.Season = int.Parse(season.Name.Split(' ')[1], CultureInfo.CurrentCulture);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.Error($"Encountered an error parsing Season Number for: {currFileObj.Filename}");
+                            logger.Error(e);
+                            logger.Debug("Setting Season number to -1");
+                            currFileObj.Season = -1;
+                        }
                     }
                     catch (Exception e)
                     {
@@ -167,6 +202,8 @@ public class Scraper
                     {
                         // save to "database" : Table currRunScanList
                         // WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
+                        logger.Debug("Adding to CurrRunData DB...");
+                        currFileObj = NoNull(currFileObj);
                         db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath) " +
                                 "VALUES (" +
                                 "'" + currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
@@ -178,6 +215,7 @@ public class Scraper
                                 "'" + currFileObj.ItemID.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
                                 "'" + currFileObj.PosterPath.Replace("'", string.Empty, StringComparison.Ordinal) + "'" +
                                 ");");
+                        logger.Debug("Complete!");
                     }
                 }
                 else
@@ -188,6 +226,41 @@ public class Scraper
 
             currCount++;
         }
+    }
+
+    private JsonFileObj NoNull(JsonFileObj currFileObj)
+    {
+        if (currFileObj.Filename == null)
+        {
+            currFileObj.Filename = string.Empty;
+        }
+
+        if (currFileObj.Title == null)
+        {
+            currFileObj.Title = string.Empty;
+        }
+
+        if (currFileObj.SeriesOverview == null)
+        {
+            currFileObj.SeriesOverview = string.Empty;
+        }
+
+        if (currFileObj.ImageURL == null)
+        {
+            currFileObj.ImageURL = string.Empty;
+        }
+
+        if (currFileObj.ItemID == null)
+        {
+            currFileObj.Filename = string.Empty;
+        }
+
+        if (currFileObj.PosterPath == null)
+        {
+            currFileObj.PosterPath = string.Empty;
+        }
+
+        return currFileObj;
     }
 
     private bool InDatabase(string tableName, string fileName)
@@ -255,6 +328,8 @@ public class Scraper
 
         // string url = ng.FetchImagePoster(obj.Title);
         logger.Debug("Uploading poster...");
+        logger.Debug(currObj.ItemID);
+        logger.Debug(currObj.PosterPath);
         // return string.Empty;
         return ng.FetchImagePoster(currObj.PosterPath);
     }
