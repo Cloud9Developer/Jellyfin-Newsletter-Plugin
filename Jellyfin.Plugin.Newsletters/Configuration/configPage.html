@@ -182,8 +182,8 @@
             // button to test configration (NOT FUNCTIONAL)
             document.querySelector('#testButton')
                 .addEventListener('click', function(e) {
-                Dashboard.showLoadingMsg();
-                saveConfig();
+                // Dashboard.showLoadingMsg();
+                // saveConfig();
                 console.log("Test mail button pressed!");
                 // Configure test notification
                 ApiClient.getPluginConfiguration(NewsletterConfig.pluginUniqueId).then(function (config) {
