@@ -83,13 +83,13 @@
                                 <input id="SMTPPass" name="SMTPPassword" type="text" is="emby-input" />
                                 <div class="fieldDescription">Password that will be used to login to the SMTP server</div>
                             </div>
+                            <button id="testButton" is="emby-button" type="button" class="raised block emby-button">
+                                <span>Test</span>
+                            </button>
                         </details>
                     </div>
                         <!-- buttons -->
                     <div>
-                        <button id="testButton" is="emby-button" type="button" class="raised button-submit block emby-button" >
-                            <span>Test Notifications</span>
-                        </button>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
                             <span>Save</span>
                         </button>
@@ -106,7 +106,6 @@
             }
             #testButton {
                 background: #C1C1BF;
-                display: none;
             }
         </style>
         <script type="text/javascript">
@@ -184,19 +183,15 @@
                 .addEventListener('click', function(e) {
                 Dashboard.showLoadingMsg();
                 saveConfig();
-                console.log("TestButtonPressed!");
+                console.log("Test mail button pressed!");
                 // Configure test notification
                 ApiClient.getPluginConfiguration(NewsletterConfig.pluginUniqueId).then(function (config) {
                     console.log("TEST: ", config);
-                    let url = ApiClient.getUrl('Smtp/SendSmtp');
+                    let url = ApiClient.getUrl('Smtp/SendTestMail');
                     console.log("ServerAddr: ", ApiClient.serverAddress());
-                    //let url = '@Url.Action("SendSmtp", "Home")';
-                    //let url = '<%= ResolveUrl("/home/christopher/Development/jellyfin-plugins/newsletters/Jellyfin.Plugin.Newsletters/Scripts/smtp.cs") %>';
                     console.log("URL: ",url);
                     let data = JSON.stringify(config);
                     ApiClient.ajax({ type: 'POST', url, data, contentType: 'application/json' });
-                    //Jellyfin.Plugin.NewsLetters.Scripts.Smtp.SendSmtp("test", "test2") ;
-                    //Blazor.platform.callMethod(sendSmtp, null);
                 });
 
 
