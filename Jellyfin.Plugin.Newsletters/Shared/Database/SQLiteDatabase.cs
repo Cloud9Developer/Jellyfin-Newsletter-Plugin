@@ -98,8 +98,23 @@ public class SQLiteDatabase
                                 "ImageURL TEXT," +
                                 "ItemID TEXT," +
                                 "PosterPath TEXT," +
+                                "Type TEXT," +
                                 "PRIMARY KEY (Filename)" +
                                 ");");
+
+                // ExecuteSQL("IF COL_LENGTH ('" + table + "', 'Type') IS NULL " +
+                //                 "BEGIN " +
+                //                     "ALTER TABLE " + table +
+                //                     " ADD Type TEXT " +
+                //                 "END;");
+                try
+                {
+                    ExecuteSQL("ALTER TABLE " + table + " ADD COLUMN Type TEXT;");
+                }
+                catch (SQLiteException sle)
+                {
+                    logger.Warn(sle);
+                }
             }
         }
 
