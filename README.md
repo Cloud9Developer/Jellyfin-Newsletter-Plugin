@@ -88,7 +88,6 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
     - All emails will be sent out via BCC
 
 ### From Address
-- ***Currently not functioning properly***
 - The address recipients will see on emails as the sender
     - Defaults to JellyfinNewsletter@donotreply.com
 
