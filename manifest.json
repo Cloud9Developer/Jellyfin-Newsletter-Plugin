@@ -6,7 +6,7 @@
         "description": "Scan your libraries and send out Newsletters on what has been recently added",
         "owner": "Cloud9Developer",
         "category": "Newsletters",
-        "imageUrl": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/NewslettersLogo.png",
+        "imageUrl": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/logo.png",
         "versions": [
             {
                 "version": "0.4.0",
