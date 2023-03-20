@@ -1,6 +1,6 @@
 # Jellyfin Newsletter Plugin
 <p align='center'>
-    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewslettersLogo.png?raw=true'/><br>
+    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/logo.png?raw=true'/><br>
 </p>
 This is my first end-to-end C# project, but I hope you enjoy!
 
