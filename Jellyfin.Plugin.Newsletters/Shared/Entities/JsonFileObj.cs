@@ -28,6 +28,7 @@ public class JsonFileObj
         ImageURL = string.Empty;
         ItemID = string.Empty;
         PosterPath = string.Empty;
+        Type = string.Empty;
     }
 
     public string Filename { get; set; }
@@ -50,6 +51,8 @@ public class JsonFileObj
 
     public string PosterPath { get; set; }
 
+    public string Type { get; set; }
+
     public JsonFileObj ConvertToObj(IReadOnlyList<ResultSetValue> row)
     {
         // Filename = string.Empty; 0
@@ -71,7 +74,8 @@ public class JsonFileObj
             SeriesOverview = row[4].ToString(),
             ImageURL = row[5].ToString(),
             ItemID = row[6].ToString(),
-            PosterPath = row[7].ToString()
+            PosterPath = row[7].ToString(),
+            Type = row[8].ToString()
         };
 
         return obj;

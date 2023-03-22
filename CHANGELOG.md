@@ -1,3 +1,6 @@
+# 0.4.0
+- Added movie Functionality
+
 # 0.3.3
 - Added Test Mail button (tsfoni)
 - Fixed issue where sometimes episode list would cause error due to empty list

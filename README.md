@@ -1,6 +1,6 @@
 # Jellyfin Newsletter Plugin
 <p align='center'>
-    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewslettersLogo.png?raw=true'/><br>
+    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/logo.png?raw=true'/><br>
 </p>
 This is my first end-to-end C# project, but I hope you enjoy!
 
@@ -20,10 +20,7 @@ This plugin automacially scans a users library (default every 4 hours), populate
             - https://dev.to/bearer/how-to-configure-the-imgur-api-2ap9
             - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
 
-2. This plugin can only process series at this point in time.
-    - I do plan on adding this functionality in a near-future release
-
-3. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
+2. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
 
 # File Structure
 To ensure proper images are being pulled from Jellyfin's database, ensure you follow the standard Organization Scheme for naming and organizing your files. https://jellyfin.org/docs/general/server/media/books
@@ -52,7 +49,6 @@ Shows
     ├── Episode S02E01-E02.mkv
     └── Episode S02E03.mkv
 
-***(NOT YET SUPPORTED)***
 Movies
 ├── Film (1990).mp4
 ├── Film (1994).mp4
@@ -62,6 +58,7 @@ Movies
     ├── Film-cd1.avi
     └── Film-cd2.avi
 ```
+
 # Testing/Run Frequency
 
 Testing and Frequency can be managed through your Dashboard > Scheduled Tasks
@@ -91,12 +88,15 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
     - All emails will be sent out via BCC
 
 ### From Address
-- ***Currently not functioning properly***
 - The address recipients will see on emails as the sender
     - Defaults to JellyfinNewsletter@donotreply.com
 
 ### Subject
 - The subject of the email
+
+### Library Selection
+- Select the item types you want to scan
+    - NOTE: this is Item types, not libraries
 
 ## Scraper/Scanner Config
 
@@ -126,4 +126,3 @@ Please leave a ticket in the Issues on this GitHub page and I will get to it as 
 Please be patient with me, since I did this on the side of my normal job. But I will try to fix any issues that come up to the best of my ability and as fast as I can!
 
 ## Known Issues
-- 'From Address' in setting/config page does nothing right now

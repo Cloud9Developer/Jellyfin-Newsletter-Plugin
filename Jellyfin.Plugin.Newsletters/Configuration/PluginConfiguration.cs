@@ -64,6 +64,10 @@ public class PluginConfiguration : BasePluginConfiguration
         ArchiveFileName = "Archive.txt";
         NewsletterDataFileName = "NewsletterList.txt";
         NewsletterDir = string.Empty;
+
+        // default libraries
+        MoviesEnabled = true;
+        SeriesEnabled = true;
     }
 
     /// <summary>
@@ -208,4 +212,14 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string NewsletterDataFileName { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Series should be scanned.
+    /// </summary>
+    public bool SeriesEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Movies should be scanned.
+    /// </summary>
+    public bool MoviesEnabled { get; set; }
 }
