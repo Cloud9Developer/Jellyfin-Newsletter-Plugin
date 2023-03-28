@@ -60,32 +60,53 @@
                             </tr>
                         </table>
                     </div>
+
                     <!-- Scraper configuration Details -->
                     <div id="HiddenDetails" name="ScraperConfig">
                         <details>
-                            <summary>Scraper Config</summary>
-                            <div class="inputContainer" id="MediaDirPath" style="display: none;">
+                            <summary>Scraper Config</summary><br>
+                            <div class="selectContainer">
+                                <label class="selectLabel" for="HostingOptions">Poster Hosting Type:</label>
+                                <select is="emby-select" id="HostingOptions" name="HostingOptions" class="emby-select-withcolor emby-select">
+                                    <option id="defaultImgur" value="Imgur">Imgur (Default)</option>
+                                    <option id="localJFHosting" value="JfHosting">Local JF Hosting</option>
+                                </select>
+                            </div>
+                            <!-- <div class="inputContainer" id="MediaDirPath" style="display: none;">
                                 <label class="inputLabel inputLabelUnfocused" for="MediaDir">Directory to Media:</label>
                                 <input id="MediaDir" name="MediaDir" type="text" is="emby-input" />
                                 <div class="fieldDescription">Currently only working for Series directories following the standard formatting: <i><b>/PATH/TO/My_Series/SeasonX/My_Series_S01E01.mp4</b></i></div>
-                            </div>
-                            <div class="inputContainer" id="GoogleAPIkey">
+                            </div> -->
+                            <h3>Imgur Hosting:</h3>
+                            <div class="inputContainer" id="ImgurClientID">
                                 <label class="inputLabel inputLabelUnfocused" for="ApiKey">Imgur API Key:</label>
                                 <input id="ApiKey" name="ApiKey" type="text" is="emby-input" />
                                 <div class="fieldDescription">Required for image uploading so HTML formatting of newsletter can pull images (posters). Follow instructions <a href="https://dev.to/bearer/how-to-configure-the-imgur-api-2ap9" target="_blank">Here</a> and <a href="http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html" target="_blank">Here</a> </div>
                             </div>
-                            <div class="inputContainer" id="GoogleCXkey" style="display: none;">
+                            <hr>
+                            <h3>Local JF Hosting</h3>
+                            <div class="inputContainer" id="LocalHostname">
+                                <label class="inputLabel inputLabelUnfocused" for="ApiKey">Hostname:</label>
+                                <input id="Hostname" name="Hostname" type="text" is="emby-input" />
+                                <div class="fieldDescription">
+                                    Hostname for your JF server that is accessible from outside your network. Ensure to include http[s]:// and port number (if applicable). <b>DO NOT include a trailing slash '/'</b>. 
+                                    <br>
+                                    I.e: https://myServerDNSName.com:8096
+                                </div>
+                            </div>
+                            <!-- <div class="inputContainer" id="GoogleCXkey" style="display: none;">
                                 <label class="inputLabel inputLabelUnfocused" for="CXKey">Google CX Key:</label>
                                 <input id="CXKey" name="CXKey" type="text" is="emby-input" />
                                 <div class="fieldDescription">Required for image searching <b>(Different from API key above)</b>. Reference: <a href="https://stackoverflow.com/questions/6562125/getting-a-cx-id-for-custom-search-google-api-python" target="_blank">Google CX Key</a></div>
-                            </div>
+                            </div> -->
                         </details>
                     </div>
+
                     <br>
                     <!-- SMTP Server Details -->
                     <div id="HiddenDetails" name="ServerDetails">
                         <details>
-                            <summary>SMTP Config</summary>
+                            <summary>SMTP Config</summary><br>
                             <div class="inputContainer" id="SMTPServerAddress">
                                 <label class="inputLabel inputLabelUnfocused" for="SMTPServer">SMTP Server Address:</label>
                                 <input id="SMTPServer" name="SMTPServerName" type="text" is="emby-input" />
@@ -154,13 +175,16 @@
                     config.Subject = document.querySelector('#Subject').value;
                     config.Body = document.querySelector('#Body').value;
                     //scraperConfig
-                    config.MediaDir = document.querySelector('#MediaDir').value;
+                    // config.MediaDir = document.querySelector('#MediaDir').value;
                     config.ApiKey = document.querySelector('#ApiKey').value;
-                    config.CXKey = document.querySelector('#CXKey').value;
+                    // config.CXKey = document.querySelector('#CXKey').value;
                     // console.log("HERE: ",config); SeriesEnabled MoviesEnabled
                     //librariesEnabled
                     config.SeriesEnabled = document.querySelector('#SeriesEnabled').checked;
                     config.MoviesEnabled = document.querySelector('#MoviesEnabled').checked;
+                    //hosting options
+                    config.PHType = document.querySelector('#HostingOptions').value;
+                    config.Hostname = document.querySelector('#Hostname').value;
 
                     ApiClient.updatePluginConfiguration(NewsletterConfig.pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
@@ -185,12 +209,16 @@
                     document.querySelector('#Subject').value = config.Subject;
                     document.querySelector('#Body').value = config.Body;
                     //scraperConfig
-                    document.querySelector('#MediaDir').value = config.MediaDir;
+                    // document.querySelector('#MediaDir').value = config.MediaDir;
                     document.querySelector('#ApiKey').value = config.ApiKey;
-                    document.querySelector('#CXKey').value = config.CXKey;
+                    // document.querySelector('#CXKey').value = config.CXKey;
                     //librariesEnabled
                     document.querySelector('#SeriesEnabled').checked = config.SeriesEnabled;
                     document.querySelector('#MoviesEnabled').checked = config.MoviesEnabled;
+                    //hosting options
+                    console.log("HERE");
+                    document.querySelector('#HostingOptions').value = config.PHType;
+                    document.querySelector('#Hostname').value = config.Hostname;
 
                     Dashboard.hideLoadingMsg();
                 });

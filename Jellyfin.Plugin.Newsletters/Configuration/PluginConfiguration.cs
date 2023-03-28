@@ -5,17 +5,17 @@ namespace Jellyfin.Plugin.Newsletters.Configuration;
 /// <summary>
 /// The configuration options.
 /// </summary>
-public enum SomeOptions
+public enum PosterHostingTypes
 {
     /// <summary>
     /// Option one.
     /// </summary>
-    OneOption,
+    Imgur,
 
     /// <summary>
     /// Second option.
     /// </summary>
-    AnotherOption
+    JfHosting
 }
 
 /// <summary>
@@ -68,6 +68,10 @@ public class PluginConfiguration : BasePluginConfiguration
         // default libraries
         MoviesEnabled = true;
         SeriesEnabled = true;
+
+        // poster hosting
+        PHType = "Imgur";
+        Hostname = string.Empty;
     }
 
     /// <summary>
@@ -222,4 +226,14 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a value indicating whether Movies should be scanned.
     /// </summary>
     public bool MoviesEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating hosting type.
+    /// </summary>
+    public string PHType { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value for JF hostname accessible outside of network.
+    /// </summary>
+    public string Hostname { get; set; }
 }
