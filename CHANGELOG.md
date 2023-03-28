@@ -1,4 +1,8 @@
 # 0.4.0
+- Added JF Poster Serving Functionality
+    - Allows users to set HOSTNAME/URL to their JF server to serve poster images directly from JF, bypassing any limitations on 3rd parties such as Imgur
+
+# 0.4.0
 - Added movie Functionality
 
 # 0.3.3
