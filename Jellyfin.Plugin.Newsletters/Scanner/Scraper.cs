@@ -371,7 +371,7 @@ public class Scraper
         logger.Debug(currObj.ItemID);
         logger.Debug(currObj.PosterPath);
         // return string.Empty;
-        return ng.FetchImagePoster(currObj.PosterPath);
+        return ng.FetchImagePoster(currObj);
     }
 
     private void CopyCurrRunDataToNewsletterData()
