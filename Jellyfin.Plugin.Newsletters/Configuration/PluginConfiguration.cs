@@ -3,22 +3,6 @@ using MediaBrowser.Model.Plugins;
 namespace Jellyfin.Plugin.Newsletters.Configuration;
 
 /// <summary>
-/// The configuration options.
-/// </summary>
-public enum PosterHostingTypes
-{
-    /// <summary>
-    /// Option one.
-    /// </summary>
-    Imgur,
-
-    /// <summary>
-    /// Second option.
-    /// </summary>
-    JfHosting
-}
-
-/// <summary>
 /// Plugin configuration.
 /// </summary>
 public class PluginConfiguration : BasePluginConfiguration
@@ -44,9 +28,7 @@ public class PluginConfiguration : BasePluginConfiguration
         Body = string.Empty;
 
         // default Scraper config
-        MediaDir = string.Empty;
         ApiKey = string.Empty;
-        CXKey = string.Empty;
 
         // System Paths
         DataPath = string.Empty;
@@ -130,19 +112,19 @@ public class PluginConfiguration : BasePluginConfiguration
     // Scraper Config
 
     /// <summary>
-    /// Gets or sets a string setting.
+    /// Gets or sets a value indicating hosting type.
     /// </summary>
-    public string MediaDir { get; set; }
+    public string PHType { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value for JF hostname accessible outside of network.
+    /// </summary>
+    public string Hostname { get; set; }
 
     /// <summary>
     /// Gets or sets a string setting.
     /// </summary>
     public string ApiKey { get; set; }
-
-    /// <summary>
-    /// Gets or sets a string setting.
-    /// </summary>
-    public string CXKey { get; set; }
 
     // -----------------------------------
 
@@ -226,14 +208,4 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a value indicating whether Movies should be scanned.
     /// </summary>
     public bool MoviesEnabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating hosting type.
-    /// </summary>
-    public string PHType { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value for JF hostname accessible outside of network.
-    /// </summary>
-    public string Hostname { get; set; }
 }
