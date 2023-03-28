@@ -19,7 +19,7 @@ This plugin automacially scans a users library (default every 4 hours), populate
         - Helpful Links:
             - https://dev.to/bearer/how-to-configure-the-imgur-api-2ap9
             - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
-    - Users can bypass this limitation as of V0.5.0 with the ability to use Jellyfin's API to serve images!
+    - ***Users can bypass this limitation as of V0.5.0 with the ability to use Jellyfin's API to serve images!***
 
 2. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
 
