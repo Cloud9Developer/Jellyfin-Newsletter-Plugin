@@ -100,8 +100,19 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
 
 ## Scraper/Scanner Config
 
-### Scraper Config > Imgur API Key
-- Your Imgur API key to upload images to be available in the newsletter
+### Poster Hosting Type
+- The type of poster hosting you want to use
+    - Options include:
+        - Imgur (Default)
+        - Local Hosting from Jellyfin's API  
+
+### Imgur API Key
+- Your Imgur API key (Client ID) to upload images to be available in the newsletter
+
+### Hostname
+- Your servername/hostname/DNS entry (and Port if applicable) to allow users to access images hosted locally on your server.
+    - i.e. https://myDNSentry.com:8096 
+        - **NOTE:** do not put a trailing '/' at the end of the url
 
 ## SMTP Config
 
@@ -126,3 +137,7 @@ Please leave a ticket in the Issues on this GitHub page and I will get to it as 
 Please be patient with me, since I did this on the side of my normal job. But I will try to fix any issues that come up to the best of my ability and as fast as I can!
 
 ## Known Issues
+See 'issues' tab in GitHub with the lable 'bug'
+
+# Contribute
+If you would like to collaborate/contribute, feel free! Make all PR's to the 'development' branch and please note clearly what was added/fixed, thanks!
