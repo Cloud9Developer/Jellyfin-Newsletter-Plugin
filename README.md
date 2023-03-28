@@ -12,13 +12,14 @@ This plugin automacially scans a users library (default every 4 hours), populate
 </p>
 
 # Current Limitations
-1. This plugin uses Imgur's API to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 12,500/day. 
+1. Imgur's API is one available option to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 12,500/day. 
     - HOWEVER, according to some documentation I have just discovered, there is a limit of 500 requests/hour for each user _(IP address)_ hitting the API
     - **This plugin is configured to reference existing Images from previous scans (including current) as to not duplicate requests to Imgur and use up the daily upload limit**
     - Sign up to get an API key in order to use this plugin.
         - Helpful Links:
             - https://dev.to/bearer/how-to-configure-the-imgur-api-2ap9
             - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
+    - Users can bypass this limitation as of V0.5.0 with the ability to use Jellyfin's API to serve images!
 
 2. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
 
