@@ -102,9 +102,24 @@ public class NewsletterDataGenerator
         return myObj;
     }
 
-    public string FetchImagePoster(string posterFilePath)
+    public string FetchImagePoster(JsonFileObj item)
     {
-        return UploadToImgur(posterFilePath);
+        // Check which config option for posters are selected
+        logger.Debug($"HOSTING TYPE: {config.PHType}");
+        switch (config.PHType)
+        {
+            case "Imgur":
+                return UploadToImgur(item.PosterPath);
+                break;
+            case "JfHosting":
+                return $"{config.Hostname}/Items/{item.ItemID}/Images/Primary";
+                break;
+            default:
+                return "Something Went Wrong";
+                break;
+        }
+
+        // return UploadToImgur(posterFilePath);
     }
 
     private string UploadToImgur(string posterFilePath)
