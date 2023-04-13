@@ -12,13 +12,14 @@ This plugin automacially scans a users library (default every 4 hours), populate
 </p>
 
 # Current Limitations
-1. This plugin uses Imgur's API to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 12,500/day. 
+1. Imgur's API is one available option to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 12,500/day. 
     - HOWEVER, according to some documentation I have just discovered, there is a limit of 500 requests/hour for each user _(IP address)_ hitting the API
     - **This plugin is configured to reference existing Images from previous scans (including current) as to not duplicate requests to Imgur and use up the daily upload limit**
     - Sign up to get an API key in order to use this plugin.
         - Helpful Links:
             - https://dev.to/bearer/how-to-configure-the-imgur-api-2ap9
             - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
+    - ***Users can bypass this limitation as of V0.5.0 with the ability to use Jellyfin's API to serve images!***
 
 2. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
 
@@ -100,8 +101,19 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
 
 ## Scraper/Scanner Config
 
-### Scraper Config > Imgur API Key
-- Your Imgur API key to upload images to be available in the newsletter
+### Poster Hosting Type
+- The type of poster hosting you want to use
+    - Options include:
+        - Imgur (Default)
+        - Local Hosting from Jellyfin's API  
+
+### Imgur API Key
+- Your Imgur API key (Client ID) to upload images to be available in the newsletter
+
+### Hostname
+- Your servername/hostname/DNS entry (and Port if applicable) to allow users to access images hosted locally on your server.
+    - i.e. https://myDNSentry.com:8096 
+        - **NOTE:** do not put a trailing '/' at the end of the url
 
 ## SMTP Config
 
@@ -126,3 +138,7 @@ Please leave a ticket in the Issues on this GitHub page and I will get to it as 
 Please be patient with me, since I did this on the side of my normal job. But I will try to fix any issues that come up to the best of my ability and as fast as I can!
 
 ## Known Issues
+See 'issues' tab in GitHub with the lable 'bug'
+
+# Contribute
+If you would like to collaborate/contribute, feel free! Make all PR's to the 'development' branch and please note clearly what was added/fixed, thanks!
