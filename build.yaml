@@ -1,13 +1,12 @@
 ---
 name: "Newsletters"
 guid: "60f478ab-2dd6-4ea0-af10-04d033f75979"
+imageUrl: "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/logo.png"
 version: "0.5.0"
 targetAbi: "10.8.0.0"
 framework: "net6.0"
 overview: "Send newsletters for recently added"
-description: >
-  This is a longer description that can span more than one
-  line and include details about your plugin.
+description: "This plugin automacially scans a users library (default every 4 hours), populates a list of recently added (not previously scanned) media, converts that data into HTML format, and sends out emails to a provided list of recipients."
 category: "General"
 owner: "jellyfin"
 artifacts:
