@@ -161,6 +161,12 @@ public class Scraper
                     logger.Debug(episode.PhysicalLocations[0]); // Filepath
                     logger.Debug("---------------");
                 }
+                catch (IndexOutOfRangeException iore)
+                {
+                    logger.Error($"Physical location of file could not be found.. Turn on debug mode to see more information!");
+                    logger.Error(iore);
+                    continue;
+                }
                 catch (Exception e)
                 {
                     logger.Error("Error processing your file..");
