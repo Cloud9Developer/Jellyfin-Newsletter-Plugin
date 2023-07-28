@@ -109,7 +109,8 @@ public class SQLiteDatabase
                 //                 "END;");
                 try
                 {
-                    ExecuteSQL("ALTER TABLE " + table + " ADD COLUMN Type TEXT;");
+                    // ExecuteSQL("ALTER TABLE " + table + " ADD COLUMN Type TEXT;");
+                    logger.Debug("Alter Table no longer required as of V0.5.1!");
                 }
                 catch (SQLiteException sle)
                 {
