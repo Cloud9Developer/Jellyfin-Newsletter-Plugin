@@ -1,3 +1,4 @@
+using System.IO;
 using MediaBrowser.Model.Plugins;
 
 namespace Jellyfin.Plugin.Newsletters.Configuration;
@@ -25,7 +26,56 @@ public class PluginConfiguration : BasePluginConfiguration
         ToAddr = string.Empty;
         FromAddr = "JellyfinNewsletter@donotreply.com";
         Subject = "Jellyfin Newsletter";
-        Body = string.Empty;
+        // Body = string.Empty;
+        Body = @"<html>
+    <div>
+        <table style='margin-left: auto; margin-right: auto;'>
+            <tr> 
+                <td width='100%' height='100%' style='vertical-align: top; background-color: #000000;'> 
+                    <table id='InsertHere' name='MainTable' style='margin-left: auto; margin-right: auto; border-spacing: 0 5px; padding-left: 2%; padding-right: 2%; padding-bottom: 1%;'> 
+                        <tr style='text-align: center;'> 
+                            <td colspan='2'> 
+                                <span>
+                                    <h1 id='Title' style='color:#FFFFFF;'>Jellyfin Newsletter</h1>
+                                    <h3 id='Date' style='color:#FFFFFF;'>2023-03-14</h3>
+                                </span> 
+                            </td> 
+                        </tr> 
+                        <!-- Fill this in from code --> 
+                        {EntryData}
+                        <!-- Fill that in from code --> 
+                    </table> 
+                </td> 
+            </tr> 
+        </table> 
+    </div> 
+</html>";
+
+        // Entry = string.Empty;
+        // ImageURL
+        // Title
+        // SeasonEpsInfo
+        // SeriesOverview
+        Entry = @"<tr class='boxed' style='outline: thin solid #D3D3D3;'> 
+    <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> 
+        <img style='width: 200px; height: 300px;' src='{ImageURL}'> 
+    </td> 
+    <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> 
+        <p>
+            <div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'>
+                <h3>
+                    {Title} 
+                </h3>
+            </div>
+            {SeasonEpsInfo}
+            <hr> 
+                <div id='Description' class='text' style='color: #FFFFFF;'>
+                {SeriesOverview}
+                </div> 
+            </hr>
+        </p> 
+    </td> 
+</tr>";
 
         // default Scraper config
         ApiKey = string.Empty;
@@ -106,6 +156,11 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string Body { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string Entry { get; set; }
 
     // -----------------------------------
 

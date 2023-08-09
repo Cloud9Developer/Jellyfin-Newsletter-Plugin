@@ -6,5 +6,5 @@ else
     echo "Image already exists!"
 fi
 
-docker run --name dotnet -it -v .:/Development mcr.microsoft.com/dotnet/sdk:6.0 /Development/HelperScripts/dotnetbuild.sh
+docker run --name dotnet -it -v .:/Development mcr.microsoft.com/dotnet/sdk:6.0 /Development/BuildScripts/dotnetbuild.sh
 docker rm dotnet
