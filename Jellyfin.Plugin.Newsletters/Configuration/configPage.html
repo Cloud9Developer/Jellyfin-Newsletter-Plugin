@@ -59,7 +59,7 @@
                     <!-- <div class="inputContainer" id="BodyTemplate" style="display: none;"> -->
                     <!-- Newsletter Formatting -->
                     <!-- Main Body -->
-                    <div id="HiddenDetails" name="HtmlFormatting">
+                    <div id="HiddenDetails" name="HtmlFormatting" class="DropdownSection">
                         <details>
                             <summary>Newsletter HTML Format</summary><br>
                             <div class="inputContainer" id="BodyTemplate">
@@ -89,7 +89,7 @@
                     <br>
 
                     <!-- Scraper configuration Details -->
-                    <div id="HiddenDetails" name="ScraperConfig">
+                    <div id="HiddenDetails" name="ScraperConfig" class="DropdownSection">
                         <details>
                             <summary>Scraper Config</summary><br>
                             <div class="selectContainer">
@@ -123,7 +123,7 @@
 
                     <br>
                     <!-- SMTP Server Details -->
-                    <div id="HiddenDetails" name="ServerDetails">
+                    <div id="HiddenDetails" name="ServerDetails" class="DropdownSection">
                         <details>
                             <summary>SMTP Config</summary><br>
                             <div class="inputContainer" id="SMTPServerAddress">
@@ -172,6 +172,9 @@
             }
             td {
                 padding-right: 10px;
+            }
+            .DropdownSection {
+                cursor: pointer;
             }
         </style>
         <script type="text/javascript">
