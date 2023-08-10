@@ -74,7 +74,8 @@ public class HtmlBuilder
 
     public string GetDefaultHTMLBody()
     {
-        emailBody = "<html> <div> <table style='margin-left: auto; margin-right: auto;'> <tr> <td width='100%' height='100%' style='vertical-align: top; background-color: #000000;'> <table id='InsertHere' name='MainTable' style='margin-left: auto; margin-right: auto; border-spacing: 0 5px; padding-left: 2%; padding-right: 2%; padding-bottom: 1%;'> <tr style='text-align: center;'> <td colspan='2'> <span><h1 id='Title' style='color:#FFFFFF;'>Jellyfin Newsletter</h1><h3 id='Date' style='color:#FFFFFF;'>" + DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) + "</h3></span> </td> </tr> <!-- Fill this in from code --> REPLACEME <!-- Fill that in from code --> </table> </td> </tr> </table> </div> </html>";
+        // emailBody = "<html> <div> <table style='margin-left: auto; margin-right: auto;'> <tr> <td width='100%' height='100%' style='vertical-align: top; background-color: #000000;'> <table id='InsertHere' name='MainTable' style='margin-left: auto; margin-right: auto; border-spacing: 0 5px; padding-left: 2%; padding-right: 2%; padding-bottom: 1%;'> <tr style='text-align: center;'> <td colspan='2'> <span><h1 id='Title' style='color:#FFFFFF;'>Jellyfin Newsletter</h1><h3 id='Date' style='color:#FFFFFF;'>" + DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) + "</h3></span> </td> </tr> <!-- Fill this in from code --> REPLACEME <!-- Fill that in from code --> </table> </td> </tr> </table> </div> </html>";
+        emailBody = config.Body;
         return emailBody;
     }
 
@@ -108,7 +109,12 @@ public class HtmlBuilder
                         seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
                     }
 
-                    builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + item.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + item.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + item.SeriesOverview + "</div> </p> </td> </tr>";
+                    // builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + item.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + item.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + item.SeriesOverview + "</div> </p> </td> </tr>";
+                    // return body.Replace("{EntryData}", nlData, StringComparison.Ordinal);
+                    builtHTMLString += config.Entry.Replace("{ImageURL}", item.ImageURL, StringComparison.Ordinal)
+                                                   .Replace("{Title}", item.Title, StringComparison.Ordinal)
+                                                   .Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
+                                                   .Replace("{SeriesOverview}", item.SeriesOverview, StringComparison.Ordinal);
                     completed.Add(item.Title);
                 }
             }
@@ -131,7 +137,8 @@ public class HtmlBuilder
         foreach (NlDetailsJson obj in list)
         {
             logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
-            html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
+            // html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
+            html += "Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "<br>";
         }
 
         return html;
@@ -366,7 +373,7 @@ public class HtmlBuilder
 
     public string ReplaceBodyWithBuiltString(string body, string nlData)
     {
-        return body.Replace("REPLACEME", nlData, StringComparison.Ordinal);
+        return body.Replace("{EntryData}", nlData, StringComparison.Ordinal);
     }
 
     public void CleanUp(string htmlBody)
