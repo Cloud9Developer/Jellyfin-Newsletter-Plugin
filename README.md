@@ -21,8 +21,6 @@ This plugin automacially scans a users library (default every 4 hours), populate
             - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
     - ***Users can bypass this limitation as of V0.5.0 with the ability to use Jellyfin's API to serve images!***
 
-2. There is no custom formatting to the newsletter (yet). My plan is to add this functionality in a later release, but would like to iron out some finer details before moving on to that.
-
 # File Structure
 To ensure proper images are being pulled from Jellyfin's database, ensure you follow the standard Organization Scheme for naming and organizing your files. https://jellyfin.org/docs/general/server/media/books
 
@@ -98,6 +96,17 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
 ### Library Selection
 - Select the item types you want to scan
     - NOTE: this is Item types, not libraries
+
+## Newsletter HTML Format
+Allows for use of custom HTML formatting for emails! Defaults to origional formatting, but can be modified now!
+
+For defaults, see `Jellyfin.Plugin.Newsletters/Templates/`
+
+### Body HTML
+- The main body of your email
+
+### EntryData HTML
+- The formatting for each individual entry/series/movie that was found and will be sent out
 
 ## Scraper/Scanner Config
 
