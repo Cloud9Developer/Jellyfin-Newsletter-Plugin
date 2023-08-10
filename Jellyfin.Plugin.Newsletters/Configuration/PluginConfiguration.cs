@@ -27,6 +27,7 @@ public class PluginConfiguration : BasePluginConfiguration
         FromAddr = "JellyfinNewsletter@donotreply.com";
         Subject = "Jellyfin Newsletter";
         // Body = string.Empty;
+        // {EntryData}
         Body = @"<html>
     <div>
         <table style='margin-left: auto; margin-right: auto;'>
@@ -52,10 +53,10 @@ public class PluginConfiguration : BasePluginConfiguration
 </html>";
 
         // Entry = string.Empty;
-        // ImageURL
-        // Title
-        // SeasonEpsInfo
-        // SeriesOverview
+        // {ImageURL}
+        // {Title}
+        // {SeasonEpsInfo}
+        // {SeriesOverview}
         Entry = @"<tr class='boxed' style='outline: thin solid #D3D3D3;'> 
     <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> 
         <img style='width: 200px; height: 300px;' src='{ImageURL}'> 
@@ -67,7 +68,9 @@ public class PluginConfiguration : BasePluginConfiguration
                     {Title} 
                 </h3>
             </div>
-            {SeasonEpsInfo}
+            <div class='text' style='color: #FFFFFF;'>
+                {SeasonEpsInfo}
+            </div>
             <hr> 
                 <div id='Description' class='text' style='color: #FFFFFF;'>
                 {SeriesOverview}

@@ -31,20 +31,6 @@
                             <input id="Subject" name="Subject" type="text" is="emby-input" />
                             <div class="fieldDescription">Subject field of the newsletter (Default: 'Jellyfin Newsletter)</div>
                         </div>
-                        <!-- <div class="inputContainer" id="BodyTemplate" style="display: none;"> -->
-                        <!-- Newsletter Formatting -->
-                        <!-- Main Body -->
-                        <div class="inputContainer" id="BodyTemplate">
-                            <label class="inputLabel inputLabelUnfocused" for="Body">Body Html:</label>
-                            <textarea id="Body" name="Body" dataname="Body" style="width: 100%; height: 400px"></textarea>
-                            <div class="fieldDescription">HTML formatting for main Body of email. Defaults to a predefined template</div>
-                        </div>
-                        <!-- Entry/Cell Data -->
-                        <div class="inputContainer" id="EntryTemplate">
-                            <label class="inputLabel inputLabelUnfocused" for="Entry">Entry Html:</label>
-                            <textarea id="Entry" name="Entry" dataname="Entry" style="width: 100%; height: 400px"></textarea>
-                            <div class="fieldDescription">Html formatting for each Entry of email. Defaults to a predefined template</div>
-                        </div>
                     </div>
                     <div id="LibrarySelection">
                         <table>
@@ -69,6 +55,38 @@
                             </tr>
                         </table>
                     </div>
+
+                    <!-- <div class="inputContainer" id="BodyTemplate" style="display: none;"> -->
+                    <!-- Newsletter Formatting -->
+                    <!-- Main Body -->
+                    <div id="HiddenDetails" name="HtmlFormatting">
+                        <details>
+                            <summary>Newsletter HTML Format</summary><br>
+                            <div class="inputContainer" id="BodyTemplate">
+                                <label class="inputLabel inputLabelUnfocused" for="Body">Body Html:</label>
+                                <div class="fieldDescription">
+                                    See below for Field Names to use in your custom HTML:<br>
+                                    {EntryData} - This is the insert of the custom HTML from the field EntryData below. If not used, email will have no data. <br>
+                                </div>
+                                <textarea id="Body" name="Body" dataname="Body" style="width: 100%; height: 400px"></textarea>
+                                <div class="fieldDescription">HTML formatting for main Body of email. Defaults to a predefined template</div>
+                            </div>
+                            <!-- Entry/Cell Data -->
+                            <div class="inputContainer" id="EntryTemplate">
+                                <label class="inputLabel inputLabelUnfocused" for="Entry">EntryData Html:</label>
+                                <div class="fieldDescription">
+                                    See below for Field Names to use in your custom HTML:<br>
+                                    {ImageURL} - The physical URL for the image to be used. For HTML formatting, should be used within a 'img' tag as it's source. <br>
+                                    {Title} - Title of the Series/Movie for the entry <br>
+                                    {SeasonEpsInfo} - Season-Episode information for a series (Doesn't show for movies) <br>
+                                    {SeriesOverview} - The series/movie overview <br>
+                                </div>
+                                <textarea id="Entry" name="Entry" dataname="Entry" style="width: 100%; height: 400px"></textarea>
+                                <div class="fieldDescription">Html formatting for each Entry (episode, movie, etc.) for the email. Defaults to a predefined template</div>
+                            </div>
+                        </details>
+                    </div>
+                    <br>
 
                     <!-- Scraper configuration Details -->
                     <div id="HiddenDetails" name="ScraperConfig">

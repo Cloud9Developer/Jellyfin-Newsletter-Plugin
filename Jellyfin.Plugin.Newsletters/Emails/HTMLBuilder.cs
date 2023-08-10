@@ -137,7 +137,8 @@ public class HtmlBuilder
         foreach (NlDetailsJson obj in list)
         {
             logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
-            html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
+            // html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
+            html += "Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "<br>";
         }
 
         return html;
