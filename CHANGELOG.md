@@ -1,3 +1,7 @@
+# 0.6.0
+- Added ability to use custom HTML for newsletter emails
+- Added buildscript (using dotnet docker) for easier development
+
 # 0.5.1
 - Cleaned up logging for easier readibility
 
