@@ -98,7 +98,7 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
     - NOTE: this is Item types, not libraries
 
 ## Newsletter HTML Format
-Allows for use of custom HTML formatting for emails! Defaults to origional formatting, but can be modified now!
+Allows for use of custom HTML formatting for emails! Defaults to original formatting, but can be modified now!
 
 For defaults, see `Jellyfin.Plugin.Newsletters/Templates/`
 
