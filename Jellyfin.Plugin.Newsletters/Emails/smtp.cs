@@ -7,7 +7,6 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
-using Jellyfin.Plugin.Newsletters.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Configuration;
@@ -60,7 +59,7 @@ public class Smtp : ControllerBase
             mail.Body = "Success! You have properly configured your email notification settings";
             mail.IsBodyHtml = false;
 
-            foreach (string email in config.ToAddr.Split(','))
+            foreach (var email in config.ToAddr.Split(','))
             {
                 mail.Bcc.Add(email.Trim());
             }
@@ -89,41 +88,37 @@ public class Smtp : ControllerBase
             {
                 logger.Debug("Sending out mail!");
                 // Smtp varsmtp = new Smtp();
-                MailMessage mail = new MailMessage();
-                string smtpAddress = config.SMTPServer;
-                int portNumber = config.SMTPPort;
-                bool enableSSL = true;
-                string emailFromAddress = config.FromAddr;
-                string username = config.SMTPUser;
-                string password = config.SMTPPass;
-                string emailToAddress = config.ToAddr;
-                string subject = config.Subject;
-                string body;
+                var mail = new MailMessage();
+                var smtpAddress = config.SMTPServer;
+                var portNumber = config.SMTPPort;
+                var enableSSL = true;
+                var emailFromAddress = config.FromAddr;
+                var username = config.SMTPUser;
+                var password = config.SMTPPass;
+                var emailToAddress = config.ToAddr;
+                var subject = config.Subject;
 
-                HtmlBuilder hb = new HtmlBuilder();
-
-                body = hb.GetDefaultHTMLBody();
-                string builtString = hb.BuildDataHtmlStringFromNewsletterData();
-                string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
+                var hb = new HtmlBuilder();
+                var builtString = hb.BuildDataHtmlStringFromNewsletterData();
 
                 mail.From = new MailAddress(emailFromAddress, emailFromAddress);
                 mail.To.Clear();
                 mail.Subject = subject;
-                mail.Body = finalBody;
+                mail.Body = builtString;
                 mail.IsBodyHtml = true;
 
-                foreach (string email in emailToAddress.Split(','))
+                foreach (var email in emailToAddress.Split(','))
                 {
                     mail.Bcc.Add(email.Trim());
                 }
 
                 // mail.Attachments.Add(new Attachment("D:\\TestFile.txt"));//--Uncomment this to send any attachment
-                SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
+                var smtp = new SmtpClient(smtpAddress, portNumber);
                 smtp.Credentials = new NetworkCredential(username, password);
                 smtp.EnableSsl = enableSSL;
                 smtp.Send(mail);
 
-                hb.CleanUp(finalBody);
+                hb.CleanUp(builtString);
             }
             else
             {
@@ -160,6 +155,6 @@ public class Smtp : ControllerBase
 
     private void WriteToArchive()
     {
-        string test = string.Empty;
+        var test = string.Empty;
     }
 }
