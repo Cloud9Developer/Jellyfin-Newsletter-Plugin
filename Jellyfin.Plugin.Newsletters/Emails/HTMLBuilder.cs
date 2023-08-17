@@ -3,10 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
+using Morestachio;
+using Morestachio.Rendering;
 using Newtonsoft.Json;
 
 // using Microsoft.Extensions.Logging;
@@ -30,6 +33,10 @@ public class HtmlBuilder
     // Non-readonly
     private static string append = "Append";
     private static string write = "Overwrite";
+
+    private readonly MorestachioDocumentInfo _document;
+
+    private readonly IRenderer _documentCompiler;
     // private List<string> fileList;
 
     public HtmlBuilder()
@@ -48,7 +55,7 @@ public class HtmlBuilder
         if (config.NewsletterFileName.Length == 0 || File.Exists(newslettersDir + config.NewsletterFileName))
         {
             // use date to create filename
-            string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+            var currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
             newsletterHTMLFile = newslettersDir + currDate + "_Newsletter.html";
         }
         else
@@ -57,6 +64,12 @@ public class HtmlBuilder
         }
 
         logger.Info("Newsletter will be saved to: " + newsletterHTMLFile);
+
+        _document = ParserOptionsBuilder.New()
+            .WithEncoding(Encoding.UTF8)
+            .WithTemplate(config.Body)
+            .BuildAndParse();
+        _documentCompiler = _document.CreateCompiledRenderer();
     }
 
     public string GetDefaultHTMLBody()
@@ -69,41 +82,26 @@ public class HtmlBuilder
     public string BuildDataHtmlStringFromNewsletterData()
     {
         List<string> completed = new List<string>();
-        string builtHTMLString = string.Empty;
         // pull data from CurrNewsletterData table
+
+        var newsletterData = new List<(JsonFileObj FileData, IEnumerable<NlDetailsJson>? SeriesData)>();
 
         try
         {
             db.CreateConnection();
-
             foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
             {
-                if (row is not null)
+                var item = jsonHelper.ConvertToObj(row);
+                // scan through all items and get all Season numbers and Episodes
+                // (string seasonInfo, string episodeInfo) = ParseSeriesInfo(obj, readDataFile);
+                if (completed.Contains(item.Title))
                 {
-                    JsonFileObj item = jsonHelper.ConvertToObj(row);
-                    // scan through all items and get all Season numbers and Episodes
-                    // (string seasonInfo, string episodeInfo) = ParseSeriesInfo(obj, readDataFile);
-                    if (completed.Contains(item.Title))
-                    {
-                        continue;
-                    }
-
-                    string seaEpsHtml = string.Empty;
-                    if (item.Type == "Series")
-                    {
-                        // for series only
-                        List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(item);
-                        seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
-                    }
-
-                    // builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + item.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + item.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + item.SeriesOverview + "</div> </p> </td> </tr>";
-                    // return body.Replace("{EntryData}", nlData, StringComparison.Ordinal);
-                    builtHTMLString += config.Entry.Replace("{ImageURL}", item.ImageURL, StringComparison.Ordinal)
-                                                   .Replace("{Title}", item.Title, StringComparison.Ordinal)
-                                                   .Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
-                                                   .Replace("{SeriesOverview}", item.SeriesOverview, StringComparison.Ordinal);
-                    completed.Add(item.Title);
+                    continue;
                 }
+
+                // for series only
+                newsletterData.Add(item.Type == "Series" ? (item, ParseSeriesInfo(item)) : (item, null));
+                completed.Add(item.Title);
             }
         }
         catch (Exception e)
@@ -115,20 +113,11 @@ public class HtmlBuilder
             db.CloseConnection();
         }
 
-        return builtHTMLString;
-    }
-
-    private string GetSeasonEpisodeHTML(List<NlDetailsJson> list)
-    {
-        string html = string.Empty;
-        foreach (NlDetailsJson obj in list)
+        return _documentCompiler.RenderAndStringify(new
         {
-            logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
-            // html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
-            html += "Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "<br>";
-        }
-
-        return html;
+            DateOfCreation = DateTime.Now,
+            Items = newsletterData
+        });
     }
 
     private List<NlDetailsJson> ParseSeriesInfo(JsonFileObj currObj)
@@ -140,10 +129,10 @@ public class HtmlBuilder
         {
             if (row is not null)
             {
-                JsonFileObj helper = new JsonFileObj();
-                JsonFileObj itemObj = helper.ConvertToObj(row);
+                var helper = new JsonFileObj();
+                var itemObj = helper.ConvertToObj(row);
 
-                NlDetailsJson tempVar = new NlDetailsJson()
+                var tempVar = new NlDetailsJson()
                 {
                     Title = itemObj.Title,
                     Season = itemObj.Season,
@@ -155,21 +144,21 @@ public class HtmlBuilder
             }
         }
 
-        List<int> tempEpsList = new List<int>();
-        NlDetailsJson currSeriesDetailsObj = new NlDetailsJson();
+        var tempEpsList = new List<int>();
+        var currSeriesDetailsObj = new NlDetailsJson();
 
-        int currSeason = -1;
-        bool newSeason = true;
-        int list_len = compiledList.Count;
-        int count = 1;
-        foreach (NlDetailsJson item in SortListBySeason(SortListByEpisode(compiledList)))
+        var currSeason = -1;
+        var newSeason = true;
+        var list_len = compiledList.Count;
+        var count = 1;
+        foreach (var item in SortListBySeason(SortListByEpisode(compiledList)))
         {
             logger.Debug("After Sort in foreach: Season::" + item.Season + "; Episode::" + item.Episode);
             logger.Debug("Count/list_len: " + count + "/" + list_len);
 
             NlDetailsJson CopyJsonFromExisting(NlDetailsJson obj)
             {
-                NlDetailsJson newJson = new NlDetailsJson();
+                var newJson = new NlDetailsJson();
                 newJson.Season = obj.Season;
                 newJson.EpisodeRange = obj.EpisodeRange;
                 return newJson;
@@ -209,7 +198,7 @@ public class HtmlBuilder
                     }
                     else
                     {
-                        string epList = string.Empty;
+                        var epList = string.Empty;
                         int firstRangeEp, prevEp;
                         firstRangeEp = prevEp = -1;
 
@@ -240,7 +229,7 @@ public class HtmlBuilder
                             return epList;
                         }
 
-                        foreach (int ep in tempEpsList)
+                        foreach (var ep in tempEpsList)
                         {
                             logger.Debug("-------------------");
                             logger.Debug($"FOREACH firstRangeEp :: prevEp :: ep = {firstRangeEp} :: {prevEp} :: {ep} ");
@@ -335,7 +324,7 @@ public class HtmlBuilder
 
         logger.Debug("FinalList Length: " + finalList.Count);
 
-        foreach (NlDetailsJson item in finalList)
+        foreach (var item in finalList)
         {
             logger.Debug("FinalListObjs: " + JsonConvert.SerializeObject(item));
         }
@@ -358,11 +347,6 @@ public class HtmlBuilder
         return list.OrderBy(x => x.Episode).ToList();
     }
 
-    public string ReplaceBodyWithBuiltString(string body, string nlData)
-    {
-        return body.Replace("{EntryData}", nlData, StringComparison.Ordinal);
-    }
-
     public void CleanUp(string htmlBody)
     {
         // save newsletter to file
@@ -378,7 +362,7 @@ public class HtmlBuilder
 
     private void CopyNewsletterDataToArchive()
     {
-        string archiveFile = config.MyDataDir + config.ArchiveFileName;
+        var archiveFile = config.MyDataDir + config.ArchiveFileName;
         logger.Info("Appending NewsletterData for Current Newsletter Cycle to Archive Database..");
 
         // copy tables
