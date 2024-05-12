@@ -1,3 +1,6 @@
+# 0.6.1
+- Updated html template (hardcoded date)
+
 # 0.6.0
 - Added ability to use custom HTML for newsletter emails
 - Added buildscript (using dotnet docker) for easier development

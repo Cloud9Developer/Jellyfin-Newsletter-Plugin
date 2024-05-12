@@ -2,7 +2,7 @@
 name: "Newsletters"
 guid: "60f478ab-2dd6-4ea0-af10-04d033f75979"
 imageUrl: "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/logo.png"
-version: "0.6.0"
+version: "0.6.1"
 targetAbi: "10.8.0.0"
 framework: "net6.0"
 overview: "Send newsletters for recently added"
