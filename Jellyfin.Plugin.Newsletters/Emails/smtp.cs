@@ -98,13 +98,15 @@ public class Smtp : ControllerBase
                 string password = config.SMTPPass;
                 string emailToAddress = config.ToAddr;
                 string subject = config.Subject;
-                string body;
+                // string body;
 
                 HtmlBuilder hb = new HtmlBuilder();
 
-                body = hb.GetDefaultHTMLBody();
+                string body = hb.GetDefaultHTMLBody();
                 string builtString = hb.BuildDataHtmlStringFromNewsletterData();
                 string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
+                string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                finalBody = finalBody.Replace("{Date}", currDate, StringComparison.Ordinal);
 
                 mail.From = new MailAddress(emailFromAddress, emailFromAddress);
                 mail.To.Clear();

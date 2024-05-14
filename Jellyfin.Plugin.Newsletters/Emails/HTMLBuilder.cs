@@ -79,6 +79,14 @@ public class HtmlBuilder
         return emailBody;
     }
 
+    // public string TemplateReplace(String htmlObj)
+    // {
+    //     return htmlObj.Replace("{ImageURL}", item.ImageURL, StringComparison.Ordinal)
+    //                   .Replace("{Title}", item.Title, StringComparison.Ordinal)
+    //                   .Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
+    //                   .Replace("{SeriesOverview}", item.SeriesOverview, StringComparison.Ordinal);
+    // }
+
     public string BuildDataHtmlStringFromNewsletterData()
     {
         List<string> completed = new List<string>();
