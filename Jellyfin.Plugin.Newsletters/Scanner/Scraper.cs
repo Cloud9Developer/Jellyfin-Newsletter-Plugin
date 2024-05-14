@@ -128,9 +128,15 @@ public class Scraper
     {
         logger.Info($"Parsing {type}..");
         BaseItem episode, season, series;
-        logger.Info($"{type} Scan Size: {items.Count}");
+        totalLibCount = items.Count;
+        logger.Info($"Scan Size: {totalLibCount}");
+        logger.Info($"Scanning '{type}'");
         foreach (BaseItem item in items)
         {
+            currCount++;
+            // logger.Info("PROGRESS: " + currCount + " " + totalLibCount);
+            // double percentage = (double)currCount / (double)totalLibCount * 100;
+            progress.Report((double)currCount / (double)totalLibCount * 100);
             if (item is not null)
             {
                 try
@@ -269,7 +275,7 @@ public class Scraper
                 }
             }
 
-            currCount++;
+            // currCount++;
         }
     }
 
