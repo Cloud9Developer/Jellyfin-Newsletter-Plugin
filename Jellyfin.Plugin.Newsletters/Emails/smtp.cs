@@ -1,21 +1,14 @@
 #pragma warning disable 1591
 using System;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Mail;
-using System.Threading;
-using System.Threading.Tasks;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
-using MediaBrowser.Common.Configuration;
-using MediaBrowser.Controller.Configuration;
-using MediaBrowser.Controller.Library;
-using MediaBrowser.Model.Globalization;
-using MediaBrowser.Model.Tasks;
-using Microsoft.AspNetCore.Http;
+using MediaBrowser.Common.Api;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // using System.Net.NetworkCredential;
@@ -26,6 +19,7 @@ namespace Jellyfin.Plugin.Newsletters.Emails.EMAIL;
 /// Interaction logic for SendMail.xaml.
 /// </summary>
 // [Route("newsletters/[controller]")]
+[Authorize(Policy = Policies.RequiresElevation)]
 [ApiController]
 [Route("Smtp")]
 public class Smtp : ControllerBase
