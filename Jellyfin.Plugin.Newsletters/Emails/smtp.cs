@@ -142,7 +142,7 @@ public class Smtp : ControllerBase
         }
     }
 
-    public bool NewsletterDbIsPopulated()
+    private bool NewsletterDbIsPopulated()
     {
         foreach (var row in db.Query("SELECT COUNT(*) FROM CurrNewsletterData;"))
         {
