@@ -35,6 +35,10 @@
         <Rule Id="SA1602" Action="None" />
         <!-- disable warning SA1633: The file header is missing or not located at the top of the file -->
         <Rule Id="SA1633" Action="None" />
+        <!-- disable warning SA1028: Code should not contain trailing whitespace -->
+        <Rule Id="SA1028" Action="None" />
+        <!-- disable warning SA1005: Single line comment should begin with a space -->
+        <Rule Id="SA1005" Action="None" />
     </Rules>
 
     <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.Design">

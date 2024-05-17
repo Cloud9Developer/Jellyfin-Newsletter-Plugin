@@ -43,8 +43,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
             config.LogDirectoryPath = dataPaths.LogDirectoryPath;
 
             // Custom Paths
-            config.MyDataDir = $"{config.TempDirectory}/Newsletters/";
-            config.NewsletterDir = $"{config.MyDataDir}myNewsletters/";
+            config.NewsletterDir = $"{config.TempDirectory}/Newsletters/";
         }
 
         SetConfigPaths(applicationPaths);

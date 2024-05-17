@@ -25,7 +25,7 @@ namespace Jellyfin.Plugin.Newsletters.Emails.EMAIL;
 public class Smtp : ControllerBase
 {
     private readonly PluginConfiguration config;
-    private readonly string newsletterDataFile;
+    // private readonly string newsletterDataFile;
     private SQLiteDatabase db;
     private Logger logger;
 
@@ -34,7 +34,6 @@ public class Smtp : ControllerBase
         db = new SQLiteDatabase();
         logger = new Logger();
         config = Plugin.Instance!.Configuration;
-        newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
     }
 
     [HttpPost("SendTestMail")]
