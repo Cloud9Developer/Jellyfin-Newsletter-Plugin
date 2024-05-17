@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/logo.png",
         "versions": [
             {
+                "version": "0.6.2.1",
+                "changelog": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md",
+                "targetAbi": "10.9.0.0",
+                "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.6.2.1/Newsletters-v0.6.2.1.zip",
+                "checksum": "af612e174a1d3ebe7d862af8951e72a4",
+                "timestamp": "2024-05-16T05:00:00Z"
+            },
+            {
                 "version": "0.6.2.0",
                 "changelog": "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md",
                 "targetAbi": "10.9.0.0",

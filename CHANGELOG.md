@@ -1,3 +1,8 @@
+# 0.6.2.1
+- Minor security fix
+- Cleaned codebase for easier readability
+- Minor refactor
+
 # 0.6.2.0
 - Updated support for the latest Jellyfin Server release (10.9.0)
 - Fixed Scheduled Scan task completion meter. Now accurately gives percentage of completion.
