@@ -152,16 +152,16 @@ public class Scraper
                     logger.Debug($"Season: {season.Name}"); // Season
                     logger.Debug($"Episode Name: {episode.Name}"); // episode Name
                     logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
-                    logger.Debug($"Series Overview: {series.Overview}"); // series overview
+                    logger.Debug($"Overview: {series.Overview}"); // series overview
                     logger.Debug($"ImageInfos: {series.PrimaryImagePath}");
-                    logger.Debug(series.Id.ToString("N")); // series ItemId
-                    logger.Debug(episode.PhysicalLocations[0]); // Filepath
+                    logger.Debug($"ItemId: " + series.Id.ToString("N")); // series ItemId
+                    logger.Debug($"Filepath: " + episode.PhysicalLocations[0]); // Filepath
                     logger.Debug("---------------");
                 }
                 catch (IndexOutOfRangeException iore)
                 {
-                    logger.Error($"Physical location of file could not be found.. Turn on debug mode to see more information!");
-                    logger.Error(iore);
+                    logger.Warn($"Physical location of file for could not be found.. Turn on debug mode to see more information!");
+                    logger.Debug(iore);
                     continue;
                 }
                 catch (Exception e)
@@ -248,15 +248,15 @@ public class Scraper
                         currFileObj = NoNull(currFileObj);
                         db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type) " +
                                 "VALUES (" +
-                                "'" + currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.Title.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                currFileObj.Season + "," +
-                                currFileObj.Episode + "," +
-                                "'" + currFileObj.SeriesOverview.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.ImageURL.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.ItemID.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.PosterPath.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.Type.Replace("'", string.Empty, StringComparison.Ordinal) + "'" +
+                                    SanitizeDbItem(currFileObj.Filename) + "," +
+                                    SanitizeDbItem(currFileObj.Title) + "," +
+                                    currFileObj.Season + "," +
+                                    currFileObj.Episode + "," +
+                                    SanitizeDbItem(currFileObj.SeriesOverview) + "," +
+                                    SanitizeDbItem(currFileObj.ImageURL) + "," +
+                                    SanitizeDbItem(currFileObj.ItemID) + "," +
+                                    SanitizeDbItem(currFileObj.PosterPath) + "," +
+                                    SanitizeDbItem(currFileObj.Type) +
                                 ");");
                         logger.Debug("Complete!");
                     }
@@ -381,5 +381,10 @@ public class Scraper
         // -> clear CurrData table
         db.ExecuteSQL("INSERT INTO CurrNewsletterData SELECT * FROM CurrRunData;");
         db.ExecuteSQL("DELETE FROM CurrRunData;");
+    }
+
+    private string SanitizeDbItem(string unsanitized_string)
+    {
+        return "'" + unsanitized_string.Replace("'", string.Empty, StringComparison.Ordinal) + "'";
     }
 }
