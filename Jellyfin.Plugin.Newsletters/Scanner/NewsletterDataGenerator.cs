@@ -32,12 +32,6 @@ public class NewsletterDataGenerator
     // Global Vars
     // Readonly
     private readonly PluginConfiguration config;
-    private readonly string newslettersDir;
-    private readonly string newsletterDataFile;
-
-    private readonly string currRunList;
-    private readonly string archiveFile;
-    private readonly string myDataDir;
     private Logger logger;
     private SQLiteDatabase db;
 
@@ -50,56 +44,8 @@ public class NewsletterDataGenerator
         logger = new Logger();
         db = new SQLiteDatabase();
         config = Plugin.Instance!.Configuration;
-        myDataDir = config.TempDirectory + "/Newsletters";
-
-        archiveFile = config.MyDataDir + config.ArchiveFileName; // curlist/archive
-        currRunList = config.MyDataDir + config.CurrRunListFileName;
-        newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
 
         archiveSeriesList = new List<JsonFileObj>();
-        newslettersDir = config.NewsletterDir; // newsletterdir
-        Directory.CreateDirectory(newslettersDir);
-    }
-
-    public Task GenerateDataForNextNewsletter()
-    {
-        try
-        {
-            db.CreateConnection();
-            archiveSeriesList = PopulateFromArchive(db); // Files that shouldn't be processed again
-            CopyCurrRunDataToNewsletterData();
-        }
-        catch (Exception e)
-        {
-            logger.Error("An error has occured: " + e);
-        }
-        finally
-        {
-            db.CloseConnection();
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public List<JsonFileObj> PopulateFromArchive(SQLiteDatabase database)
-    {
-        List<JsonFileObj> myObj = new List<JsonFileObj>();
-        JsonFileObj helper, currArcObj;
-
-        foreach (var row in database.Query("SELECT * FROM ArchiveData;"))
-        {
-            logger.Debug("Inside of foreach..");
-            if (row is not null)
-            {
-                helper = new JsonFileObj();
-                currArcObj = helper.ConvertToObj(row);
-                myObj.Add(currArcObj);
-            }
-        }
-
-        logger.Debug("Returning ArchObj");
-
-        return myObj;
     }
 
     public string FetchImagePoster(JsonFileObj item)
@@ -159,17 +105,6 @@ public class NewsletterDataGenerator
                 logger.Error("Error caught while trying to parse webException error: " + ex);
                 return "ERR";
             }
-        }
-    }
-
-    private void CopyCurrRunDataToNewsletterData()
-    {
-        if (File.Exists(currRunList)) // archiveFile
-        {
-            Stream input = File.OpenRead(currRunList);
-            Stream output = new FileStream(newsletterDataFile, FileMode.Append, FileAccess.Write, FileShare.None);
-            input.CopyTo(output);
-            File.Delete(currRunList);
         }
     }
 }

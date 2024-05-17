@@ -33,7 +33,7 @@ public class HtmlBuilder
     private readonly PluginConfiguration config;
     private readonly string newslettersDir;
     private readonly string newsletterHTMLFile;
-    private readonly string newsletterDataFile;
+    // private readonly string newsletterDataFile;
 
     private string emailBody;
     private Logger logger;
@@ -51,7 +51,6 @@ public class HtmlBuilder
         jsonHelper = new JsonFileObj();
         db = new SQLiteDatabase();
         config = Plugin.Instance!.Configuration;
-        newsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
         emailBody = config.Body;
 
         newslettersDir = config.NewsletterDir; // newsletterdir
@@ -74,7 +73,6 @@ public class HtmlBuilder
 
     public string GetDefaultHTMLBody()
     {
-        // emailBody = "<html> <div> <table style='margin-left: auto; margin-right: auto;'> <tr> <td width='100%' height='100%' style='vertical-align: top; background-color: #000000;'> <table id='InsertHere' name='MainTable' style='margin-left: auto; margin-right: auto; border-spacing: 0 5px; padding-left: 2%; padding-right: 2%; padding-bottom: 1%;'> <tr style='text-align: center;'> <td colspan='2'> <span><h1 id='Title' style='color:#FFFFFF;'>Jellyfin Newsletter</h1><h3 id='Date' style='color:#FFFFFF;'>" + DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) + "</h3></span> </td> </tr> <!-- Fill this in from code --> REPLACEME <!-- Fill that in from code --> </table> </td> </tr> </table> </div> </html>";
         emailBody = config.Body;
         return emailBody;
     }
@@ -392,14 +390,10 @@ public class HtmlBuilder
 
         // append newsletter cycle data to Archive.txt
         CopyNewsletterDataToArchive();
-
-        // remove newsletter cycle data
-        File.Delete(newsletterDataFile);
     }
 
     private void CopyNewsletterDataToArchive()
     {
-        string archiveFile = config.MyDataDir + config.ArchiveFileName;
         logger.Info("Appending NewsletterData for Current Newsletter Cycle to Archive Database..");
 
         // copy tables

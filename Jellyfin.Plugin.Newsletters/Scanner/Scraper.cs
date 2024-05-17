@@ -32,9 +32,9 @@ public class Scraper
     // Global Vars
     // Readonly
     private readonly PluginConfiguration config;
-    private readonly string currRunScanList;
-    private readonly string archiveFile;
-    private readonly string currNewsletterDataFile;
+    // private readonly string currRunScanList;
+    // private readonly string archiveFile;
+    // private readonly string currNewsletterDataFile;
     private readonly ILibraryManager libManager;
 
     // Non-readonly
@@ -58,25 +58,19 @@ public class Scraper
         libManager = libraryManager;
 
         totalLibCount = currCount = 0;
-        // currRunScanListDir = config.TempDirectory + "/Newsletters/";
-        archiveFile = config.MyDataDir + config.ArchiveFileName;
-        currRunScanList = config.MyDataDir + config.CurrRunListFileName;
-        currNewsletterDataFile = config.MyDataDir + config.NewsletterDataFileName;
-        Directory.CreateDirectory(config.MyDataDir);
 
         ng = new NewsletterDataGenerator();
         db = new SQLiteDatabase();
 
         logger.Debug("Setting Config Paths: ");
         logger.Debug("\n  DataPath: " + config.DataPath +
-                    "\n  TempDirectory: " + config.TempDirectory +
-                    "\n  PluginsPath: " + config.PluginsPath +
-                    "\n  MyDataDir: " + config.MyDataDir +
-                    "\n  NewsletterDir: " + config.NewsletterDir +
-                    "\n  ProgramDataPath: " + config.ProgramDataPath +
-                    "\n  ProgramSystemPath: " + config.ProgramSystemPath +
-                    "\n  SystemConfigurationFilePath: " + config.SystemConfigurationFilePath +
-                    "\n  LogDirectoryPath: " + config.LogDirectoryPath );
+                     "\n  TempDirectory: " + config.TempDirectory +
+                     "\n  PluginsPath: " + config.PluginsPath +
+                     "\n  NewsletterDir: " + config.NewsletterDir +
+                     "\n  ProgramDataPath: " + config.ProgramDataPath +
+                     "\n  ProgramSystemPath: " + config.ProgramSystemPath +
+                     "\n  SystemConfigurationFilePath: " + config.SystemConfigurationFilePath +
+                     "\n  LogDirectoryPath: " + config.LogDirectoryPath );
     }
 
     // This is the main function
@@ -86,7 +80,6 @@ public class Scraper
         try
         {
             db.CreateConnection();
-            // archiveObj = ng.PopulateFromArchive(db);
             BuildJsonObjsToCurrScanfile();
             CopyCurrRunDataToNewsletterData();
         }
@@ -134,8 +127,6 @@ public class Scraper
         foreach (BaseItem item in items)
         {
             currCount++;
-            // logger.Info("PROGRESS: " + currCount + " " + totalLibCount);
-            // double percentage = (double)currCount / (double)totalLibCount * 100;
             progress.Report((double)currCount / (double)totalLibCount * 100);
             if (item is not null)
             {
@@ -184,7 +175,9 @@ public class Scraper
                 currFileObj.Filename = episode.PhysicalLocations[0];
                 currFileObj.Title = series.Name;
                 currFileObj.Type = type;
-                if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && !InDatabase("CurrNewsletterData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && !InDatabase("ArchiveData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)))
+                if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
+                    !InDatabase("CurrNewsletterData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
+                    !InDatabase("ArchiveData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)))
                 {
                     try
                     {
@@ -251,7 +244,6 @@ public class Scraper
                     finally
                     {
                         // save to "database" : Table currRunScanList
-                        // WriteFile(append, currRunScanList, JsonConvert.SerializeObject(currFileObj) + ";;;");
                         logger.Debug("Adding to CurrRunData DB...");
                         currFileObj = NoNull(currFileObj);
                         db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type) " +
@@ -274,8 +266,6 @@ public class Scraper
                     logger.Debug("\"" + currFileObj.Filename + "\" has already been processed either by Previous or Current Newsletter!");
                 }
             }
-
-            // currCount++;
         }
     }
 
@@ -378,7 +368,6 @@ public class Scraper
             }
         }
 
-        // string url = ng.FetchImagePoster(obj.Title);
         logger.Debug("Uploading poster...");
         logger.Debug(currObj.ItemID);
         logger.Debug(currObj.PosterPath);

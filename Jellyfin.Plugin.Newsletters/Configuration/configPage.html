@@ -195,7 +195,7 @@
             }
             
             function saveConfig() {
-                console.log("test");
+                //console.log("test");
                 ApiClient.getPluginConfiguration(NewsletterConfig.pluginUniqueId).then(function (config) {
                     config.DebugMode = document.querySelector('#DebugMode').checked;
                     //serverDetails

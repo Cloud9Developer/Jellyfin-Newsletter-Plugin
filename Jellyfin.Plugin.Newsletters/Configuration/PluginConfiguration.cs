@@ -94,10 +94,6 @@ public class PluginConfiguration : BasePluginConfiguration
 
         // default newsletter paths
         NewsletterFileName = string.Empty;
-        MyDataDir = string.Empty;
-        CurrRunListFileName = "Currlist.txt";
-        ArchiveFileName = "Archive.txt";
-        NewsletterDataFileName = "NewsletterList.txt";
         NewsletterDir = string.Empty;
 
         // default libraries
@@ -235,27 +231,7 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>
     /// Gets or sets a string setting.
     /// </summary>
-    public string MyDataDir { get; set; }
-
-    /// <summary>
-    /// Gets a string setting.
-    /// </summary>
-    public string CurrRunListFileName { get; }
-
-    /// <summary>
-    /// Gets a string setting.
-    /// </summary>
-    public string ArchiveFileName { get; }
-
-    /// <summary>
-    /// Gets or sets a string setting.
-    /// </summary>
     public string NewsletterDir { get; set; }
-
-    /// <summary>
-    /// Gets or sets a string setting.
-    /// </summary>
-    public string NewsletterDataFileName { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether Series should be scanned.
