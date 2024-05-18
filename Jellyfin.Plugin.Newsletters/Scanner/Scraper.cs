@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Jellyfin.Data.Enums;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
-using Jellyfin.Plugin.Newsletters.Scanner.NLDataGenerator;
+using Jellyfin.Plugin.Newsletters.Scanner.NLImageHandler;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Configuration;
@@ -40,7 +40,7 @@ public class Scraper
     // Non-readonly
     private int totalLibCount;
     private int currCount;
-    private NewsletterDataGenerator ng;
+    private PosterImageHandler imageHandler;
     private SQLiteDatabase db;
     private JsonFileObj jsonHelper;
     private Logger logger;
@@ -59,7 +59,7 @@ public class Scraper
 
         totalLibCount = currCount = 0;
 
-        ng = new NewsletterDataGenerator();
+        imageHandler = new PosterImageHandler();
         db = new SQLiteDatabase();
 
         logger.Debug("Setting Config Paths: ");
@@ -397,7 +397,7 @@ public class Scraper
         logger.Debug(currObj.ItemID);
         logger.Debug(currObj.PosterPath);
         // return string.Empty;
-        return ng.FetchImagePoster(currObj);
+        return imageHandler.FetchImagePoster(currObj);
     }
 
     private void CopyCurrRunDataToNewsletterData()
