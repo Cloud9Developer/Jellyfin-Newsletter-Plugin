@@ -149,13 +149,21 @@ public class Scraper
                         continue;
                     }
 
+                    logger.Debug($"ItemId: " + series.Id.ToString("N")); // series ItemId
                     logger.Debug($"{type}: {series.Name}"); // Title
+                    logger.Debug($"LocationType: " + episode.LocationType.ToString());
+                    if (episode.LocationType.ToString() == "Virtual")
+                    {
+                        logger.Debug($"No physical path.. Skipping...");
+                        continue;
+                    }
+
                     logger.Debug($"Season: {season.Name}"); // Season Name
                     logger.Debug($"Episode Name: {episode.Name}"); // episode Name
                     logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
                     logger.Debug($"Overview: {series.Overview}"); // series overview
                     logger.Debug($"ImageInfo: {series.PrimaryImagePath}");
-                    logger.Debug($"ItemId: " + series.Id.ToString("N")); // series ItemId
+                    logger.Debug($"Filepath: " + episode.Path); // Filepath, episode.Path is cleaner, but may be empty
 
                     // NEW PARAMS
                     logger.Debug($"PremiereDate: {series.PremiereDate}"); // series PremiereDate
@@ -163,16 +171,7 @@ public class Scraper
                     // logger.Info($"CriticRating: " + series.CriticRating);
                     // logger.Info($"CustomRating: " + series.CustomRating);
                     logger.Debug($"CommunityRating: " + series.CommunityRating); // 8.5, 9.2, etc
-                    logger.Debug($"RunTime: " + (int)((float)episode.RunTimeTicks / 10000 / 60000) + " minutes");
-
-
-                    if (episode.LocationType.ToString() == "Virtual")
-                    {
-                        logger.Debug($"Location Type is: '{episode.LocationType}'.. No physical path.. Skipping...");
-                        continue;
-                    }
-
-                    logger.Info($"Filepath: " + episode.Path); // Filepath, episode.Path is cleaner, but may be empty
+                    logger.Debug($"RunTime: " + (int)((float)episode.RunTimeTicks! / 10000 / 60000) + " minutes");
                 }
                 catch (Exception e)
                 {
@@ -185,11 +184,16 @@ public class Scraper
                 currFileObj.Filename = episode.Path;
                 currFileObj.Title = series.Name;
                 currFileObj.Type = type;
+
                 if (series.PremiereDate is not null)
                 {
                     currFileObj.PremiereYear = series.PremiereDate.ToString()!.Split(' ')[0].Split('/')[2]; // NEW {PremierYear}
                     logger.Debug($"PremiereYear: {currFileObj.PremiereYear}");
                 }
+
+                currFileObj.RunTime = (int)((float)episode.RunTimeTicks / 10000 / 60000);
+                currFileObj.OfficialRating = series.OfficialRating;
+                currFileObj.CommunityRating = series.CommunityRating;
 
                 if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
                     !InDatabase("CurrNewsletterData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
@@ -262,17 +266,21 @@ public class Scraper
                         // save to "database" : Table currRunScanList
                         logger.Debug("Adding to CurrRunData DB...");
                         currFileObj = NoNull(currFileObj);
-                        db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type) " +
+                        db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type, PremiereYear, RunTime, OfficialRating, CommunityRating) " +
                                 "VALUES (" +
-                                    SanitizeDbItem(currFileObj.Filename) + "," +
-                                    SanitizeDbItem(currFileObj.Title) + "," +
-                                    currFileObj.Season + "," +
-                                    currFileObj.Episode + "," +
-                                    SanitizeDbItem(currFileObj.SeriesOverview) + "," +
-                                    SanitizeDbItem(currFileObj.ImageURL) + "," +
-                                    SanitizeDbItem(currFileObj.ItemID) + "," +
-                                    SanitizeDbItem(currFileObj.PosterPath) + "," +
-                                    SanitizeDbItem(currFileObj.Type) +
+                                    SanitizeDbItem(currFileObj.Filename) +
+                                    "," + SanitizeDbItem(currFileObj.Title) +
+                                    "," + currFileObj.Season +
+                                    "," + currFileObj.Episode +
+                                    "," + SanitizeDbItem(currFileObj.SeriesOverview) +
+                                    "," + SanitizeDbItem(currFileObj.ImageURL) +
+                                    "," + SanitizeDbItem(currFileObj.ItemID) +
+                                    "," + SanitizeDbItem(currFileObj.PosterPath) +
+                                    "," + SanitizeDbItem(currFileObj.Type) +
+                                    "," + SanitizeDbItem(currFileObj.PremiereYear) + 
+                                    "," + currFileObj.RunTime +
+                                    "," + SanitizeDbItem(currFileObj.OfficialRating) +
+                                    "," + currFileObj.CommunityRating +
                                 ");");
                         logger.Debug("Complete!");
                     }
@@ -357,6 +365,7 @@ public class Scraper
         }
 
         // check if URL for series already exists CurrNewsletterData table
+        logger.Debug("Checking if exists in CurrNewsletterData");
         foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
         {
             if (row is not null)

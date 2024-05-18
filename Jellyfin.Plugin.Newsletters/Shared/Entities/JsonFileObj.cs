@@ -28,6 +28,9 @@ public class JsonFileObj
         PosterPath = string.Empty;
         Type = string.Empty;
         PremiereYear = string.Empty;
+        RunTime = 0;
+        OfficialRating = string.Empty;
+        CommunityRating = 0.0f;
     }
 
     public string Filename { get; set; }
@@ -54,6 +57,12 @@ public class JsonFileObj
 
     public string PremiereYear { get; set; }
 
+    public int RunTime { get; set; }
+
+    public string OfficialRating { get; set; }
+
+    public float? CommunityRating { get; set; }
+
     public JsonFileObj ConvertToObj(IReadOnlyList<ResultSetValue> row)
     {
         // Filename = string.Empty; 0
@@ -76,7 +85,11 @@ public class JsonFileObj
             ImageURL = row[5].ToString(),
             ItemID = row[6].ToString(),
             PosterPath = row[7].ToString(),
-            Type = row[8].ToString()
+            Type = row[8].ToString(),
+            PremiereYear = row[9].ToString(),
+            RunTime = string.IsNullOrEmpty(row[10].ToString()) ? 0 : int.Parse(row[10].ToString(), CultureInfo.CurrentCulture),
+            OfficialRating = row[11].ToString(),
+            CommunityRating = string.IsNullOrEmpty(row[12].ToString()) ? 0.0f : float.Parse(row[12].ToString(), CultureInfo.CurrentCulture)
         };
 
         return obj;

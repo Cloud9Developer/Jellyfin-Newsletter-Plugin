@@ -99,22 +99,35 @@ public class SQLiteDatabase
                                 "ItemID TEXT," +
                                 "PosterPath TEXT," +
                                 "Type TEXT," +
+                                // "PremiereYear TEXT" +
+                                // "RunTime INT" +
+                                // "OfficialRating TEXT" +
+                                // "CommunityRating REAL" +
                                 "PRIMARY KEY (Filename)" +
-                                ");");
+                            ");");
 
-                // ExecuteSQL("IF COL_LENGTH ('" + table + "', 'Type') IS NULL " +
-                //                 "BEGIN " +
-                //                     "ALTER TABLE " + table +
-                //                     " ADD Type TEXT " +
-                //                 "END;");
-                try
+                // ExecuteSQL("ALTER TABLE " + table + " ADD COLUMN Type TEXT;");
+                // logger.Debug("Altering Table not needed since V0.6.2.0");
+                // continue;
+                logger.Info($"Altering DB table: {table}");
+                // <TABLE_NAME, DATA_TYPE>
+                Dictionary<string, string> new_cols = new Dictionary<string, string>();
+                new_cols.Add("PremiereYear", "TEXT");
+                new_cols.Add("RunTime", "INT");
+                new_cols.Add("OfficialRating", "TEXT");
+                new_cols.Add("CommunityRating", "REAL");
+
+                foreach (KeyValuePair<string, string> col in new_cols)
                 {
-                    // ExecuteSQL("ALTER TABLE " + table + " ADD COLUMN Type TEXT;");
-                    logger.Debug("Alter Table no longer required as of V0.5.1!");
-                }
-                catch (SQLiteException sle)
-                {
-                    logger.Warn(sle);
+                    try
+                    {
+                        logger.Info($"Running Query: 'ALTER TABLE {table} ADD COLUMN {col.Key} {col.Value};'");
+                        ExecuteSQL($"ALTER TABLE {table} ADD COLUMN {col.Key} {col.Value};");
+                    }
+                    catch (SQLiteException sle)
+                    {
+                        logger.Warn(sle);
+                    }
                 }
             }
         }
