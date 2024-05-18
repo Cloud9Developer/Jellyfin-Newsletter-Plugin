@@ -126,6 +126,7 @@ public class Scraper
         logger.Info($"Scanning '{type}'");
         foreach (BaseItem item in items)
         {
+            logger.Debug("---------------");
             currCount++;
             progress.Report((double)currCount / (double)totalLibCount * 100);
             if (item is not null)
@@ -152,11 +153,26 @@ public class Scraper
                     logger.Debug($"Season: {season.Name}"); // Season
                     logger.Debug($"Episode Name: {episode.Name}"); // episode Name
                     logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
+
+                    // foreach (var genre in episode.Generes)
+                    // {
+                    //     logger.Info($"Genre: {genre}");
+                    // }
+                    // logger.Info("Path: " + episode.Path);
+                    // logger.Info("LocationType: " + episode.LocationType); // if this is Virtual, Path is blank
+                    // logger.Info("----");
+                    
                     logger.Debug($"Overview: {series.Overview}"); // series overview
                     logger.Debug($"ImageInfos: {series.PrimaryImagePath}");
                     logger.Debug($"ItemId: " + series.Id.ToString("N")); // series ItemId
-                    logger.Debug($"Filepath: " + episode.PhysicalLocations[0]); // Filepath
-                    logger.Debug("---------------");
+                    
+                    if (episode.LocationType.ToString() == "Virtual")
+                    {
+                        logger.Debug($"Location Type is: '{episode.LocationType}'.. No physical path.. Skipping...");
+                        continue;
+                    }
+
+                    logger.Debug($"Filepath: " + episode.Path); // Filepath, episode.Path is cleaner, but may be empty
                 }
                 catch (IndexOutOfRangeException iore)
                 {
@@ -172,7 +188,7 @@ public class Scraper
                 }
 
                 JsonFileObj currFileObj = new JsonFileObj();
-                currFileObj.Filename = episode.PhysicalLocations[0];
+                currFileObj.Filename = episode.Path;
                 currFileObj.Title = series.Name;
                 currFileObj.Type = type;
                 if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 

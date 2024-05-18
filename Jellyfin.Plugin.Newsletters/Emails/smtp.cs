@@ -152,9 +152,4 @@ public class Smtp : ControllerBase
         db.CloseConnection();
         return false;
     }
-
-    private void WriteToArchive()
-    {
-        string test = string.Empty;
-    }
 }
