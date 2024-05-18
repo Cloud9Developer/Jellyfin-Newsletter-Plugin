@@ -121,7 +121,7 @@ public class SQLiteDatabase
                 {
                     try
                     {
-                        logger.Info($"Running Query: 'ALTER TABLE {table} ADD COLUMN {col.Key} {col.Value};'");
+                        logger.Debug($"Adding Table Columns for DB updates...");
                         ExecuteSQL($"ALTER TABLE {table} ADD COLUMN {col.Key} {col.Value};");
                     }
                     catch (SQLiteException sle)

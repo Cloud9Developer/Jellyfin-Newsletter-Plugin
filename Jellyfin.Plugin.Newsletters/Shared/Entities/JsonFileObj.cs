@@ -94,4 +94,24 @@ public class JsonFileObj
 
         return obj;
     }
+
+    public Dictionary<string, object?> GetReplaceDict()
+    {
+        Dictionary<string, object?> item_dict = new Dictionary<string, object?>();
+        item_dict.Add("{Filename}", this.Filename);
+        item_dict.Add("{Title}", this.Title);
+        item_dict.Add("{Season}", this.Season);
+        item_dict.Add("{Episode}", this.Episode);
+        item_dict.Add("{SeriesOverview}", this.SeriesOverview);
+        item_dict.Add("{ImageURL}", this.ImageURL);
+        item_dict.Add("{ItemID}", this.ItemID);
+        item_dict.Add("{PosterPath}", this.PosterPath);
+        item_dict.Add("{Type}", this.Type);
+        item_dict.Add("{PremiereYear}", this.PremiereYear);
+        item_dict.Add("{RunTime}", this.RunTime);
+        item_dict.Add("{OfficialRating}", this.OfficialRating);
+        item_dict!.Add("{CommunityRating}", this.CommunityRating);
+
+        return item_dict;        
+    }
 }

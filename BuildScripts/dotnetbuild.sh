@@ -11,5 +11,6 @@ if [[ "${1}" == "prod" ]]; then
     cp ./Jellyfin.Plugin.Newsletters/manifest.json ./manifest.json
 else
     dotnet build
+    # dotnet publish
 fi
 exit $?
