@@ -20,15 +20,14 @@ public class JsonFileObj
     {
         Filename = string.Empty;
         Title = string.Empty;
-        // Season = string.Empty;
         Season = 0;
         Episode = 0;
-        // Episode = string.Empty;
         SeriesOverview = string.Empty;
         ImageURL = string.Empty;
         ItemID = string.Empty;
         PosterPath = string.Empty;
         Type = string.Empty;
+        PremiereYear = string.Empty;
     }
 
     public string Filename { get; set; }
@@ -52,6 +51,8 @@ public class JsonFileObj
     public string PosterPath { get; set; }
 
     public string Type { get; set; }
+
+    public string PremiereYear { get; set; }
 
     public JsonFileObj ConvertToObj(IReadOnlyList<ResultSetValue> row)
     {

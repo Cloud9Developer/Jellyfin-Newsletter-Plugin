@@ -150,39 +150,33 @@ public class Scraper
                     }
 
                     logger.Debug($"{type}: {series.Name}"); // Title
-                    logger.Debug($"Season: {season.Name}"); // Season
+                    logger.Debug($"Season: {season.Name}"); // Season Name
                     logger.Debug($"Episode Name: {episode.Name}"); // episode Name
                     logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
-
-                    // foreach (var genre in episode.Generes)
-                    // {
-                    //     logger.Info($"Genre: {genre}");
-                    // }
-                    // logger.Info("Path: " + episode.Path);
-                    // logger.Info("LocationType: " + episode.LocationType); // if this is Virtual, Path is blank
-                    // logger.Info("----");
-                    
                     logger.Debug($"Overview: {series.Overview}"); // series overview
-                    logger.Debug($"ImageInfos: {series.PrimaryImagePath}");
+                    logger.Debug($"ImageInfo: {series.PrimaryImagePath}");
                     logger.Debug($"ItemId: " + series.Id.ToString("N")); // series ItemId
-                    
+
+                    // NEW PARAMS
+                    logger.Debug($"PremiereDate: {series.PremiereDate}"); // series PremiereDate
+                    logger.Debug($"OfficialRating: " + series.OfficialRating); // TV-14, TV-PG, etc
+                    // logger.Info($"CriticRating: " + series.CriticRating);
+                    // logger.Info($"CustomRating: " + series.CustomRating);
+                    logger.Debug($"CommunityRating: " + series.CommunityRating); // 8.5, 9.2, etc
+                    logger.Debug($"RunTime: " + (int)((float)episode.RunTimeTicks / 10000 / 60000) + " minutes");
+
+
                     if (episode.LocationType.ToString() == "Virtual")
                     {
                         logger.Debug($"Location Type is: '{episode.LocationType}'.. No physical path.. Skipping...");
                         continue;
                     }
 
-                    logger.Debug($"Filepath: " + episode.Path); // Filepath, episode.Path is cleaner, but may be empty
-                }
-                catch (IndexOutOfRangeException iore)
-                {
-                    logger.Warn($"Physical location of file for could not be found.. Turn on debug mode to see more information!");
-                    logger.Debug(iore);
-                    continue;
+                    logger.Info($"Filepath: " + episode.Path); // Filepath, episode.Path is cleaner, but may be empty
                 }
                 catch (Exception e)
                 {
-                    logger.Error("Error processing your file..");
+                    logger.Error("Error processing item..");
                     logger.Error(e);
                     continue;
                 }
@@ -191,6 +185,12 @@ public class Scraper
                 currFileObj.Filename = episode.Path;
                 currFileObj.Title = series.Name;
                 currFileObj.Type = type;
+                if (series.PremiereDate is not null)
+                {
+                    currFileObj.PremiereYear = series.PremiereDate.ToString()!.Split(' ')[0].Split('/')[2]; // NEW {PremierYear}
+                    logger.Debug($"PremiereYear: {currFileObj.PremiereYear}");
+                }
+
                 if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
                     !InDatabase("CurrNewsletterData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
                     !InDatabase("ArchiveData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)))
