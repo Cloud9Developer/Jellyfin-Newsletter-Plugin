@@ -4,3 +4,4 @@ Jellyfin.Plugin.Newsletters/obj
 RELEASES
 artifacts
 Jellyfin.Plugin.Newsletters/newsletters/
+*.bak
