@@ -1,6 +1,6 @@
 */.DS_Store
-Jellyfin.Plugin.Newsletters/bin/*
-Jellyfin.Plugin.Newsletters/obj/*
+Jellyfin.Plugin.Newsletters/bin
+Jellyfin.Plugin.Newsletters/obj
 RELEASES
 artifacts
 Jellyfin.Plugin.Newsletters/newsletters/
