@@ -7,12 +7,68 @@
 						<table id="InsertHere" name="MainTable" style="margin-left: auto; margin-right: auto; border-spacing: 0 10px; padding: 0 10px;"> 
 							<tr style="text-align: center;"> 
 								<td colspan="2"> 
-									<h1 id="Title" style="font-size:3.3em;margin:10px 0 0 0;"><a href="[YOUR.JELLYFIN.SERVER]" target="_blank" style="color:#E197BC;text-decoration: none;"><img src="https://static-00.iconduck.com/assets.00/jellyfin-icon-2048x2048-tf5ztk6m.png" style="height: 1.3em;margin-bottom:-12px;"> Jellyfin Newsletter</a></h1>
+									<h1 id="Title" style="font-size:3.3em;margin:10px 0 0 0;"><a href="[YOUR.JELLYFIN.SERVER]" target="_blank" style="color:#E197BC;text-decoration: none;"><img src="https://cdn0.iconfinder.com/data/icons/google-material-design-3-0/48/ic_play_circle_filled_white_48px-512.png" style="height: 1.3em;margin-bottom:-12px;"> Jellyfin Newsletter</a></h1>
 									<h3 id="Date" style="color:#FFFFFF;margin:0px;">{Date}</h3>
 								</td> 
 							</tr>
 							<!-- Fill this in from code --> 
-							{EntryData}
+							<tr class="boxed" style="outline: 1px solid #bf7df0;border-radius: 25px;">
+								<td>
+									<table style="margin:0;padding:0;border:0;">
+										<tr style="margin:0;padding:0;border:0;">
+											<td rowspan="0" class="lefttable" style="padding-right: 20px; padding-left: 20px; padding-top: 20px; padding-bottom: 20px;"> 
+												<a href="{ServerURL}" target="_blank"><img style="width: 133px; height: 200px;" src="{ImageURL}"></a>
+											</td>
+											<td class="righttable" style="vertical-align: top; padding-right: 10px; padding-top: 10px;width:100%;"> 
+												<div id="SeriesTitle" class="text" style="color: #FFFFFF; text-align: center;">
+													<h2 style="margin-top:6px;margin-bottom:0px;"><a href="{ServerURL}" target="_blank" style="color:#87beff;text-decoration: none;">
+													{Title} 
+													</a></h2>
+												</div>
+												
+												<!-- One time create, not loop for these elements-->
+												<table>
+													<td>
+														<div id="runtime" style="color: #d190c5; font-size: small;">
+															<b>Duration:</b> <i>{RunTime} min.</i> |
+														</div>
+													</td>
+													<td>
+														<div id="communityrating" style="color: #d190c5; font-size: small;">
+															<img src="https://cdn-icons-png.flaticon.com/512/3418/3418886.png" style="height: 15px;"> 
+														</div>
+													</td>
+													<td>
+														<div id="communityrating" style="color: #d190c5; font-size: small;">
+															{CommunityRating} |
+														</div>
+													</td>
+													<td>
+														<div id="officialrating" style="color: #d190c5; font-size: small;">
+															{OfficialRating} |
+														</div>
+													</td>
+													<td>
+														<div id="premiereyear" style="color: #d190c5; font-size: small;">
+															{PremiereYear}
+														</div>
+													</td>
+												</table>
+							
+												<!--  -->
+												
+												<div class="text" style="color: #d190c5;">
+													{SeasonEpsInfo}
+												</div>
+												<hr style="border-color: #007fb1;margin-bottom:12px;width:80%;"/> 
+												<div id="Description" class="text" style="color: #FFFFFF;">
+													{SeriesOverview}
+												</div>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
 							<!-- Fill that in from code -->
 						</table> 
 					</td>
