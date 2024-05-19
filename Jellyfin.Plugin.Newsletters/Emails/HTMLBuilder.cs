@@ -149,7 +149,8 @@ public class HtmlBuilder
                         }
                     }
 
-                    builtHTMLString += tmp_entry.Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal);
+                    builtHTMLString += tmp_entry.Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
+                                                .Replace("{ServerURL}", config.Hostname, StringComparison.Ordinal);
                     completed.Add(item.Title);
                 }
             }

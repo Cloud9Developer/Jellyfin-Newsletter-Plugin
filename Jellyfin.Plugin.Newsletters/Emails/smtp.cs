@@ -97,7 +97,8 @@ public class Smtp : ControllerBase
 
                 string body = hb.GetDefaultHTMLBody();
                 string builtString = hb.BuildDataHtmlStringFromNewsletterData();
-                string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
+                // string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
+                string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
                 string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
                 finalBody = finalBody.Replace("{Date}", currDate, StringComparison.Ordinal);
 

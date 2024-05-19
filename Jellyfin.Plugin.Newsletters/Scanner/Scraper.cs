@@ -250,10 +250,10 @@ public class Scraper
                         }
                         catch (Exception e)
                         {
-                            logger.Error($"Encountered an error parsing Season Number for: {currFileObj.Filename}");
-                            logger.Error(e);
-                            logger.Debug("Setting Season number to -1");
-                            currFileObj.Season = -1;
+                            logger.Warn($"Encountered an error parsing Season Number for: {currFileObj.Filename}");
+                            logger.Debug(e);
+                            logger.Warn("Setting Season number to 0 (SPECIALS)");
+                            currFileObj.Season = 0;
                         }
                     }
                     catch (Exception e)
@@ -269,18 +269,18 @@ public class Scraper
                         db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type, PremiereYear, RunTime, OfficialRating, CommunityRating) " +
                                 "VALUES (" +
                                     SanitizeDbItem(currFileObj.Filename) +
-                                    "," + SanitizeDbItem(currFileObj.Title) +
-                                    "," + currFileObj.Season +
-                                    "," + currFileObj.Episode +
-                                    "," + SanitizeDbItem(currFileObj.SeriesOverview) +
-                                    "," + SanitizeDbItem(currFileObj.ImageURL) +
+                                    "," + SanitizeDbItem(currFileObj!.Title) +
+                                    "," + ((currFileObj?.Season is null) ? -1 : currFileObj.Season) +
+                                    "," + ((currFileObj?.Episode is null) ? -1 : currFileObj.Episode) +
+                                    "," + SanitizeDbItem(currFileObj!.SeriesOverview) +
+                                    "," + SanitizeDbItem(currFileObj!.ImageURL) +
                                     "," + SanitizeDbItem(currFileObj.ItemID) +
-                                    "," + SanitizeDbItem(currFileObj.PosterPath) +
+                                    "," + SanitizeDbItem(currFileObj!.PosterPath) +
                                     "," + SanitizeDbItem(currFileObj.Type) +
-                                    "," + SanitizeDbItem(currFileObj.PremiereYear) + 
-                                    "," + currFileObj.RunTime +
-                                    "," + SanitizeDbItem(currFileObj.OfficialRating) +
-                                    "," + currFileObj.CommunityRating +
+                                    "," + SanitizeDbItem(currFileObj!.PremiereYear) + 
+                                    "," + ((currFileObj?.RunTime is null) ? -1 : currFileObj.RunTime) +
+                                    "," + SanitizeDbItem(currFileObj!.OfficialRating) +
+                                    "," + ((currFileObj?.CommunityRating is null) ? -1 : currFileObj.CommunityRating) +
                                 ");");
                         logger.Debug("Complete!");
                     }
@@ -410,6 +410,12 @@ public class Scraper
 
     private string SanitizeDbItem(string unsanitized_string)
     {
+        // string sanitize_string = string.Empty;
+        if (unsanitized_string is null)
+        {
+            unsanitized_string = string.Empty;
+        }
+
         return "'" + unsanitized_string.Replace("'", string.Empty, StringComparison.Ordinal) + "'";
     }
 }
