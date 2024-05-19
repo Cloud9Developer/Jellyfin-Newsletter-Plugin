@@ -13,7 +13,7 @@
                 "changelog": "- Major code refactoring. - Database updates for new available Tags. - Catch all for any missed tags in newsletter output. - Alert for \"Test mail\" button. FULL CHANGELOG: https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md\n",
                 "targetAbi": "10.9.0.0",
                 "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.6.3.0/newsletters_0.6.3.0.zip",
-                "checksum": "73df09a8fe22639ae8c6e112cc0b2f70",
+                "checksum": "6d3f12680a2da13578522c987d751def",
                 "timestamp": "2024-05-19T03:41:09Z"
             },
             {
