@@ -61,4 +61,15 @@ find "${PLUGIN}" -name project.assets.json -exec rm -v '{}' ';'
 zipfile=$($JPRM --verbosity=debug plugin build "${PLUGIN}" --output="${ARTIFACT_DIR}" --version="${VERSION}") && {
     $JPRM --verbosity=debug repo add --url=${JELLYFIN_REPO_URL} "${JELLYFIN_REPO}" "${zipfile}"
 }
-exit $?
+rc=$?
+
+# echo $JELLYFIN_REPO
+# package Templates/ as well
+cd ${MY}/../${JELLYFIN_REPO}
+zip -r ${zipfile} ./Templates
+echo "----------"
+echo "Contents in ${zipfile}"
+unzip -l ${zipfile}
+sed -i "s/github.com\/Cloud9Developer\/Jellyfin-Newsletter-Plugin\/releases\/download\/newsletters/github.com\/Cloud9Developer\/Jellyfin-Newsletter-Plugin\/releases\/download\/v${VERSION}/g" manifest.json
+
+exit $rc
