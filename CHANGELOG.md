@@ -1,3 +1,6 @@
+# 0.6.4.0
+- Minor bug fix
+
 # 0.6.3.0
 - Major code refactoring.
 - Added additional data tags (see README.md)
