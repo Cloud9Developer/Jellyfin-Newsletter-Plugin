@@ -26,16 +26,16 @@
 
   <ItemGroup>
     <None Remove="Configuration\configPage.html" />
-    <None Remove="Templates\templateBody.html" />
-    <None Remove="Templates\templateEntry.html" />
+    <None Remove="Templates\template_modern_body.html" />
+    <None Remove="Templates\template_modern_entry.html" />
     <EmbeddedResource Include="Configuration\configPage.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Templates\templateBody.html">
+    <Content Include="Templates\template_modern_body.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\templateEntry.html">
+    <Content Include="Templates\template_modern_entry.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

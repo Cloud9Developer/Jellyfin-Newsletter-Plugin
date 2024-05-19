@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using MediaBrowser.Model.Plugins;
 
@@ -13,6 +14,8 @@ public class PluginConfiguration : BasePluginConfiguration
     /// </summary>
     public PluginConfiguration()
     {
+        Console.WriteLine("[NLP] :: Newsletter Plugin Starting..");
+
         // set default options here
         DebugMode = false;
 
@@ -26,59 +29,56 @@ public class PluginConfiguration : BasePluginConfiguration
         ToAddr = string.Empty;
         FromAddr = "JellyfinNewsletter@donotreply.com";
         Subject = "Jellyfin Newsletter";
-        // Body = string.Empty;
-        // {EntryData}
-        Body = @"<html>
-    <div>
-        <table style='margin-left: auto; margin-right: auto;'>
-            <tr> 
-                <td width='100%' height='100%' style='vertical-align: top; background-color: #000000;'> 
-                    <table id='InsertHere' name='MainTable' style='margin-left: auto; margin-right: auto; border-spacing: 0 5px; padding-left: 2%; padding-right: 2%; padding-bottom: 1%;'> 
-                        <tr style='text-align: center;'> 
-                            <td colspan='2'> 
-                                <span>
-                                    <h1 id='Title' style='color:#FFFFFF;'>Jellyfin Newsletter</h1>
-                                    <h3 id='Date' style='color:#FFFFFF;'>2023-03-14</h3>
-                                </span> 
-                            </td> 
-                        </tr> 
-                        <!-- Fill this in from code --> 
-                        {EntryData}
-                        <!-- Fill that in from code --> 
-                    </table> 
-                </td> 
-            </tr> 
-        </table> 
-    </div> 
-</html>";
 
-        // Entry = string.Empty;
-        // {ImageURL}
-        // {Title}
-        // {SeasonEpsInfo}
-        // {SeriesOverview}
-        Entry = @"<tr class='boxed' style='outline: thin solid #D3D3D3;'> 
-    <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> 
-        <img style='width: 200px; height: 300px;' src='{ImageURL}'> 
-    </td> 
-    <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> 
-        <p>
-            <div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'>
-                <h3>
-                    {Title} 
-                </h3>
-            </div>
-            <div class='text' style='color: #FFFFFF;'>
-                {SeasonEpsInfo}
-            </div>
-            <hr> 
-                <div id='Description' class='text' style='color: #FFFFFF;'>
-                {SeriesOverview}
-                </div> 
-            </hr>
-        </p> 
-    </td> 
-</tr>";
+        // Attempt Dynamic set of Body and Entry HTML, set empty if failure occurs
+        Body = string.Empty;
+        Entry = string.Empty;
+        
+        try
+        {
+            string[] dirs = Directory.GetDirectories(@".", "config/plugins/Jellyfin Newsletters_*.*.*.*", SearchOption.AllDirectories);
+            string pluginDir = string.Empty;
+            if (dirs.Length > 1)
+            {
+                Console.WriteLine($"[NLP] :: Found {dirs.Length} matches for plugin directory...");
+            }
+            else
+            {
+                foreach (string dir in dirs)
+                {
+                    Console.WriteLine("[NLP] :: Plugin Directory is: {0}", dir);
+                    pluginDir = dir;
+                    break;
+                }
+            }
+            
+            try
+            {
+                Body = File.ReadAllText($"{pluginDir}/Templates/template_modern_body.html");
+                Console.WriteLine("[NLP] :: Body HTML set from Template file!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[NLP] :: Failed to set default Body HTML from Template file");
+                Console.WriteLine(ex);
+            }
+
+            try
+            {
+                Entry = File.ReadAllText($"{pluginDir}/Templates/template_modern_entry.html");
+                Console.WriteLine("[NLP] :: Entry HTML set from Template file!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[NLP] :: Failed to set default Entry HTML from Template file");
+                Console.WriteLine(ex);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("[NLP] :: [ERR] Failed to locate/set html body from template file..");
+            Console.WriteLine(e);
+        }
 
         // default Scraper config
         ApiKey = string.Empty;
