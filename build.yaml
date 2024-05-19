@@ -13,4 +13,8 @@ artifacts:
   - "Jellyfin.Plugin.Newsletters.dll"
   - "SQLitePCL.pretty.dll"
 changelog: >
-  https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md
+  - Major code refactoring.
+  - Database updates for new available Tags.
+  - Catch all for any missed tags in newsletter output.
+  - Alert for "Test mail" button.
+  FULL CHANGELOG: https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md
