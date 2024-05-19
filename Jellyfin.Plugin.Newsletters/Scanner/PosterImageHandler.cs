@@ -25,9 +25,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.Newsletters.Scanner.NLDataGenerator;
+namespace Jellyfin.Plugin.Newsletters.Scanner.NLImageHandler;
 
-public class NewsletterDataGenerator
+public class PosterImageHandler
 {
     // Global Vars
     // Readonly
@@ -39,7 +39,7 @@ public class NewsletterDataGenerator
     private List<JsonFileObj> archiveSeriesList;
     // private List<string> fileList;
 
-    public NewsletterDataGenerator()
+    public PosterImageHandler()
     {
         logger = new Logger();
         db = new SQLiteDatabase();

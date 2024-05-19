@@ -2,10 +2,10 @@
 name: "Newsletters"
 guid: "60f478ab-2dd6-4ea0-af10-04d033f75979"
 imageUrl: "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/logo.png"
-version: "0.6.3"
+version: "0.6.3.0"
 targetAbi: "10.9.0.0"
 framework: "net8.0"
-overview: "Send newsletters for recently added"
+overview: "Send newsletters for recently added media"
 description: "This plugin automacially scans a users library (default every 4 hours), populates a list of recently added (not previously scanned) media, converts that data into HTML format, and sends out emails to a provided list of recipients."
 category: "General"
 owner: "jellyfin"
@@ -13,4 +13,8 @@ artifacts:
   - "Jellyfin.Plugin.Newsletters.dll"
   - "SQLitePCL.pretty.dll"
 changelog: >
-  https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md
+  - Major code refactoring.
+  - Database updates for new available Tags.
+  - Catch all for any missed tags in newsletter output.
+  - Alert for "Test mail" button.
+  FULL CHANGELOG: https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md

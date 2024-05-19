@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Jellyfin.Data.Enums;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
-using Jellyfin.Plugin.Newsletters.Scanner.NLDataGenerator;
+using Jellyfin.Plugin.Newsletters.Scanner.NLImageHandler;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Configuration;
@@ -40,7 +40,7 @@ public class Scraper
     // Non-readonly
     private int totalLibCount;
     private int currCount;
-    private NewsletterDataGenerator ng;
+    private PosterImageHandler imageHandler;
     private SQLiteDatabase db;
     private JsonFileObj jsonHelper;
     private Logger logger;
@@ -59,7 +59,7 @@ public class Scraper
 
         totalLibCount = currCount = 0;
 
-        ng = new NewsletterDataGenerator();
+        imageHandler = new PosterImageHandler();
         db = new SQLiteDatabase();
 
         logger.Debug("Setting Config Paths: ");
@@ -126,6 +126,7 @@ public class Scraper
         logger.Info($"Scanning '{type}'");
         foreach (BaseItem item in items)
         {
+            logger.Debug("---------------");
             currCount++;
             progress.Report((double)currCount / (double)totalLibCount * 100);
             if (item is not null)
@@ -148,33 +149,52 @@ public class Scraper
                         continue;
                     }
 
+                    logger.Debug($"ItemId: " + series.Id.ToString("N")); // series ItemId
                     logger.Debug($"{type}: {series.Name}"); // Title
-                    logger.Debug($"Season: {season.Name}"); // Season
+                    logger.Debug($"LocationType: " + episode.LocationType.ToString());
+                    if (episode.LocationType.ToString() == "Virtual")
+                    {
+                        logger.Debug($"No physical path.. Skipping...");
+                        continue;
+                    }
+
+                    logger.Debug($"Season: {season.Name}"); // Season Name
                     logger.Debug($"Episode Name: {episode.Name}"); // episode Name
                     logger.Debug($"Episode Number: {episode.IndexNumber}"); // episode Name
-                    logger.Debug($"Series Overview: {series.Overview}"); // series overview
-                    logger.Debug($"ImageInfos: {series.PrimaryImagePath}");
-                    logger.Debug(series.Id.ToString("N")); // series ItemId
-                    logger.Debug(episode.PhysicalLocations[0]); // Filepath
-                    logger.Debug("---------------");
-                }
-                catch (IndexOutOfRangeException iore)
-                {
-                    logger.Error($"Physical location of file could not be found.. Turn on debug mode to see more information!");
-                    logger.Error(iore);
-                    continue;
+                    logger.Debug($"Overview: {series.Overview}"); // series overview
+                    logger.Debug($"ImageInfo: {series.PrimaryImagePath}");
+                    logger.Debug($"Filepath: " + episode.Path); // Filepath, episode.Path is cleaner, but may be empty
+
+                    // NEW PARAMS
+                    logger.Debug($"PremiereDate: {series.PremiereDate}"); // series PremiereDate
+                    logger.Debug($"OfficialRating: " + series.OfficialRating); // TV-14, TV-PG, etc
+                    // logger.Info($"CriticRating: " + series.CriticRating);
+                    // logger.Info($"CustomRating: " + series.CustomRating);
+                    logger.Debug($"CommunityRating: " + series.CommunityRating); // 8.5, 9.2, etc
+                    logger.Debug($"RunTime: " + (int)((float)episode.RunTimeTicks! / 10000 / 60000) + " minutes");
                 }
                 catch (Exception e)
                 {
-                    logger.Error("Error processing your file..");
+                    logger.Error("Error processing item..");
                     logger.Error(e);
                     continue;
                 }
 
                 JsonFileObj currFileObj = new JsonFileObj();
-                currFileObj.Filename = episode.PhysicalLocations[0];
+                currFileObj.Filename = episode.Path;
                 currFileObj.Title = series.Name;
                 currFileObj.Type = type;
+
+                if (series.PremiereDate is not null)
+                {
+                    currFileObj.PremiereYear = series.PremiereDate.ToString()!.Split(' ')[0].Split('/')[2]; // NEW {PremierYear}
+                    logger.Debug($"PremiereYear: {currFileObj.PremiereYear}");
+                }
+
+                currFileObj.RunTime = (int)((float)episode.RunTimeTicks / 10000 / 60000);
+                currFileObj.OfficialRating = series.OfficialRating;
+                currFileObj.CommunityRating = series.CommunityRating;
+
                 if (!InDatabase("CurrRunData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
                     !InDatabase("CurrNewsletterData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)) && 
                     !InDatabase("ArchiveData", currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal)))
@@ -230,10 +250,10 @@ public class Scraper
                         }
                         catch (Exception e)
                         {
-                            logger.Error($"Encountered an error parsing Season Number for: {currFileObj.Filename}");
-                            logger.Error(e);
-                            logger.Debug("Setting Season number to -1");
-                            currFileObj.Season = -1;
+                            logger.Warn($"Encountered an error parsing Season Number for: {currFileObj.Filename}");
+                            logger.Debug(e);
+                            logger.Warn("Setting Season number to 0 (SPECIALS)");
+                            currFileObj.Season = 0;
                         }
                     }
                     catch (Exception e)
@@ -246,17 +266,21 @@ public class Scraper
                         // save to "database" : Table currRunScanList
                         logger.Debug("Adding to CurrRunData DB...");
                         currFileObj = NoNull(currFileObj);
-                        db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type) " +
+                        db.ExecuteSQL("INSERT INTO CurrRunData (Filename, Title, Season, Episode, SeriesOverview, ImageURL, ItemID, PosterPath, Type, PremiereYear, RunTime, OfficialRating, CommunityRating) " +
                                 "VALUES (" +
-                                "'" + currFileObj.Filename.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.Title.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                currFileObj.Season + "," +
-                                currFileObj.Episode + "," +
-                                "'" + currFileObj.SeriesOverview.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.ImageURL.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.ItemID.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.PosterPath.Replace("'", string.Empty, StringComparison.Ordinal) + "'," +
-                                "'" + currFileObj.Type.Replace("'", string.Empty, StringComparison.Ordinal) + "'" +
+                                    SanitizeDbItem(currFileObj.Filename) +
+                                    "," + SanitizeDbItem(currFileObj!.Title) +
+                                    "," + ((currFileObj?.Season is null) ? -1 : currFileObj.Season) +
+                                    "," + ((currFileObj?.Episode is null) ? -1 : currFileObj.Episode) +
+                                    "," + SanitizeDbItem(currFileObj!.SeriesOverview) +
+                                    "," + SanitizeDbItem(currFileObj!.ImageURL) +
+                                    "," + SanitizeDbItem(currFileObj.ItemID) +
+                                    "," + SanitizeDbItem(currFileObj!.PosterPath) +
+                                    "," + SanitizeDbItem(currFileObj.Type) +
+                                    "," + SanitizeDbItem(currFileObj!.PremiereYear) + 
+                                    "," + ((currFileObj?.RunTime is null) ? -1 : currFileObj.RunTime) +
+                                    "," + SanitizeDbItem(currFileObj!.OfficialRating) +
+                                    "," + ((currFileObj?.CommunityRating is null) ? -1 : currFileObj.CommunityRating) +
                                 ");");
                         logger.Debug("Complete!");
                     }
@@ -341,6 +365,7 @@ public class Scraper
         }
 
         // check if URL for series already exists CurrNewsletterData table
+        logger.Debug("Checking if exists in CurrNewsletterData");
         foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
         {
             if (row is not null)
@@ -372,7 +397,7 @@ public class Scraper
         logger.Debug(currObj.ItemID);
         logger.Debug(currObj.PosterPath);
         // return string.Empty;
-        return ng.FetchImagePoster(currObj);
+        return imageHandler.FetchImagePoster(currObj);
     }
 
     private void CopyCurrRunDataToNewsletterData()
@@ -381,5 +406,16 @@ public class Scraper
         // -> clear CurrData table
         db.ExecuteSQL("INSERT INTO CurrNewsletterData SELECT * FROM CurrRunData;");
         db.ExecuteSQL("DELETE FROM CurrRunData;");
+    }
+
+    private string SanitizeDbItem(string unsanitized_string)
+    {
+        // string sanitize_string = string.Empty;
+        if (unsanitized_string is null)
+        {
+            unsanitized_string = string.Empty;
+        }
+
+        return "'" + unsanitized_string.Replace("'", string.Empty, StringComparison.Ordinal) + "'";
     }
 }

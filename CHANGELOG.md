@@ -1,3 +1,13 @@
+# 0.6.3.0
+- Major code refactoring.
+- Added additional data tags (see README.md)
+- Database updates for new available Tags.
+- Catch all for any missed tags in newsletter output.
+- Alert for "Test mail" button.
+- Better error logging/handling.
+- Added template files to Plugin directory
+    - Plugin now pulls from these files as default values instead of hardcoded values in codebase
+
 # 0.6.2.1
 - Minor security fix
 - Cleaned codebase for easier readability

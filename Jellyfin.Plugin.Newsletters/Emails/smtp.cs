@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using System.Net;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.LOGGER;
@@ -97,14 +98,16 @@ public class Smtp : ControllerBase
 
                 string body = hb.GetDefaultHTMLBody();
                 string builtString = hb.BuildDataHtmlStringFromNewsletterData();
-                string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
+                // string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
+                // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
+                builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
                 string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
-                finalBody = finalBody.Replace("{Date}", currDate, StringComparison.Ordinal);
+                builtString = builtString.Replace("{Date}", currDate, StringComparison.Ordinal);
 
                 mail.From = new MailAddress(emailFromAddress, emailFromAddress);
                 mail.To.Clear();
                 mail.Subject = subject;
-                mail.Body = finalBody;
+                mail.Body = Regex.Replace(builtString, "{[A-za-z]*}", " "); // Final cleanup
                 mail.IsBodyHtml = true;
 
                 foreach (string email in emailToAddress.Split(','))
@@ -118,7 +121,7 @@ public class Smtp : ControllerBase
                 smtp.EnableSsl = enableSSL;
                 smtp.Send(mail);
 
-                hb.CleanUp(finalBody);
+                hb.CleanUp(builtString);
             }
             else
             {
@@ -151,10 +154,5 @@ public class Smtp : ControllerBase
 
         db.CloseConnection();
         return false;
-    }
-
-    private void WriteToArchive()
-    {
-        string test = string.Empty;
     }
 }

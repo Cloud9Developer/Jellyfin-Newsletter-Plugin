@@ -33,7 +33,7 @@ public class HtmlBuilder
     private readonly PluginConfiguration config;
     private readonly string newslettersDir;
     private readonly string newsletterHTMLFile;
-    // private readonly string newsletterDataFile;
+    // private readonly string[] itemJsonKeys = 
 
     private string emailBody;
     private Logger logger;
@@ -77,13 +77,43 @@ public class HtmlBuilder
         return emailBody;
     }
 
-    // public string TemplateReplace(String htmlObj)
-    // {
-    //     return htmlObj.Replace("{ImageURL}", item.ImageURL, StringComparison.Ordinal)
-    //                   .Replace("{Title}", item.Title, StringComparison.Ordinal)
-    //                   .Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
-    //                   .Replace("{SeriesOverview}", item.SeriesOverview, StringComparison.Ordinal);
-    // }
+    public string TemplateReplace(string htmlObj, string replaceKey, object replaceValue, bool finalPass = false)
+    {
+        logger.Debug("Replacing {} params:\n " + htmlObj);
+        if (replaceValue is null)
+        {
+            logger.Debug($"Replace string is null.. Nothing to replace");
+            return htmlObj;
+        }
+
+        if (replaceKey == "{RunTime}" && (int)replaceValue == 0)
+        {
+            logger.Debug($"{replaceKey} == {replaceValue}");
+            logger.Debug("Skipping replace..");
+            return htmlObj;
+        }
+
+        logger.Debug($"Replace Value {replaceKey} with " + replaceValue);
+
+        // Dictionary<string, object> html_params = new Dictionary<string, object>();
+        // html_params.Add("{Date}", DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
+        // html_params.Add(replaceKey, replaceValue);
+
+        htmlObj = htmlObj.Replace(replaceKey, replaceValue.ToString(), StringComparison.Ordinal);
+        // logger.Debug("HERE\n " + htmlObj)
+
+        // foreach (KeyValuePair<string, object> param in html_params)
+        // {
+        //     if (param.Value is not null)
+        //     {
+        //         htmlObj = htmlObj.Replace(param.Key, param.Value.ToString(), StringComparison.Ordinal);
+        //         // logger.Debug("HERE\n " + htmlObj)
+        //     }
+        // }
+        
+        logger.Debug("New HTML OBJ: \n" + htmlObj);
+        return htmlObj;
+    }
 
     public string BuildDataHtmlStringFromNewsletterData()
     {
@@ -115,12 +145,20 @@ public class HtmlBuilder
                         seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
                     }
 
-                    // builtHTMLString += "<tr class='boxed' style='outline: thin solid #D3D3D3;'> <td class='lefttable' style='padding-right: 5%; padding-left: 2%; padding-top: 2%; padding-bottom: 2%;'> <img style='width: 200px; height: 300px;' src='" + item.ImageURL + "'> </td> <td class='righttable' style='vertical-align: top; padding-left: 5%; padding-right: 2%; padding-top: 2%; padding-bottom: 2%;'> <p><div id='SeriesTitle' class='text' style='color: #FFFFFF; text-align: center;'><h3>" + item.Title + "</h3></div>" + seaEpsHtml + " <hr> <div id='Description' class='text' style='color: #FFFFFF;'>" + item.SeriesOverview + "</div> </p> </td> </tr>";
-                    // return body.Replace("{EntryData}", nlData, StringComparison.Ordinal);
-                    builtHTMLString += config.Entry.Replace("{ImageURL}", item.ImageURL, StringComparison.Ordinal)
-                                                   .Replace("{Title}", item.Title, StringComparison.Ordinal)
-                                                   .Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
-                                                   .Replace("{SeriesOverview}", item.SeriesOverview, StringComparison.Ordinal);
+                    var tmp_entry = config.Entry;
+                    // logger.Debug("TESTING");
+                    // logger.Debug(item.GetDict()["Filename"]);
+
+                    foreach (KeyValuePair<string, object?> ele in item.GetReplaceDict())
+                    {
+                        if (ele.Value is not null)
+                        {
+                            tmp_entry = this.TemplateReplace(tmp_entry, ele.Key, ele.Value);
+                        }
+                    }
+
+                    builtHTMLString += tmp_entry.Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
+                                                .Replace("{ServerURL}", config.Hostname, StringComparison.Ordinal);
                     completed.Add(item.Title);
                 }
             }

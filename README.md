@@ -123,6 +123,7 @@ For defaults, see `Jellyfin.Plugin.Newsletters/Templates/`
 - Your servername/hostname/DNS entry (and Port if applicable) to allow users to access images hosted locally on your server.
     - i.e. https://myDNSentry.com:8096 
         - **NOTE:** do not put a trailing '/' at the end of the url
+- This is now used as a possible data tag! (even if you don't use self-hosting, set this if you want the `{ServerURL}` to work)
 
 ## SMTP Config
 
@@ -146,6 +147,36 @@ For defaults, see `Jellyfin.Plugin.Newsletters/Templates/`
 Please leave a ticket in the Issues on this GitHub page and I will get to it as soon as I can. 
 Please be patient with me, since I did this on the side of my normal job. But I will try to fix any issues that come up to the best of my ability and as fast as I can!
 
+# Available HTML Data Tags
+Some of these may not interest that average user (if anyone), but I figured I would have any element in the Newsletters.db be available for use! <br>
+**NOTE:** *Examples of most tags can be found in the default Templates (template_modern_body.html AND template_modern_entry.html)*
+
+## Required Tags
+```
+- {EntryData} - Needs to be inside of the 'Body' html
+```
+## Recommended Tags
+```
+- {Date} - Auto-generated date of Newsletter email generation
+- {SeasonEpsInfo} - This tag is the Plugin-generated Season/Episode data
+- {Title} - Title of Movie/Series
+- {SeriesOverview} - Movie/Series overview
+- {ImageURL} - Poster image for the Movie/Series
+- {Type} - Item type (Movie or Series)
+- {PremiereYear} - Year Movie/Series was Premiered
+- {RunTime} - Movie/Episode Duration (for Series, gives first found duration. Will fix for only single episode or average in future update) 
+- {OfficialRating} - TV-PG, TV-13, TV-14, etc.
+- {CommunityRating} - Numerical rating stored in Jellyfin's metadata
+```
+## Non-Recommended Tags
+These tags are ***available*** but not recommended to use. Untested behavior using these.
+```
+- {Filename} - File path of the Movie/Episode (NOT RECOMMENDED TO USE)
+- {Season} - Season number of Episode (NOT RECOMMENDED TO USE)
+- {Episode} - Episode number (NOT RECOMMENDED TO USE)
+- {ItemID} - Jellyfin's assigned ItemID (NOT RECOMMENDED TO USE)
+- {PosterPath} - Jellyfin's assigned Poster Path (NOT RECOMMENDED TO USE)
+```
 ## Known Issues
 See 'issues' tab in GitHub with the lable 'bug'
 
