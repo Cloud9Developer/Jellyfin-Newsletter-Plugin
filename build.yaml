@@ -2,7 +2,7 @@
 name: "Newsletters"
 guid: "60f478ab-2dd6-4ea0-af10-04d033f75979"
 imageUrl: "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/logo.png"
-version: "0.6.3.0"
+version: "0.6.4.0"
 targetAbi: "10.9.0.0"
 framework: "net8.0"
 overview: "Send newsletters for recently added media"
@@ -17,4 +17,5 @@ changelog: >
   - Database updates for new available Tags.
   - Catch all for any missed tags in newsletter output.
   - Alert for "Test mail" button.
+  - Minor bug fix post 0.6.3.0 release
   FULL CHANGELOG: https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md
