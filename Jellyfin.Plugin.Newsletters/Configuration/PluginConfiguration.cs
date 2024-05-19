@@ -36,7 +36,7 @@ public class PluginConfiguration : BasePluginConfiguration
         
         try
         {
-            string[] dirs = Directory.GetDirectories(@".", "config/plugins/Jellyfin Newsletters_*.*.*.*", SearchOption.AllDirectories);
+            string[] dirs = Directory.GetDirectories(@".", "config/plugins/Newsletters_*.*.*.*", SearchOption.AllDirectories);
             string pluginDir = string.Empty;
             if (dirs.Length > 1)
             {
