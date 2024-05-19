@@ -66,6 +66,7 @@ rc=$?
 # echo $JELLYFIN_REPO
 # package Templates/ as well
 cd ${MY}/../${JELLYFIN_REPO}
+zipfile="./newsletters/newsletters_${VERSION}.zip"
 zip -r ${zipfile} ./Templates
 echo "----------"
 echo "Contents in ${zipfile}"
