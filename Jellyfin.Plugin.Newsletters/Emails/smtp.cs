@@ -101,8 +101,20 @@ public class Smtp : ControllerBase
                 // string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
                 // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
                 builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
-                string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                string currDate = DateTime.Today.ToString(System.Globalization.CultureInfo.CurrentCulture);
+                string currDay = DateTime.Today.ToString("dd", System.Globalization.CultureInfo.InvariantCulture);
+                string currWeekday = DateTime.Today.ToString("dddd", System.Globalization.CultureInfo.InvariantCulture);
+                string currMonth = DateTime.Today.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture);
+                string currMon = DateTime.Today.ToString("MMM", System.Globalization.CultureInfo.InvariantCulture);
+                string currMonthNum = DateTime.Today.ToString("MM", System.Globalization.CultureInfo.InvariantCulture);
+                string currYear = DateTime.Today.ToString("yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 builtString = builtString.Replace("{Date}", currDate, StringComparison.Ordinal);
+                builtString.Replace("{Day}", currDay, StringComparison.Ordinal);
+                builtString.Replace("{Weekday}", currWeekday, StringComparison.Ordinal);
+                builtString.Replace("{Month}", currMonth, StringComparison.Ordinal);
+                builtString.Replace("{Mon}", currMon, StringComparison.Ordinal);
+                builtString.Replace("{Month_Num}", currMonthNum, StringComparison.Ordinal);
+                builtString.Replace("{Year}", currYear, StringComparison.Ordinal);
 
                 mail.From = new MailAddress(emailFromAddress, emailFromAddress);
                 mail.To.Clear();
