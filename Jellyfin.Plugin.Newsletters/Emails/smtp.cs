@@ -101,8 +101,23 @@ public class Smtp : ControllerBase
                 // string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
                 // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
                 builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
-                string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
-                builtString = builtString.Replace("{Date}", currDate, StringComparison.Ordinal);
+                
+                Dictionary<string, string> dateFormats = new Dictionary<string, string>
+                {
+                    { "{Date}", "d" },          // Short date format based on current culture
+                    { "{Day}", "dd" },          // Day of the month (two digits)
+                    { "{Weekday}", "dddd" },    // Full weekday name
+                    { "{Month}", "MMMM" },      // Full month name
+                    { "{Mon}", "MMM" },         // Abbreviated month name (three letters)
+                    { "{Month_Num}", "MM" },    // Month number (two digits)
+                    { "{Year}", "yyyy" }        // Four-digit year
+                };
+                foreach (var kvp in dateFormats)
+                {
+                    string format = kvp.Value;
+                    string formattedDate = DateTime.Today.ToString(format, System.Globalization.CultureInfo.CurrentCulture);
+                    builtString = builtString.Replace(kvp.Key, formattedDate, StringComparison.Ordinal);
+                }
 
                 mail.From = new MailAddress(emailFromAddress, emailFromAddress);
                 mail.To.Clear();
