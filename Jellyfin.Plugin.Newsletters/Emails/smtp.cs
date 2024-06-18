@@ -101,20 +101,23 @@ public class Smtp : ControllerBase
                 // string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
                 // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
                 builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
-                string currDate = DateTime.Today.ToString(System.Globalization.CultureInfo.CurrentCulture);
-                string currDay = DateTime.Today.ToString("dd", System.Globalization.CultureInfo.InvariantCulture);
-                string currWeekday = DateTime.Today.ToString("dddd", System.Globalization.CultureInfo.InvariantCulture);
-                string currMonth = DateTime.Today.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture);
-                string currMon = DateTime.Today.ToString("MMM", System.Globalization.CultureInfo.InvariantCulture);
-                string currMonthNum = DateTime.Today.ToString("MM", System.Globalization.CultureInfo.InvariantCulture);
-                string currYear = DateTime.Today.ToString("yyyy", System.Globalization.CultureInfo.InvariantCulture);
-                builtString = builtString.Replace("{Date}", currDate, StringComparison.Ordinal);
-                builtString.Replace("{Day}", currDay, StringComparison.Ordinal);
-                builtString.Replace("{Weekday}", currWeekday, StringComparison.Ordinal);
-                builtString.Replace("{Month}", currMonth, StringComparison.Ordinal);
-                builtString.Replace("{Mon}", currMon, StringComparison.Ordinal);
-                builtString.Replace("{Month_Num}", currMonthNum, StringComparison.Ordinal);
-                builtString.Replace("{Year}", currYear, StringComparison.Ordinal);
+                
+                Dictionary<string, string> dateFormats = new Dictionary<string, string>
+                {
+                    { "{Date}", "d" },          // Short date format based on current culture
+                    { "{Day}", "dd" },          // Day of the month (two digits)
+                    { "{Weekday}", "dddd" },    // Full weekday name
+                    { "{Month}", "MMMM" },      // Full month name
+                    { "{Mon}", "MMM" },         // Abbreviated month name (three letters)
+                    { "{Month_Num}", "MM" },    // Month number (two digits)
+                    { "{Year}", "yyyy" }        // Four-digit year
+                };
+                foreach (var kvp in dateFormats)
+                {
+                    string format = kvp.Value;
+                    string formattedDate = DateTime.Today.ToString(format, System.Globalization.CultureInfo.CurrentCulture);
+                    builtString = builtString.Replace(kvp.Key, formattedDate, StringComparison.Ordinal);
+                }
 
                 mail.From = new MailAddress(emailFromAddress, emailFromAddress);
                 mail.To.Clear();
