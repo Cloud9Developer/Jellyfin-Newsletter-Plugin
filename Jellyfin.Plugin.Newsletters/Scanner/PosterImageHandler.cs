@@ -60,6 +60,9 @@ public class PosterImageHandler
             case "JfHosting":
                 return $"{config.Hostname}/Items/{item.ItemID}/Images/Primary";
                 break;
+            case "Embedded":
+                return "data:image/jpeg;base64, " + Convert.ToBase64String(File.ReadAllBytes(item.PosterPath));
+                break;
             default:
                 return "Something Went Wrong";
                 break;
