@@ -30,6 +30,10 @@ public class PluginConfiguration : BasePluginConfiguration
         FromAddr = "JellyfinNewsletter@donotreply.com";
         Subject = "Jellyfin Newsletter";
 
+        // default Discord Webhook Details
+        DiscordWebhookURL = string.Empty;
+        DiscordWebhookName = "Jellyfin Newsletter";
+
         // Attempt Dynamic set of Body and Entry HTML, set empty if failure occurs
         Body = string.Empty;
         Entry = string.Empty;
@@ -160,6 +164,20 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string Entry { get; set; }
+
+    // -----------------------------------
+
+    // Discord Webhook Details
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DiscordWebhookURL { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DiscordWebhookName { get; set; }
 
     // -----------------------------------
 
