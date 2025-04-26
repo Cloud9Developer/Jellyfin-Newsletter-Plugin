@@ -4,17 +4,19 @@ using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using Jellyfin.Plugin.Newsletters.Clients.CLIENT;
+using Jellyfin.Plugin.Newsletters.Clients.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.Configuration;
-using Jellyfin.Plugin.Newsletters.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Api;
+using MediaBrowser.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // using System.Net.NetworkCredential;
 
-namespace Jellyfin.Plugin.Newsletters.Emails.EMAIL;
+namespace Jellyfin.Plugin.Newsletters.Clients.Emails.EMAIL;
 
 /// <summary>
 /// Interaction logic for SendMail.xaml.
@@ -23,19 +25,9 @@ namespace Jellyfin.Plugin.Newsletters.Emails.EMAIL;
 [Authorize(Policy = Policies.RequiresElevation)]
 [ApiController]
 [Route("Smtp")]
-public class Smtp : ControllerBase
+public class Smtp : Client, IClient
 {
-    private readonly PluginConfiguration config;
-    // private readonly string newsletterDataFile;
-    private SQLiteDatabase db;
-    private Logger logger;
-
-    public Smtp()
-    {
-        db = new SQLiteDatabase();
-        logger = new Logger();
-        config = Plugin.Instance!.Configuration;
-    }
+    public Smtp(IServerApplicationHost applicationHost) : base(applicationHost) {}
 
     [HttpPost("SendTestMail")]
     public void SendTestMail()
@@ -125,7 +117,7 @@ public class Smtp : ControllerBase
             }
             else
             {
-                logger.Info("There is no Newsletter data.. Have I scanned or sent out a newsletter recently?");
+                logger.Info("There is no Newsletter data.. Have I scanned or sent out an email newsletter recently?");
             }
         }
         catch (Exception e)
@@ -138,21 +130,8 @@ public class Smtp : ControllerBase
         }
     }
 
-    private bool NewsletterDbIsPopulated()
+    public void Send()
     {
-        foreach (var row in db.Query("SELECT COUNT(*) FROM CurrNewsletterData;"))
-        {
-            if (row is not null)
-            {
-                if (int.Parse(row[0].ToString(), CultureInfo.CurrentCulture) > 0)
-                {
-                    db.CloseConnection();
-                    return true;
-                }
-            }
-        }
-
-        db.CloseConnection();
-        return false;
+        SendEmail();
     }
 }

@@ -4,29 +4,40 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Jellyfin.Plugin.Newsletters.Discord.CLIENT;
+// using ICU4N.Logging;
+using Jellyfin.Plugin.Newsletters.Clients.CLIENT;
+using Jellyfin.Plugin.Newsletters.LOGGER;
+using MediaBrowser.Controller;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.Tasks;
+
 
 namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
 {
     /// <summary>
     /// Class RefreshMediaLibraryTask.
     /// </summary>
-    public class DiscordNewsletterTask : IScheduledTask
+    public class NewsletterTask : IScheduledTask
     {
-        /// <inheritdoc />
-        public string Name => "Discord Newsletter";
+        private readonly IServerApplicationHost _applicationHost;
+
+        public NewsletterTask(IServerApplicationHost applicationHost)
+        {
+            _applicationHost = applicationHost;
+        }
 
         /// <inheritdoc />
-        public string Description => "Discord Newsletters";
+        public string Name => "Newsletter";
+
+        /// <inheritdoc />
+        public string Description => "Send Newsletters to all the specified hooks in plugin";
 
         /// <inheritdoc />
         public string Category => "Newsletters";
 
         /// <inheritdoc />
-        public string Key => "DiscordNewsletters";
+        public string Key => "Newsletters";
 
         /// <summary>
         /// Creates the triggers that define when the task will run.
@@ -42,15 +53,17 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
         }
 
         /// <inheritdoc />
-        public async Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
+        public Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             progress.Report(0);
+            
+            // Call the Notify/Send for each client
+            Client client = new Client(_applicationHost);
+            client.NotifyAll();
 
-            DiscordClient client = new DiscordClient();
-            await client.SendDiscordMessage().ConfigureAwait(false);
             progress.Report(100);
-            return;
+            return Task.CompletedTask;
         }
     }
 }
