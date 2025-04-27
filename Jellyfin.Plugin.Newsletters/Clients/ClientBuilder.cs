@@ -28,28 +28,28 @@ namespace Jellyfin.Plugin.Newsletters.Clients.CLIENTBuilder;
 
 public class ClientBuilder
 {
-    // Global Vars
-    // Readonly
-    protected readonly PluginConfiguration config;
-
-    protected Logger logger;
-    protected SQLiteDatabase db;
-    protected JsonFileObj jsonHelper;
-
     public ClientBuilder()
     {
-        logger = new Logger();
-        jsonHelper = new JsonFileObj();
-        db = new SQLiteDatabase();
-        config = Plugin.Instance!.Configuration;
+        Logger = new Logger();
+        JsonHelper = new JsonFileObj();
+        Db = new SQLiteDatabase();
+        Config = Plugin.Instance!.Configuration;
     }
+
+    protected PluginConfiguration Config { get; }
+
+    protected SQLiteDatabase Db { get; set; }
+
+    protected Logger Logger { get; set; }
+
+    protected JsonFileObj JsonHelper { get; set; }
 
     protected List<NlDetailsJson> ParseSeriesInfo(JsonFileObj currObj)
     {
         List<NlDetailsJson> compiledList = new List<NlDetailsJson>();
         List<NlDetailsJson> finalList = new List<NlDetailsJson>();
 
-        foreach (var row in db.Query("SELECT * FROM CurrNewsletterData WHERE Title='" + currObj.Title + "';"))
+        foreach (var row in Db.Query("SELECT * FROM CurrNewsletterData WHERE Title='" + currObj.Title + "';"))
         {
             if (row is not null)
             {
@@ -63,7 +63,7 @@ public class ClientBuilder
                     Episode = itemObj.Episode
                 };
 
-                logger.Debug("tempVar.Season: " + tempVar.Season + " : tempVar.Episode: " + tempVar.Episode);
+                Logger.Debug("tempVar.Season: " + tempVar.Season + " : tempVar.Episode: " + tempVar.Episode);
                 compiledList.Add(tempVar);
             }
         }
@@ -77,8 +77,8 @@ public class ClientBuilder
         int count = 1;
         foreach (NlDetailsJson item in SortListBySeason(SortListByEpisode(compiledList)))
         {
-            logger.Debug("After Sort in foreach: Season::" + item.Season + "; Episode::" + item.Episode);
-            logger.Debug("Count/list_len: " + count + "/" + list_len);
+            Logger.Debug("After Sort in foreach: Season::" + item.Season + "; Episode::" + item.Episode);
+            Logger.Debug("Count/list_len: " + count + "/" + list_len);
 
             NlDetailsJson CopyJsonFromExisting(NlDetailsJson obj)
             {
@@ -90,7 +90,7 @@ public class ClientBuilder
 
             void AddNewSeason()
             {
-                // logger.Debug("AddNewSeason()");
+                // Logger.Debug("AddNewSeason()");
                 currSeriesDetailsObj.Season = currSeason = item.Season;
                 newSeason = false;
                 tempEpsList.Add(item.Episode);
@@ -98,19 +98,19 @@ public class ClientBuilder
 
             void AddCurrentSeason()
             {
-                // logger.Debug("AddCurrentSeason()");
-                logger.Debug("Seasons Match " + currSeason + "::" + item.Season);
+                // Logger.Debug("AddCurrentSeason()");
+                Logger.Debug("Seasons Match " + currSeason + "::" + item.Season);
                 tempEpsList.Add(item.Episode);
             }
 
             void EndOfSeason()
             {
                 // process season, them increment
-                logger.Debug("EndOfSeason()");
-                logger.Debug($"tempEpsList Size: {tempEpsList.Count}");
+                Logger.Debug("EndOfSeason()");
+                Logger.Debug($"tempEpsList Size: {tempEpsList.Count}");
                 if (tempEpsList.Count != 0)
                 {
-                    logger.Debug("tempEpsList is populated");
+                    Logger.Debug("tempEpsList is populated");
                     tempEpsList.Sort();
                     if (IsIncremental(tempEpsList))
                     {
@@ -128,9 +128,9 @@ public class ClientBuilder
 
                         bool IsNext(int prev, int curr)
                         {
-                            logger.Debug("Checking Prev and Curr..");
-                            logger.Debug($"prev: {prev} :: curr: {curr}");
-                            logger.Debug(prev + 1);
+                            Logger.Debug("Checking Prev and Curr..");
+                            Logger.Debug($"prev: {prev} :: curr: {curr}");
+                            Logger.Debug(prev + 1);
                             if (curr == prev + 1)
                             {
                                 return true;
@@ -155,13 +155,13 @@ public class ClientBuilder
 
                         foreach (int ep in tempEpsList)
                         {
-                            logger.Debug("-------------------");
-                            logger.Debug($"FOREACH firstRangeEp :: prevEp :: ep = {firstRangeEp} :: {prevEp} :: {ep} ");
-                            logger.Debug(ep == tempEpsList.Last());
+                            Logger.Debug("-------------------");
+                            Logger.Debug($"FOREACH firstRangeEp :: prevEp :: ep = {firstRangeEp} :: {prevEp} :: {ep} ");
+                            Logger.Debug(ep == tempEpsList.Last());
                             // if first passthrough
                             if (firstRangeEp == -1)
                             {
-                                logger.Debug("First pass of episode list");
+                                Logger.Debug("First pass of episode list");
                                 firstRangeEp = prevEp = ep;
                                 continue;
                             }
@@ -169,19 +169,19 @@ public class ClientBuilder
                             // If incremental
                             if (IsNext(prevEp, ep) && (ep != tempEpsList.Last()))
                             {
-                                logger.Debug("Is Next and Isn't last");
+                                Logger.Debug("Is Next and Isn't last");
                                 prevEp = ep;
                                 continue;
                             }
                             else if (IsNext(prevEp, ep) && (ep == tempEpsList.Last()))
                             {
-                                logger.Debug("Is Next and Is last");
+                                Logger.Debug("Is Next and Is last");
                                 prevEp = ep;
                                 ProcessEpString(firstRangeEp, prevEp);
                             }
                             else if (!IsNext(prevEp, ep) && (ep == tempEpsList.Last()))
                             {
-                                logger.Debug("Isn't Next and Is last");
+                                Logger.Debug("Isn't Next and Is last");
                                 // process previous
                                 ProcessEpString(firstRangeEp, prevEp);
                                 // process last episode
@@ -190,18 +190,18 @@ public class ClientBuilder
                             }
                             else
                             {
-                                logger.Debug("Isn't Next and Isn't last");
+                                Logger.Debug("Isn't Next and Isn't last");
                                 ProcessEpString(firstRangeEp, prevEp);
                                 firstRangeEp = prevEp = ep;
                             }
                         }
 
                         // better numbering here
-                        logger.Debug($"epList: {epList}");
+                        Logger.Debug($"epList: {epList}");
                         currSeriesDetailsObj.EpisodeRange = epList.TrimEnd(',');
                     }
 
-                    logger.Debug("Adding to finalListObj: " + JsonConvert.SerializeObject(currSeriesDetailsObj));
+                    Logger.Debug("Adding to finalListObj: " + JsonConvert.SerializeObject(currSeriesDetailsObj));
                     // finalList.Add(currSeriesDetailsObj);
                     finalList.Add(CopyJsonFromExisting(currSeriesDetailsObj));
 
@@ -215,7 +215,7 @@ public class ClientBuilder
                 }
             }
 
-            logger.Debug("CurrItem Season/Episode number: " + item.Season + "/" + item.Episode);
+            Logger.Debug("CurrItem Season/Episode number: " + item.Season + "/" + item.Episode);
             if (newSeason)
             {
                 AddNewSeason();
@@ -246,11 +246,11 @@ public class ClientBuilder
             count++;
         }
 
-        logger.Debug("FinalList Length: " + finalList.Count);
+        Logger.Debug("FinalList Length: " + finalList.Count);
 
         foreach (NlDetailsJson item in finalList)
         {
-            logger.Debug("FinalListObjs: " + JsonConvert.SerializeObject(item));
+            Logger.Debug("FinalListObjs: " + JsonConvert.SerializeObject(item));
         }
 
         return finalList;
@@ -276,4 +276,3 @@ public class ClientBuilder
         return body.Replace("{EntryData}", nlData, StringComparison.Ordinal);
     }
 }
-

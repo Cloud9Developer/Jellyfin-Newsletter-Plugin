@@ -7,8 +7,8 @@ using Jellyfin.Plugin.Newsletters.Clients.Emails.EMAIL;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
-using Microsoft.AspNetCore.Mvc;
 using MediaBrowser.Controller;
+using Microsoft.AspNetCore.Mvc;
 
 // using System.Net.NetworkCredential;
 
@@ -16,56 +16,59 @@ namespace Jellyfin.Plugin.Newsletters.Clients.CLIENT;
 
 public class Client : ControllerBase
 {
-    protected readonly IServerApplicationHost _applicationHost;
-    protected readonly PluginConfiguration config;
-    protected SQLiteDatabase db;
-    protected Logger logger;
-
     public Client(IServerApplicationHost applicationHost)
     {
-        db = new SQLiteDatabase();
-        logger = new Logger();
-        config = Plugin.Instance!.Configuration;
-        _applicationHost = applicationHost;
+        Db = new SQLiteDatabase();
+        Logger = new Logger();
+        Config = Plugin.Instance!.Configuration;
+        ApplicationHost = applicationHost;
     }
+
+    protected IServerApplicationHost ApplicationHost { get; }
+
+    protected PluginConfiguration Config { get; }
+
+    protected SQLiteDatabase Db { get; set; }
+
+    protected Logger Logger { get; set; }
 
     private void CopyNewsletterDataToArchive()
     {
-        logger.Info("Appending NewsletterData for Current Newsletter Cycle to Archive Database..");
+        Logger.Info("Appending NewsletterData for Current Newsletter Cycle to Archive Database..");
 
         try
         {
-            db.CreateConnection();
+            Db.CreateConnection();
 
             // copy tables
-            db.ExecuteSQL("INSERT INTO ArchiveData SELECT * FROM CurrNewsletterData;");
-            db.ExecuteSQL("DELETE FROM CurrNewsletterData;");
+            Db.ExecuteSQL("INSERT INTO ArchiveData SELECT * FROM CurrNewsletterData;");
+            Db.ExecuteSQL("DELETE FROM CurrNewsletterData;");
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
         finally
         {
-            db.CloseConnection();
+            Db.CloseConnection();
         }
     }
 
     protected bool NewsletterDbIsPopulated()
     {
-        foreach (var row in db.Query("SELECT COUNT(*) FROM CurrNewsletterData;"))
+        foreach (var row in Db.Query("SELECT COUNT(*) FROM CurrNewsletterData;"))
         {
             if (row is not null)
             {
                 if (int.Parse(row[0].ToString(), CultureInfo.CurrentCulture) > 0)
                 {
-                    db.CloseConnection();
+                    Db.CloseConnection();
                     return true;
                 }
             }
         }
 
-        db.CloseConnection();
+        Db.CloseConnection();
         return false;
     }
 
@@ -73,23 +76,35 @@ public class Client : ControllerBase
     {
         var clients = new List<IClient>
         {
-            new DiscordWebhook(_applicationHost),
-            new Smtp(_applicationHost)
+            new DiscordWebhook(ApplicationHost),
+            new Smtp(ApplicationHost)
             // Scope to add other clients in future
         };
 
+        bool result = false;
         foreach (var client in clients)
         {
-            logger.Debug($"Send triggered for the {client}");
-            client.Send();
+            Logger.Debug($"Send triggered for the {client}");
+            result |= client.Send();
         }
 
-        // Move the db once every client has sent the message
-        CopyNewsletterDataToArchive();
+        // If we the result is True i.e. even if any one client was successful
+        // to send the newsletter we'll move the current database
+        if (result)
+        {
+            Logger.Debug("Atleast one of the client sent the newsletter. Proceeding forward...");
+            CopyNewsletterDataToArchive();
+        }
+        else
+        {
+            // There could be a case when there is no newsletter to be send. So marking this as Info rather an Error
+            // for now.
+            Logger.Info("None of the client were able to send the newsletter. Please check the plugin configuration.");
+        }
     }
 }
 
 public interface IClient
 {
-    void Send();
+    bool Send();
 }

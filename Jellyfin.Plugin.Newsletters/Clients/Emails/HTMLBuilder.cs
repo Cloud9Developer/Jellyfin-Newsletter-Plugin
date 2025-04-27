@@ -26,13 +26,13 @@ public class HtmlBuilder : ClientBuilder
 
     public HtmlBuilder()
     {
-        emailBody = config.Body;
+        emailBody = Config.Body;
 
-        newslettersDir = config.NewsletterDir; // newsletterdir
+        newslettersDir = Config.NewsletterDir; // newsletterdir
         Directory.CreateDirectory(newslettersDir);
 
         // if no newsletter filename is saved or the file doesn't exist
-        if (config.NewsletterFileName.Length == 0 || File.Exists(newslettersDir + config.NewsletterFileName))
+        if (Config.NewsletterFileName.Length == 0 || File.Exists(newslettersDir + Config.NewsletterFileName))
         {
             // use date to create filename
             string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
@@ -40,53 +40,53 @@ public class HtmlBuilder : ClientBuilder
         }
         else
         {
-            newsletterHTMLFile = newslettersDir + config.NewsletterFileName;
+            newsletterHTMLFile = newslettersDir + Config.NewsletterFileName;
         }
 
-        logger.Info("Newsletter will be saved to: " + newsletterHTMLFile);
+        Logger.Info("Newsletter will be saved to: " + newsletterHTMLFile);
     }
 
     public string GetDefaultHTMLBody()
     {
-        emailBody = config.Body;
+        emailBody = Config.Body;
         return emailBody;
     }
 
     public string TemplateReplace(string htmlObj, string replaceKey, object replaceValue, bool finalPass = false)
     {
-        logger.Debug("Replacing {} params:\n " + htmlObj);
+        Logger.Debug("Replacing {} params:\n " + htmlObj);
         if (replaceValue is null)
         {
-            logger.Debug($"Replace string is null.. Nothing to replace");
+            Logger.Debug($"Replace string is null.. Nothing to replace");
             return htmlObj;
         }
 
         if (replaceKey == "{RunTime}" && (int)replaceValue == 0)
         {
-            logger.Debug($"{replaceKey} == {replaceValue}");
-            logger.Debug("Skipping replace..");
+            Logger.Debug($"{replaceKey} == {replaceValue}");
+            Logger.Debug("Skipping replace..");
             return htmlObj;
         }
 
-        logger.Debug($"Replace Value {replaceKey} with " + replaceValue);
+        Logger.Debug($"Replace Value {replaceKey} with " + replaceValue);
 
         // Dictionary<string, object> html_params = new Dictionary<string, object>();
         // html_params.Add("{Date}", DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
         // html_params.Add(replaceKey, replaceValue);
 
         htmlObj = htmlObj.Replace(replaceKey, replaceValue.ToString(), StringComparison.Ordinal);
-        // logger.Debug("HERE\n " + htmlObj)
+        // Logger.Debug("HERE\n " + htmlObj)
 
         // foreach (KeyValuePair<string, object> param in html_params)
         // {
         //     if (param.Value is not null)
         //     {
         //         htmlObj = htmlObj.Replace(param.Key, param.Value.ToString(), StringComparison.Ordinal);
-        //         // logger.Debug("HERE\n " + htmlObj)
+        //         // Logger.Debug("HERE\n " + htmlObj)
         //     }
         // }
         
-        logger.Debug("New HTML OBJ: \n" + htmlObj);
+        Logger.Debug("New HTML OBJ: \n" + htmlObj);
         return htmlObj;
     }
 
@@ -98,13 +98,13 @@ public class HtmlBuilder : ClientBuilder
 
         try
         {
-            db.CreateConnection();
+            Db.CreateConnection();
 
-            foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
+            foreach (var row in Db.Query("SELECT * FROM CurrNewsletterData;"))
             {
                 if (row is not null)
                 {
-                    JsonFileObj item = jsonHelper.ConvertToObj(row);
+                    JsonFileObj item = JsonHelper.ConvertToObj(row);
                     // scan through all items and get all Season numbers and Episodes
                     // (string seasonInfo, string episodeInfo) = ParseSeriesInfo(obj, readDataFile);
                     if (completed.Contains(item.Title))
@@ -120,9 +120,9 @@ public class HtmlBuilder : ClientBuilder
                         seaEpsHtml += GetSeasonEpisodeHTML(parsedInfoList);
                     }
 
-                    var tmp_entry = config.Entry;
-                    // logger.Debug("TESTING");
-                    // logger.Debug(item.GetDict()["Filename"]);
+                    var tmp_entry = Config.Entry;
+                    // Logger.Debug("TESTING");
+                    // Logger.Debug(item.GetDict()["Filename"]);
 
                     foreach (KeyValuePair<string, object?> ele in item.GetReplaceDict())
                     {
@@ -133,18 +133,18 @@ public class HtmlBuilder : ClientBuilder
                     }
 
                     builtHTMLString += tmp_entry.Replace("{SeasonEpsInfo}", seaEpsHtml, StringComparison.Ordinal)
-                                                .Replace("{ServerURL}", config.Hostname, StringComparison.Ordinal);
+                                                .Replace("{ServerURL}", Config.Hostname, StringComparison.Ordinal);
                     completed.Add(item.Title);
                 }
             }
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
         finally
         {
-            db.CloseConnection();
+            Db.CloseConnection();
         }
 
         return builtHTMLString;
@@ -155,7 +155,7 @@ public class HtmlBuilder : ClientBuilder
         string html = string.Empty;
         foreach (NlDetailsJson obj in list)
         {
-            logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
+            Logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
             // html += "<div id='SeasonEpisode' class='text' style='color: #FFFFFF;'>Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "</div>";
             html += "Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "<br>";
         }
@@ -166,7 +166,7 @@ public class HtmlBuilder : ClientBuilder
     public void CleanUp(string htmlBody)
     {
         // save newsletter to file
-        logger.Info("Saving HTML file");
+        Logger.Info("Saving HTML file");
         WriteFile(write, newsletterHTMLFile, htmlBody);
     }
 

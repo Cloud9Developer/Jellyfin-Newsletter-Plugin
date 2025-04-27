@@ -107,6 +107,18 @@ public class PluginConfiguration : BasePluginConfiguration
         // poster hosting
         PHType = "Imgur";
         Hostname = string.Empty;
+
+        // default discord fields
+        DiscordDescriptionEnabled = true;
+        DiscordThumbnailEnabled = true;
+        DiscordRatingEnabled = true;
+        DiscordPGRatingEnabled = true;
+        DiscordDurationEnabled = true;
+        DiscordEpisodesEnabled = true;
+
+        // default discord embed color
+        DiscordSeriesEmbedColor = "#00ffff";
+        DiscordMoviesEmbedColor = "#00ff99";
     }
 
     /// <summary>
@@ -178,6 +190,46 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets a string setting.
     /// </summary>
     public string DiscordWebhookName { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether description in discord embed should be visible.
+    /// </summary>
+    public bool DiscordDescriptionEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether thumbnail in discord embed should be visible.
+    /// </summary>
+    public bool DiscordThumbnailEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether rating in discord embed should be visible.
+    /// </summary>
+    public bool DiscordRatingEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether PG rating in discord embed should be visible.
+    /// </summary>
+    public bool DiscordPGRatingEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether duration in discord embed should be visible.
+    /// </summary>
+    public bool DiscordDurationEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether episodes list in discord embed should be visible.
+    /// </summary>
+    public bool DiscordEpisodesEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DiscordMoviesEmbedColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DiscordSeriesEmbedColor { get; set; }
 
     // -----------------------------------
 

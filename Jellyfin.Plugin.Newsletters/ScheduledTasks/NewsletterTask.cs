@@ -12,7 +12,6 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.Tasks;
 
-
 namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
 {
     /// <summary>

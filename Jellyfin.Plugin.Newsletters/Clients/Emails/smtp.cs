@@ -27,7 +27,9 @@ namespace Jellyfin.Plugin.Newsletters.Clients.Emails.EMAIL;
 [Route("Smtp")]
 public class Smtp : Client, IClient
 {
-    public Smtp(IServerApplicationHost applicationHost) : base(applicationHost) {}
+    public Smtp(IServerApplicationHost applicationHost) : base(applicationHost) 
+    {
+    }
 
     [HttpPost("SendTestMail")]
     public void SendTestMail()
@@ -37,53 +39,54 @@ public class Smtp : Client, IClient
 
         try
         {
-            logger.Debug("Sending out test mail!");
+            Logger.Debug("Sending out test mail!");
             mail = new MailMessage();
 
-            mail.From = new MailAddress(config.FromAddr);
+            mail.From = new MailAddress(Config.FromAddr);
             mail.To.Clear();
             mail.Subject = "Jellyfin Newsletters - Test";
             mail.Body = "Success! You have properly configured your email notification settings";
             mail.IsBodyHtml = false;
 
-            foreach (string email in config.ToAddr.Split(','))
+            foreach (string email in Config.ToAddr.Split(','))
             {
                 mail.Bcc.Add(email.Trim());
             }
 
-            smtp = new SmtpClient(config.SMTPServer, config.SMTPPort);
-            smtp.Credentials = new NetworkCredential(config.SMTPUser, config.SMTPPass);
+            smtp = new SmtpClient(Config.SMTPServer, Config.SMTPPort);
+            smtp.Credentials = new NetworkCredential(Config.SMTPUser, Config.SMTPPass);
             smtp.EnableSsl = true;
             smtp.Send(mail);
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
     }
 
     [HttpPost("SendSmtp")]
     // [ProducesResponseType(StatusCodes.Status201Created)]
     // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public void SendEmail()
+    public bool SendEmail()
     {
+        bool result = false;
         try
         {
-            db.CreateConnection();
+            Db.CreateConnection();
 
             if (NewsletterDbIsPopulated())
             {
-                logger.Debug("Sending out mail!");
+                Logger.Debug("Sending out mail!");
                 // Smtp varsmtp = new Smtp();
                 MailMessage mail = new MailMessage();
-                string smtpAddress = config.SMTPServer;
-                int portNumber = config.SMTPPort;
+                string smtpAddress = Config.SMTPServer;
+                int portNumber = Config.SMTPPort;
                 bool enableSSL = true;
-                string emailFromAddress = config.FromAddr;
-                string username = config.SMTPUser;
-                string password = config.SMTPPass;
-                string emailToAddress = config.ToAddr;
-                string subject = config.Subject;
+                string emailFromAddress = Config.FromAddr;
+                string username = Config.SMTPUser;
+                string password = Config.SMTPPass;
+                string emailToAddress = Config.ToAddr;
+                string subject = Config.Subject;
                 // string body;
 
                 HtmlBuilder hb = new HtmlBuilder();
@@ -91,8 +94,8 @@ public class Smtp : Client, IClient
                 string body = hb.GetDefaultHTMLBody();
                 string builtString = hb.BuildDataHtmlStringFromNewsletterData();
                 // string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
-                // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
-                builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
+                // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", Config.Hostname);
+                builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", Config.Hostname);
                 string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
                 builtString = builtString.Replace("{Date}", currDate, StringComparison.Ordinal);
 
@@ -112,26 +115,29 @@ public class Smtp : Client, IClient
                 smtp.Credentials = new NetworkCredential(username, password);
                 smtp.EnableSsl = enableSSL;
                 smtp.Send(mail);
+                result = true;
 
                 hb.CleanUp(builtString);
             }
             else
             {
-                logger.Info("There is no Newsletter data.. Have I scanned or sent out an email newsletter recently?");
+                Logger.Info("There is no Newsletter data.. Have I scanned or sent out an email newsletter recently?");
             }
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
         finally
         {
-            db.CloseConnection();
+            Db.CloseConnection();
         }
+
+        return result;
     }
 
-    public void Send()
+    public bool Send()
     {
-        SendEmail();
+        return SendEmail();
     }
 }

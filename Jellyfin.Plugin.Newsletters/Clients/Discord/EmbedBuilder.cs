@@ -4,68 +4,115 @@ using System.Collections.Generic;
 using System.Globalization;
 using Jellyfin.Plugin.Newsletters.Clients.CLIENTBuilder;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
+using MediaBrowser.Controller.Library;
 using Newtonsoft.Json;
 
 namespace Jellyfin.Plugin.Newsletters.Clients.Discord.EMBEDBuilder;
 
 public class EmbedBuilder : ClientBuilder
 {
-
-    public List<Embed> BuildEmbedsFromNewsletterData(string ServerId)
+    public List<Embed> BuildEmbedsFromNewsletterData(string serverId)
     {
         List<string> completed = new List<string>();
         List<Embed> embeds = new List<Embed>();
 
         try
         {
-            db.CreateConnection();
+            Db.CreateConnection();
 
-            foreach (var row in db.Query("SELECT * FROM CurrNewsletterData;"))
+            foreach (var row in Db.Query("SELECT * FROM CurrNewsletterData;"))
             {
                 if (row is not null)
                 {
-                    JsonFileObj item = jsonHelper.ConvertToObj(row);
+                    JsonFileObj item = JsonHelper.ConvertToObj(row);
 
                     if (completed.Contains(item.Title))
                     {
                         continue;
                     }
 
+                    int embedColor = Convert.ToInt32(Config.DiscordMoviesEmbedColor.Replace("#", string.Empty, StringComparison.Ordinal), 16);
                     string seaEps = string.Empty;
                     if (item.Type == "Series")
                     {
                         // for series only
                         List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(item);
                         seaEps += GetSeasonEpisode(parsedInfoList);
+                        embedColor = Convert.ToInt32(Config.DiscordMoviesEmbedColor.Replace("#", string.Empty, StringComparison.Ordinal), 16);
                     }
 
                     // string communityRating = item.CommunityRating.HasValue ? item.CommunityRating.Value.ToString(CultureInfo.InvariantCulture) : "N/A";
 
-                    var fieldsList = new List<EmbedField>
+                    var fieldsList = new List<EmbedField>();
+
+                    // Check if DiscordPGRatingEnabled is true
+                    if (Config.DiscordPGRatingEnabled)
                     {
-                        new EmbedField { name = "Rating", value = item.CommunityRating.HasValue ? item.CommunityRating.Value.ToString(CultureInfo.InvariantCulture) : "N/A", inline = true },
-                        new EmbedField { name = "PG rating", value = item.OfficialRating, inline = true },
-                        new EmbedField { name = "Duration", value = item.RunTime.ToString(CultureInfo.InvariantCulture) + " min", inline = true },
-                    };
-                    
-                    if (!string.IsNullOrWhiteSpace(seaEps))
+                        fieldsList.Add(new EmbedField
+                        {
+                            name = "PG rating",
+                            value = item.OfficialRating,
+                            inline = true
+                        });
+                    }
+
+                    // Check if DiscordRatingEnabled is true
+                    if (Config.DiscordRatingEnabled)
                     {
-                        fieldsList.Add(new EmbedField { name = "Episodes", value = seaEps, inline = false });
+                        fieldsList.Add(new EmbedField
+                        {
+                            name = "Rating",
+                            value = item.CommunityRating.HasValue ? item.CommunityRating.Value.ToString(CultureInfo.InvariantCulture) : "N/A",
+                            inline = true
+                        });
+                    }
+
+                    // Check if DiscordDurationEnabled is true
+                    if (Config.DiscordDurationEnabled)
+                    {
+                        fieldsList.Add(new EmbedField
+                        {
+                            name = "Duration",
+                            value = item.RunTime.ToString(CultureInfo.InvariantCulture) + " min",
+                            inline = true
+                        });
+                    }
+
+                    // Check if DiscordEpisodesEnabled is true and seaEps is not null/empty
+                    if (Config.DiscordEpisodesEnabled && !string.IsNullOrWhiteSpace(seaEps))
+                    {
+                        fieldsList.Add(new EmbedField
+                        {
+                            name = "Episodes",
+                            value = seaEps,
+                            inline = false
+                        });
                     }
 
                     var embed = new Embed
                     {
                         title = item.Title,
-                        url = $"{config.Hostname}/web/index.html#/details?id={item.ItemID}&serverId={ServerId}",
-                        color = 16776960,
-                        description = item.SeriesOverview,
+                        url = $"{Config.Hostname}/web/index.html#/details?id={item.ItemID}&serverId={serverId}",
+                        color = embedColor,
                         timestamp = DateTime.UtcNow.ToString("o"),
                         fields = fieldsList,
-                        thumbnail = new Thumbnail
+                    };
+
+                    // Check if DiscordDescriptionEnabled is true
+                    if (Config.DiscordDescriptionEnabled)
+                    {
+                        embed.description = item.SeriesOverview;
+                    }
+
+                    // Check if DiscordThumbnailEnabled is true
+                    if (Config.DiscordThumbnailEnabled)
+                    {
+                        embed.thumbnail = new Thumbnail
                         {
                             url = item.ImageURL
-                        }
-                    };
+                        };
+                    }
+
                     completed.Add(item.Title);
                     embeds.Add(embed);
                 }
@@ -73,11 +120,101 @@ public class EmbedBuilder : ClientBuilder
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
         finally
         {
-            db.CloseConnection();
+            Db.CloseConnection();
+        }
+
+        return embeds;
+    }
+
+    public List<Embed> BuildEmbedForTest()
+    {
+        List<Embed> embeds = new List<Embed>();
+
+        try
+        {
+            // Populating embed with reference to a Series, as it'll will cover all the cases
+            int embedColor = Convert.ToInt32(Config.DiscordSeriesEmbedColor.Replace("#", string.Empty, StringComparison.Ordinal), 16);
+            string seaEps = "Season: 1 - Eps. 1 - 10\nSeason: 2 - Eps. 1 - 10\nSeason: 3 - Eps. 1 - 10 (Test)";
+
+            var fieldsList = new List<EmbedField>();
+
+            // Check if DiscordPGRatingEnabled is true
+            if (Config.DiscordPGRatingEnabled)
+            {
+                fieldsList.Add(new EmbedField
+                {
+                    name = "PG rating",
+                    value = "TV-14 (Test)",
+                    inline = true
+                });
+            }
+
+            // Check if DiscordRatingEnabled is true
+            if (Config.DiscordRatingEnabled)
+            {
+                fieldsList.Add(new EmbedField
+                {
+                    name = "Rating",
+                    value = "8.4 (Test)",
+                    inline = true
+                });
+            }
+
+            // Check if DiscordDurationEnabled is true
+            if (Config.DiscordDurationEnabled)
+            {
+                fieldsList.Add(new EmbedField
+                {
+                    name = "Duration",
+                    value = "45 min (Test)",
+                    inline = true
+                });
+            }
+
+            // Check if DiscordEpisodesEnabled is true and seaEps is not null/empty
+            if (Config.DiscordEpisodesEnabled && !string.IsNullOrWhiteSpace(seaEps))
+            {
+                fieldsList.Add(new EmbedField
+                {
+                    name = "Episodes",
+                    value = seaEps,
+                    inline = false
+                });
+            }
+
+            var embed = new Embed
+            {
+                title = "Newsletter Test Title",
+                url = Config.Hostname,
+                color = embedColor,
+                timestamp = DateTime.UtcNow.ToString("o"),
+                fields = fieldsList,
+            };
+
+            // Check if DiscordDescriptionEnabled is true
+            if (Config.DiscordDescriptionEnabled)
+            {
+                embed.description = "This is a test embed from Newsletter plugin";
+            }
+
+            // Check if DiscordThumbnailEnabled is true
+            if (Config.DiscordThumbnailEnabled)
+            {
+                embed.thumbnail = new Thumbnail
+                {
+                    url = "https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/refs/heads/master/logo.png"
+                };
+            }
+
+            embeds.Add(embed);
+        }
+        catch (Exception e)
+        {
+            Logger.Error("An error has occured: " + e);
         }
 
         return embeds;
@@ -88,7 +225,7 @@ public class EmbedBuilder : ClientBuilder
         string seaEps = string.Empty;
         foreach (NlDetailsJson obj in list)
         {
-            logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
+            Logger.Debug("SNIPPET OBJ: " + JsonConvert.SerializeObject(obj));
             seaEps += "Season: " + obj.Season + " - Eps. " + obj.EpisodeRange + "\n";
         }
 

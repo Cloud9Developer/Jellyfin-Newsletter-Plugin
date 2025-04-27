@@ -44,23 +44,27 @@ public class DiscordWebhook : Client, IClient, IDisposable
     [HttpPost("SendDiscordTestMessage")]
     public void SendDiscordTestMessage()
     {
-        string webhookUrl = config.DiscordWebhookURL;
+        string webhookUrl = Config.DiscordWebhookURL;
 
         if (string.IsNullOrEmpty(webhookUrl))
         {
-            logger.Info("Discord webhook URL is not set. Aborting test message.");
+            Logger.Info("Discord webhook URL is not set. Aborting test message.");
+            return;
         }
 
         try
         {
-            var payload = new
+            EmbedBuilder builder = new EmbedBuilder();
+            List<Embed> embedList = builder.BuildEmbedForTest();
+
+            var payload = new DiscordPayload
             {
-                username = config.DiscordWebhookName,
-                content = "✅ Test notification from Jellyfin Newsletter plugin 🚀"
+                username = Config.DiscordWebhookName,
+                embeds = embedList
             };
 
             var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
-            logger.Debug("Sending Discord test message: " + jsonPayload);
+            Logger.Debug("Sending Discord test message: " + jsonPayload);
 
             var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
@@ -68,34 +72,42 @@ public class DiscordWebhook : Client, IClient, IDisposable
 
             if (response.IsSuccessStatusCode)
             {
-                logger.Debug("Discord test message sent successfully");
+                Logger.Debug("Discord test message sent successfully");
             }
             else
             {
                 var error = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                logger.Error($"Discord test message failed: {response.StatusCode} - {error}");
+                Logger.Error($"Discord test message failed: {response.StatusCode} - {error}");
             }
         }
         catch (Exception e)
         {
-            logger.Error("An error occurred while sending Discord test message: " + e);
+            Logger.Error("An error occurred while sending Discord test message: " + e);
         }
     }
 
     [HttpPost("SendDiscordMessage")]
-    public void SendDiscordMessage()
+    public bool SendDiscordMessage()
     {
+        bool result = false;
+
+        string webhookUrl = Config.DiscordWebhookURL;
+        if (string.IsNullOrEmpty(webhookUrl))
+        {
+            Logger.Info("Discord webhook URL is not set. Aborting sending messages.");
+            return result;
+        }
+
         try
         {
-            db.CreateConnection();
+            Db.CreateConnection();
 
             if (NewsletterDbIsPopulated())
             {
-                logger.Debug("Sending out Discord message!");
+                Logger.Debug("Sending out Discord message!");
 
-                string webhookUrl = config.DiscordWebhookURL;
                 EmbedBuilder builder = new EmbedBuilder();
-                List<Embed> embedList = builder.BuildEmbedsFromNewsletterData(_applicationHost.SystemId);
+                List<Embed> embedList = builder.BuildEmbedsFromNewsletterData(ApplicationHost.SystemId);
 
                 // Discord webhook does not support more than 10 embeds per message
                 // Therefore, we're sending in chunks with atmost 10 embed in a payload
@@ -105,12 +117,12 @@ public class DiscordWebhook : Client, IClient, IDisposable
 
                     var payload = new DiscordPayload
                     {
-                        username = config.DiscordWebhookName,
+                        username = Config.DiscordWebhookName,
                         embeds = chunk
                     };
 
                     var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
-                    logger.Debug("Sending discord message in chunks: " + jsonPayload);
+                    Logger.Debug("Sending discord message in chunks: " + jsonPayload);
 
                     var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
@@ -118,32 +130,37 @@ public class DiscordWebhook : Client, IClient, IDisposable
 
                     if (response.IsSuccessStatusCode)
                     {
-                        logger.Debug("Discord message sent successfully");
+                        Logger.Debug("Discord message sent successfully");
+                        result = true;
                     }
                     else
                     {
                         var error = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                        logger.Error($"Discord webhook failed: {response.StatusCode} - {error}");
+                        Logger.Error($"Discord webhook failed: {response.StatusCode} - {error}");
+                        result = false;
+                        break;
                     }
                 }
             }
             else
             {
-                logger.Info("There is no Newsletter data.. Have I scanned or sent out a discord newsletter recently?");
+                Logger.Info("There is no Newsletter data.. Have I scanned or sent out a discord newsletter recently?");
             }
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
         finally
         {
-            db.CloseConnection();
+            Db.CloseConnection();
         }
+
+        return result;
     }
 
-    public void Send()
+    public bool Send()
     {
-        SendDiscordMessage();
+        return SendDiscordMessage();
     }
 }
