@@ -38,7 +38,7 @@ public class EmbedBuilder : ClientBuilder
                         // for series only
                         List<NlDetailsJson> parsedInfoList = ParseSeriesInfo(item);
                         seaEps += GetSeasonEpisode(parsedInfoList);
-                        embedColor = Convert.ToInt32(Config.DiscordMoviesEmbedColor.Replace("#", string.Empty, StringComparison.Ordinal), 16);
+                        embedColor = Convert.ToInt32(Config.DiscordSeriesEmbedColor.Replace("#", string.Empty, StringComparison.Ordinal), 16);
                     }
 
                     // string communityRating = item.CommunityRating.HasValue ? item.CommunityRating.Value.ToString(CultureInfo.InvariantCulture) : "N/A";
@@ -55,7 +55,7 @@ public class EmbedBuilder : ClientBuilder
                             inline = true
                         });
                     }
-                    
+
                     // Check if DiscordPGRatingEnabled is true
                     if (Config.DiscordPGRatingEnabled)
                     {
