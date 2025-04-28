@@ -105,7 +105,7 @@ public class EmbedBuilder : ClientBuilder
                     }
 
                     // Check if DiscordThumbnailEnabled is true
-                    if (Config.DiscordThumbnailEnabled)
+                    if (Config.DiscordThumbnailEnabled && IsValidUrl(item.ImageURL))
                     {
                         embed.thumbnail = new Thumbnail
                         {
@@ -230,6 +230,17 @@ public class EmbedBuilder : ClientBuilder
         }
 
         return seaEps;
+    }
+
+    private bool IsValidUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return false;
+        }
+
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }
 
