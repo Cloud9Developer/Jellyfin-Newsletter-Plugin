@@ -45,17 +45,6 @@ public class EmbedBuilder : ClientBuilder
 
                     var fieldsList = new List<EmbedField>();
 
-                    // Check if DiscordPGRatingEnabled is true
-                    if (Config.DiscordPGRatingEnabled)
-                    {
-                        fieldsList.Add(new EmbedField
-                        {
-                            name = "PG rating",
-                            value = item.OfficialRating,
-                            inline = true
-                        });
-                    }
-
                     // Check if DiscordRatingEnabled is true
                     if (Config.DiscordRatingEnabled)
                     {
@@ -63,6 +52,17 @@ public class EmbedBuilder : ClientBuilder
                         {
                             name = "Rating",
                             value = item.CommunityRating.HasValue ? item.CommunityRating.Value.ToString(CultureInfo.InvariantCulture) : "N/A",
+                            inline = true
+                        });
+                    }
+                    
+                    // Check if DiscordPGRatingEnabled is true
+                    if (Config.DiscordPGRatingEnabled)
+                    {
+                        fieldsList.Add(new EmbedField
+                        {
+                            name = "PG rating",
+                            value = item.OfficialRating,
                             inline = true
                         });
                     }
