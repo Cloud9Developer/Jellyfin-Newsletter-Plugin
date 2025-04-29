@@ -172,6 +172,11 @@ public class Scraper
                     // logger.Info($"CustomRating: " + series.CustomRating);
                     logger.Debug($"CommunityRating: " + series.CommunityRating); // 8.5, 9.2, etc
                     logger.Debug($"RunTime: " + (int)((float)episode.RunTimeTicks! / 10000 / 60000) + " minutes");
+
+                    foreach (var kvp in series.ProviderIds)
+                    {
+                        logger.Debug($"External ID: {kvp.Key} => {kvp.Value}");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -181,6 +186,12 @@ public class Scraper
                 }
 
                 JsonFileObj currFileObj = new JsonFileObj();
+                foreach (var kvp in series.ProviderIds)
+                {
+                    // logger.Info($"External ID - {kvp.Key}: {kvp.Value}");
+                    currFileObj.ExternalIds[kvp.Key] = kvp.Value;
+                }
+
                 currFileObj.Filename = episode.Path;
                 currFileObj.Title = series.Name;
                 currFileObj.Type = type;
