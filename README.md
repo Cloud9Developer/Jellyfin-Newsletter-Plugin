@@ -9,8 +9,19 @@ This is my first end-to-end C# project, but I hope you enjoy!
 
 This plugin automacially scans a users library (default every 4 hours), populates a list of *recently added (not previously scanned)* media, converts that data into HTML format, and sends out newsletter to every client(currently email and discord webhook is supported).
 
-<p align='center'>
-    <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewsletterExample.png?raw=true'/><br>
+<h2 align="center">Email Screenshot</h2>
+<p align="center">
+    <img src="https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewsletterExample.png?raw=true" alt="Email Screenshot"/>
+</p>
+
+<h2 align="center">Discord Screenshots</h2>
+<p align="center" style="display: flex; justify-content: center; gap: 20px;">
+    <img src="https://github.com/user-attachments/assets/e6921c80-a904-452e-837c-7306085a9d0f" 
+         alt="Discord Screenshot 1" 
+         style="height: 300px; object-fit: contain;"/>
+    <img src="https://github.com/user-attachments/assets/0f224065-4923-4725-8732-8fcbb07ed359" 
+         alt="Discord Screenshot 2" 
+         style="height: 300px; object-fit: contain;"/>
 </p>
 
 # File Structure
