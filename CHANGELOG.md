@@ -2,6 +2,8 @@
 
 - Discord webhook support.
 - Discord config addition in the plugin page.
+- Moving to TMDB api for fetching poster image.
+- Depreacting the scrapper config from plugin page.
 - Plugin page update.
 - Code refactoring to support future clients support.
 

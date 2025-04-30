@@ -13,17 +13,6 @@ This plugin automacially scans a users library (default every 4 hours), populate
     <img src='https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/blob/master/NewsletterExample.png?raw=true'/><br>
 </p>
 
-# Current Limitations
-
-1. Imgur's API is one available option to upload poster images for newsletter emails to fetch images. Imgur (according to their Documentation) limits uploads to 12,500/day.
-   - HOWEVER, according to some documentation I have just discovered, there is a limit of 500 requests/hour for each user _(IP address)_ hitting the API
-   - **This plugin is configured to reference existing Images from previous scans (including current) as to not duplicate requests to Imgur and use up the daily upload limit**
-   - Sign up to get an API key in order to use this plugin.
-     - Helpful Links:
-       - https://dev.to/bearer/how-to-configure-the-imgur-api-2ap9
-       - http://siberiancmscustomization.blogspot.com/2020/10/how-to-get-imgur-client-id.html
-   - ***Users can bypass this limitation as of V0.5.0 with the ability to use Jellyfin's API to serve images!***
-
 # File Structure
 
 To ensure proper images are being pulled from Jellyfin's database, ensure you follow the standard Organization Scheme for naming and organizing your files. https://jellyfin.org/docs/general/server/media/books
@@ -85,6 +74,8 @@ Manifest is up an running! You can now import the manifest in Jellyfin and this 
 
 # Configuration
 
+**Note** :- In previous version of Jellyfin Newsletter imgur or JF server was used for the poster image. This is now deprecated as we have moved to the tmdb api for fetching the poster image internally.
+
 ## General Config
 
 ### Server URL
@@ -109,26 +100,6 @@ For defaults, see `Jellyfin.Plugin.Newsletters/Templates/`
 ### EntryData HTML
 
 - The formatting for each individual entry/series/movie that was found and will be sent out
-
-## Scraper/Scanner Config
-
-### Poster Hosting Type
-
-- The type of poster hosting you want to use
-  - Options include:
-    - Imgur (Default)
-    - Local Hosting from Jellyfin's API
-
-### Imgur API Key
-
-- Your Imgur API key (Client ID) to upload images to be available in the newsletter
-
-### Hostname
-
-- Your servername/hostname/DNS entry (and Port if applicable) to allow users to access images hosted locally on your server.
-  - i.e. https://myDNSentry.com:8096
-    - **NOTE:** do not put a trailing '/' at the end of the url
-- This is now used as a possible data tag! (even if you don't use self-hosting, set this if you want the `{ServerURL}` to work)
 
 ## Email & SMTP Config
 
