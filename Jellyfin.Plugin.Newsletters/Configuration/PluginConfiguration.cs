@@ -85,7 +85,8 @@ public class PluginConfiguration : BasePluginConfiguration
         }
 
         // default Scraper config
-        ApiKey = string.Empty;
+        // Deprecating imgur support
+        // ApiKey = string.Empty;
 
         // System Paths
         DataPath = string.Empty;
@@ -105,7 +106,8 @@ public class PluginConfiguration : BasePluginConfiguration
         SeriesEnabled = true;
 
         // poster hosting
-        PHType = "Imgur";
+        // Deprecating imgur support
+        // PHType = "Imgur";
         Hostname = string.Empty;
 
         // default discord fields
@@ -235,20 +237,22 @@ public class PluginConfiguration : BasePluginConfiguration
 
     // Scraper Config
 
-    /// <summary>
-    /// Gets or sets a value indicating hosting type.
-    /// </summary>
-    public string PHType { get; set; }
+    // / <summary>
+    // / Gets or sets a value indicating hosting type.
+    // / </summary>
+    // Deprecating imgur support
+    // public string PHType { get; set; }
 
     /// <summary>
     /// Gets or sets a value for JF hostname accessible outside of network.
     /// </summary>
     public string Hostname { get; set; }
 
-    /// <summary>
-    /// Gets or sets a string setting.
-    /// </summary>
-    public string ApiKey { get; set; }
+    // / <summary>
+    // / Gets or sets a string setting.
+    // / </summary>
+    // Deprecating imgur support
+    // public string ApiKey { get; set; }
 
     // -----------------------------------
 
