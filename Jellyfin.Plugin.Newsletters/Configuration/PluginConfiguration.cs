@@ -30,6 +30,10 @@ public class PluginConfiguration : BasePluginConfiguration
         FromAddr = "JellyfinNewsletter@donotreply.com";
         Subject = "Jellyfin Newsletter";
 
+        // default Discord Webhook Details
+        DiscordWebhookURL = string.Empty;
+        DiscordWebhookName = "Jellyfin Newsletter";
+
         // Attempt Dynamic set of Body and Entry HTML, set empty if failure occurs
         Body = string.Empty;
         Entry = string.Empty;
@@ -81,7 +85,8 @@ public class PluginConfiguration : BasePluginConfiguration
         }
 
         // default Scraper config
-        ApiKey = string.Empty;
+        // Deprecating imgur support
+        // ApiKey = string.Empty;
 
         // System Paths
         DataPath = string.Empty;
@@ -101,8 +106,21 @@ public class PluginConfiguration : BasePluginConfiguration
         SeriesEnabled = true;
 
         // poster hosting
-        PHType = "Imgur";
+        // Deprecating imgur support
+        // PHType = "Imgur";
         Hostname = string.Empty;
+
+        // default discord fields
+        DiscordDescriptionEnabled = true;
+        DiscordThumbnailEnabled = true;
+        DiscordRatingEnabled = true;
+        DiscordPGRatingEnabled = true;
+        DiscordDurationEnabled = true;
+        DiscordEpisodesEnabled = true;
+
+        // default discord embed color
+        DiscordSeriesEmbedColor = "#00ffff";
+        DiscordMoviesEmbedColor = "#00ff99";
     }
 
     /// <summary>
@@ -163,22 +181,78 @@ public class PluginConfiguration : BasePluginConfiguration
 
     // -----------------------------------
 
-    // Scraper Config
+    // Discord Webhook Details
 
     /// <summary>
-    /// Gets or sets a value indicating hosting type.
+    /// Gets or sets a string setting.
     /// </summary>
-    public string PHType { get; set; }
+    public string DiscordWebhookURL { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DiscordWebhookName { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether description in discord embed should be visible.
+    /// </summary>
+    public bool DiscordDescriptionEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether thumbnail in discord embed should be visible.
+    /// </summary>
+    public bool DiscordThumbnailEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether rating in discord embed should be visible.
+    /// </summary>
+    public bool DiscordRatingEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether PG rating in discord embed should be visible.
+    /// </summary>
+    public bool DiscordPGRatingEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether duration in discord embed should be visible.
+    /// </summary>
+    public bool DiscordDurationEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether episodes list in discord embed should be visible.
+    /// </summary>
+    public bool DiscordEpisodesEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DiscordMoviesEmbedColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string setting.
+    /// </summary>
+    public string DiscordSeriesEmbedColor { get; set; }
+
+    // -----------------------------------
+
+    // Scraper Config
+
+    // / <summary>
+    // / Gets or sets a value indicating hosting type.
+    // / </summary>
+    // Deprecating imgur support
+    // public string PHType { get; set; }
 
     /// <summary>
     /// Gets or sets a value for JF hostname accessible outside of network.
     /// </summary>
     public string Hostname { get; set; }
 
-    /// <summary>
-    /// Gets or sets a string setting.
-    /// </summary>
-    public string ApiKey { get; set; }
+    // / <summary>
+    // / Gets or sets a string setting.
+    // / </summary>
+    // Deprecating imgur support
+    // public string ApiKey { get; set; }
 
     // -----------------------------------
 

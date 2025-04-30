@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Jellyfin.Plugin.Newsletters.Emails.EMAIL;
+// using ICU4N.Logging;
+using Jellyfin.Plugin.Newsletters.Clients.CLIENT;
+using Jellyfin.Plugin.Newsletters.LOGGER;
+using MediaBrowser.Controller;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.Tasks;
@@ -14,19 +17,26 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
     /// <summary>
     /// Class RefreshMediaLibraryTask.
     /// </summary>
-    public class EmailNewsletterTask : IScheduledTask
+    public class NewsletterTask : IScheduledTask
     {
-        /// <inheritdoc />
-        public string Name => "Email Newsletter";
+        private readonly IServerApplicationHost _applicationHost;
+
+        public NewsletterTask(IServerApplicationHost applicationHost)
+        {
+            _applicationHost = applicationHost;
+        }
 
         /// <inheritdoc />
-        public string Description => "Email Newsletters";
+        public string Name => "Newsletter";
+
+        /// <inheritdoc />
+        public string Description => "Send Newsletters to all the specified hooks in plugin";
 
         /// <inheritdoc />
         public string Category => "Newsletters";
 
         /// <inheritdoc />
-        public string Key => "EmailNewsletters";
+        public string Key => "Newsletters";
 
         /// <summary>
         /// Creates the triggers that define when the task will run.
@@ -46,9 +56,11 @@ namespace Jellyfin.Plugin.Newsletters.ScheduledTasks
         {
             cancellationToken.ThrowIfCancellationRequested();
             progress.Report(0);
+            
+            // Call the Notify/Send for each client
+            Client client = new Client(_applicationHost);
+            client.NotifyAll();
 
-            Smtp mySmtp = new Smtp();
-            mySmtp.SendEmail();
             progress.Report(100);
             return Task.CompletedTask;
         }

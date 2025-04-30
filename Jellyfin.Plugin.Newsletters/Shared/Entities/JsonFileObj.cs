@@ -31,6 +31,7 @@ public class JsonFileObj
         RunTime = 0;
         OfficialRating = string.Empty;
         CommunityRating = 0.0f;
+        ExternalIds = new Dictionary<string, string>();
     }
 
     public string Filename { get; set; }
@@ -62,6 +63,9 @@ public class JsonFileObj
     public string OfficialRating { get; set; }
 
     public float? CommunityRating { get; set; }
+
+    //Dictionary to store external IDs like IMDb, TMDb, etc.
+    public Dictionary<string, string> ExternalIds { get; }
 
     public JsonFileObj ConvertToObj(IReadOnlyList<ResultSetValue> row)
     {

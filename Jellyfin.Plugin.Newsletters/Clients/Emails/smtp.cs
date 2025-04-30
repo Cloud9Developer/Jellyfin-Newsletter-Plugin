@@ -4,17 +4,19 @@ using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using Jellyfin.Plugin.Newsletters.Clients.CLIENT;
+using Jellyfin.Plugin.Newsletters.Clients.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.Configuration;
-using Jellyfin.Plugin.Newsletters.Emails.HTMLBuilder;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Shared.DATA;
 using MediaBrowser.Common.Api;
+using MediaBrowser.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // using System.Net.NetworkCredential;
 
-namespace Jellyfin.Plugin.Newsletters.Emails.EMAIL;
+namespace Jellyfin.Plugin.Newsletters.Clients.Emails.EMAIL;
 
 /// <summary>
 /// Interaction logic for SendMail.xaml.
@@ -23,18 +25,10 @@ namespace Jellyfin.Plugin.Newsletters.Emails.EMAIL;
 [Authorize(Policy = Policies.RequiresElevation)]
 [ApiController]
 [Route("Smtp")]
-public class Smtp : ControllerBase
+public class Smtp : Client, IClient
 {
-    private readonly PluginConfiguration config;
-    // private readonly string newsletterDataFile;
-    private SQLiteDatabase db;
-    private Logger logger;
-
-    public Smtp()
+    public Smtp(IServerApplicationHost applicationHost) : base(applicationHost) 
     {
-        db = new SQLiteDatabase();
-        logger = new Logger();
-        config = Plugin.Instance!.Configuration;
     }
 
     [HttpPost("SendTestMail")]
@@ -45,53 +39,54 @@ public class Smtp : ControllerBase
 
         try
         {
-            logger.Debug("Sending out test mail!");
+            Logger.Debug("Sending out test mail!");
             mail = new MailMessage();
 
-            mail.From = new MailAddress(config.FromAddr);
+            mail.From = new MailAddress(Config.FromAddr);
             mail.To.Clear();
             mail.Subject = "Jellyfin Newsletters - Test";
             mail.Body = "Success! You have properly configured your email notification settings";
             mail.IsBodyHtml = false;
 
-            foreach (string email in config.ToAddr.Split(','))
+            foreach (string email in Config.ToAddr.Split(','))
             {
                 mail.Bcc.Add(email.Trim());
             }
 
-            smtp = new SmtpClient(config.SMTPServer, config.SMTPPort);
-            smtp.Credentials = new NetworkCredential(config.SMTPUser, config.SMTPPass);
+            smtp = new SmtpClient(Config.SMTPServer, Config.SMTPPort);
+            smtp.Credentials = new NetworkCredential(Config.SMTPUser, Config.SMTPPass);
             smtp.EnableSsl = true;
             smtp.Send(mail);
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
     }
 
     [HttpPost("SendSmtp")]
     // [ProducesResponseType(StatusCodes.Status201Created)]
     // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public void SendEmail()
+    public bool SendEmail()
     {
+        bool result = false;
         try
         {
-            db.CreateConnection();
+            Db.CreateConnection();
 
             if (NewsletterDbIsPopulated())
             {
-                logger.Debug("Sending out mail!");
+                Logger.Debug("Sending out mail!");
                 // Smtp varsmtp = new Smtp();
                 MailMessage mail = new MailMessage();
-                string smtpAddress = config.SMTPServer;
-                int portNumber = config.SMTPPort;
+                string smtpAddress = Config.SMTPServer;
+                int portNumber = Config.SMTPPort;
                 bool enableSSL = true;
-                string emailFromAddress = config.FromAddr;
-                string username = config.SMTPUser;
-                string password = config.SMTPPass;
-                string emailToAddress = config.ToAddr;
-                string subject = config.Subject;
+                string emailFromAddress = Config.FromAddr;
+                string username = Config.SMTPUser;
+                string password = Config.SMTPPass;
+                string emailToAddress = Config.ToAddr;
+                string subject = Config.Subject;
                 // string body;
 
                 HtmlBuilder hb = new HtmlBuilder();
@@ -99,8 +94,8 @@ public class Smtp : ControllerBase
                 string body = hb.GetDefaultHTMLBody();
                 string builtString = hb.BuildDataHtmlStringFromNewsletterData();
                 // string finalBody = hb.ReplaceBodyWithBuiltString(body, builtString);
-                // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
-                builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", config.Hostname);
+                // string finalBody = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", Config.Hostname);
+                builtString = hb.TemplateReplace(hb.ReplaceBodyWithBuiltString(body, builtString), "{ServerURL}", Config.Hostname);
                 string currDate = DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
                 builtString = builtString.Replace("{Date}", currDate, StringComparison.Ordinal);
 
@@ -120,39 +115,29 @@ public class Smtp : ControllerBase
                 smtp.Credentials = new NetworkCredential(username, password);
                 smtp.EnableSsl = enableSSL;
                 smtp.Send(mail);
+                result = true;
 
                 hb.CleanUp(builtString);
             }
             else
             {
-                logger.Info("There is no Newsletter data.. Have I scanned or sent out a newsletter recently?");
+                Logger.Info("There is no Newsletter data.. Have I scanned or sent out an email newsletter recently?");
             }
         }
         catch (Exception e)
         {
-            logger.Error("An error has occured: " + e);
+            Logger.Error("An error has occured: " + e);
         }
         finally
         {
-            db.CloseConnection();
+            Db.CloseConnection();
         }
+
+        return result;
     }
 
-    private bool NewsletterDbIsPopulated()
+    public bool Send()
     {
-        foreach (var row in db.Query("SELECT COUNT(*) FROM CurrNewsletterData;"))
-        {
-            if (row is not null)
-            {
-                if (int.Parse(row[0].ToString(), CultureInfo.CurrentCulture) > 0)
-                {
-                    db.CloseConnection();
-                    return true;
-                }
-            }
-        }
-
-        db.CloseConnection();
-        return false;
+        return SendEmail();
     }
 }

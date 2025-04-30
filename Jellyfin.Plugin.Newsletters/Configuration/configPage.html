@@ -15,21 +15,15 @@
                             <span>Debug Mode</span>
                         </label>
                     </div>
-                    <div id="OutboundEmailDetails">
-                        <div class="inputContainer" id="ToAddress">
-                            <label class="inputLabel inputLabelUnfocused" for="ToAddr">To Address:</label>
-                            <input id="ToAddr" name="ToAddr" type="text" is="emby-input" />
-                            <div class="fieldDescription">Recipient's email to recieve newsletter. If more than 1, seperate with commas</div>
-                        </div>
-                        <div class="inputContainer" id="FromAddress">
-                            <label class="inputLabel inputLabelUnfocused" for="FromAddr">From Address:</label>
-                            <input id="FromAddr" name="FromAddr" type="text" is="emby-input" />
-                            <div class="fieldDescription">The address that the newsletter will come from</div>
-                        </div>
-                        <div class="inputContainer" id="SubjectTemplate">
-                            <label class="inputLabel inputLabelUnfocused" for="Subject">Subject:</label>
-                            <input id="Subject" name="Subject" type="text" is="emby-input" />
-                            <div class="fieldDescription">Subject field of the newsletter (Default: 'Jellyfin Newsletter)</div>
+                    <div id="CommonDetails">
+                        <div class="inputContainer" id="LocalHostname">
+                            <label class="inputLabel inputLabelUnfocused" for="Hostname">Server URL:</label>
+                            <input id="Hostname" name="Hostname" type="text" is="emby-input" />
+                            <div class="fieldDescription">
+                                Hostname for your JF server that is accessible from outside your network. Ensure to include http[s]:// and port number (if applicable). <b>DO NOT include a trailing slash '/'</b>. 
+                                <br><br>
+                                I.e: https://myServerDNSName.com:8096
+                            </div>
                         </div>
                     </div>
                     <div id="LibrarySelection">
@@ -88,9 +82,10 @@
                         </details>
                     </div>
                     <br>
-
+                    
+                    <!-- Deprecating scraper configuration part as we have moved to tmdb api for poster images -->
                     <!-- Scraper configuration Details -->
-                    <div id="HiddenDetails" name="ScraperConfig" class="DropdownSection">
+                    <!-- <div id="HiddenDetails" name="ScraperConfig" class="DropdownSection">
                         <details>
                             <summary>Scraper Config</summary><br>
                             <div class="selectContainer">
@@ -109,24 +104,35 @@
                                 </div>
                             </div>
                             <div id="JfHosting" name="options">
-                                <div class="inputContainer" id="LocalHostname">
-                                    <label class="inputLabel inputLabelUnfocused" for="ApiKey">Hostname:</label>
-                                    <input id="Hostname" name="Hostname" type="text" is="emby-input" />
+                                <div class="inputContainer" id="JfHostingID">
                                     <div class="fieldDescription">
-                                        Hostname for your JF server that is accessible from outside your network. Ensure to include http[s]:// and port number (if applicable). <b>DO NOT include a trailing slash '/'</b>. 
-                                        <br><br>
-                                        I.e: https://myServerDNSName.com:8096
+                                        Server URL will be used.
                                     </div>
                                 </div>
                             </div>
                         </details>
                     </div>
 
-                    <br>
+                    <br> -->
                     <!-- SMTP Server Details -->
                     <div id="HiddenDetails" name="ServerDetails" class="DropdownSection">
                         <details>
-                            <summary>SMTP Config</summary><br>
+                            <summary>Email & SMTP Config</summary><br>
+                            <div class="inputContainer" id="ToAddress">
+                                <label class="inputLabel inputLabelUnfocused" for="ToAddr">To Address:</label>
+                                <input id="ToAddr" name="ToAddr" type="text" is="emby-input" />
+                                <div class="fieldDescription">Recipient's email to recieve newsletter. If more than 1, seperate with commas</div>
+                            </div>
+                            <div class="inputContainer" id="FromAddress">
+                                <label class="inputLabel inputLabelUnfocused" for="FromAddr">From Address:</label>
+                                <input id="FromAddr" name="FromAddr" type="text" is="emby-input" />
+                                <div class="fieldDescription">The address that the newsletter will come from</div>
+                            </div>
+                            <div class="inputContainer" id="SubjectTemplate">
+                                <label class="inputLabel inputLabelUnfocused" for="Subject">Subject:</label>
+                                <input id="Subject" name="Subject" type="text" is="emby-input" />
+                                <div class="fieldDescription">Subject field of the newsletter (Default: 'Jellyfin Newsletter)</div>
+                            </div>
                             <div class="inputContainer" id="SMTPServerAddress">
                                 <label class="inputLabel inputLabelUnfocused" for="SMTPServer">SMTP Server Address:</label>
                                 <input id="SMTPServer" name="SMTPServerName" type="text" is="emby-input" />
@@ -152,6 +158,106 @@
                             </button>
                         </details>
                     </div>
+
+
+                    <br>
+                    <!-- Discord Webhook Details -->
+                    <div id="HiddenDetails" name="WebhookDetails" class="DropdownSection">
+                        <details>
+                            <summary>Discord Config</summary><br>
+                            <div class="inputContainer" id="DiscordWebhookAddress">
+                                <label class="inputLabel inputLabelUnfocused" for="DiscordWebhookURL">Webook URL:</label>
+                                <input id="DiscordWebhookURL" name="DiscordWebhookAddress" type="text" is="emby-input" />
+                                <div class="fieldDescription">Discord webhook URL that you want to use.</div>
+                            </div>
+                            <div class="inputContainer" id="DiscordWKName">
+                                <label class="inputLabel inputLabelUnfocused" for="DiscordWebhookName">Webhook Name:</label>
+                                <input id="DiscordWebhookName" name="DiscordWKName" type="text" is="emby-input" />
+                                <div class="fieldDescription">Name that you want to give to discord webhook. Defaults to "Jellyfin Newsletter"</div>
+                            </div>
+                            <div id="DiscordFieldSelection">
+                                <table>
+                                    <tr>
+                                        <th colspan="2">Select the fields that you want to be part of the message:</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                                <label class="emby-checkbox-label">
+                                                    <input id="DiscordDescriptionEnabled" name="DiscordDescriptionEnabled" type="checkbox" is="emby-checkbox" />
+                                                    <span>Description</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                                <label class="emby-checkbox-label">
+                                                    <input id="DiscordThumbnailEnabled" name="DiscordThumbnailEnabled" type="checkbox" is="emby-checkbox" />
+                                                    <span>Thumbnail</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                                <label class="emby-checkbox-label">
+                                                    <input id="DiscordRatingEnabled" name="DiscordRatingEnabled" type="checkbox" is="emby-checkbox" />
+                                                    <span>Rating</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                                <label class="emby-checkbox-label">
+                                                    <input id="DiscordPGRatingEnabled" name="DiscordPGRatingEnabled" type="checkbox" is="emby-checkbox" />
+                                                    <span>PG Rating</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                                <label class="emby-checkbox-label">
+                                                    <input id="DiscordDurationEnabled" name="DiscordDurationEnabled" type="checkbox" is="emby-checkbox" />
+                                                    <span>Duration</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                                <label class="emby-checkbox-label">
+                                                    <input id="DiscordEpisodesEnabled" name="DiscordEpisodesEnabled" type="checkbox" is="emby-checkbox" />
+                                                    <span>Episodes List (Will only affect in Series)</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="inputContainer">
+                                <table style="width: 100%; table-layout: fixed;">
+                                    <tr>
+                                        <th colspan="6">Series Embed Color</th>
+                                        <th colspan="6">Movies Embed Color</th>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6">
+                                            <input id="DiscordSeriesEmbedColor" name="DiscordSeriesEmbedColor" type="color" is="emby-input"
+                                                style="height: 2.2em; width: 100%;" />
+                                        </td>
+                                        <td colspan="6">
+                                            <input id="DiscordMoviesEmbedColor" name="DiscordMoviesEmbedColor" type="color" is="emby-input"
+                                                style="height: 2.2em; width: 100%;" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>                            
+                            <button id="testButtonDiscord" is="emby-button" type="button" class="raised block emby-button">
+                                <span>Test Discord</span>
+                            </button>
+                        </details>
+                    </div>
+
                         <!-- buttons -->
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
@@ -168,7 +274,7 @@
                 border-color: white;
                 padding: 10px 10px 10px 10px;
             }
-            #testButton {
+            #testButton, #testButtonDiscord {
                 background: #C1C1BF;
             }
             td {
@@ -203,6 +309,17 @@
                     config.SMTPPort = document.querySelector('#SMTPPort').value;
                     config.SMTPUser = document.querySelector('#SMTPUser').value;
                     config.SMTPPass = document.querySelector('#SMTPPass').value;
+                    //discordWebhookDetails
+                    config.DiscordWebhookURL = document.querySelector('#DiscordWebhookURL').value;
+                    config.DiscordWebhookName = document.querySelector('#DiscordWebhookName').value;
+                    config.DiscordDescriptionEnabled = document.querySelector('#DiscordDescriptionEnabled').checked;
+                    config.DiscordThumbnailEnabled = document.querySelector('#DiscordThumbnailEnabled').checked;
+                    config.DiscordRatingEnabled = document.querySelector('#DiscordRatingEnabled').checked;
+                    config.DiscordPGRatingEnabled = document.querySelector('#DiscordPGRatingEnabled').checked;
+                    config.DiscordDurationEnabled = document.querySelector('#DiscordDurationEnabled').checked;
+                    config.DiscordEpisodesEnabled = document.querySelector('#DiscordEpisodesEnabled').checked;
+                    config.DiscordSeriesEmbedColor = document.querySelector('#DiscordSeriesEmbedColor').value;
+                    config.DiscordMoviesEmbedColor = document.querySelector('#DiscordMoviesEmbedColor').value;
                     //emailDetails
                     config.ToAddr = document.querySelector('#ToAddr').value;
                     config.FromAddr = document.querySelector('#FromAddr').value;
@@ -213,10 +330,10 @@
                     //librariesEnabled
                     config.SeriesEnabled = document.querySelector('#SeriesEnabled').checked;
                     config.MoviesEnabled = document.querySelector('#MoviesEnabled').checked;
-                    //scraperConfig
+                    //scraperConfig (Deprecated)
+                    //config.PHType = document.querySelector('#HostingSelector').value;
+                    //config.ApiKey = document.querySelector('#ApiKey').value;
                     //hosting options
-                    config.PHType = document.querySelector('#HostingSelector').value;
-                    config.ApiKey = document.querySelector('#ApiKey').value;
                     config.Hostname = document.querySelector('#Hostname').value;
 
                     ApiClient.updatePluginConfiguration(NewsletterConfig.pluginUniqueId, config).then(function (result) {
@@ -236,6 +353,17 @@
                     document.querySelector('#SMTPPort').value = config.SMTPPort;
                     document.querySelector('#SMTPUser').value = config.SMTPUser;
                     document.querySelector('#SMTPPass').value = config.SMTPPass;
+                    //discordWebhookDetails
+                    document.querySelector('#DiscordWebhookURL').value = config.DiscordWebhookURL;
+                    document.querySelector('#DiscordWebhookName').value = config.DiscordWebhookName;
+                    document.querySelector('#DiscordDescriptionEnabled').checked = config.DiscordDescriptionEnabled;
+                    document.querySelector('#DiscordThumbnailEnabled').checked = config.DiscordThumbnailEnabled;
+                    document.querySelector('#DiscordRatingEnabled').checked = config.DiscordRatingEnabled;
+                    document.querySelector('#DiscordPGRatingEnabled').checked = config.DiscordPGRatingEnabled;
+                    document.querySelector('#DiscordDurationEnabled').checked = config.DiscordDurationEnabled;
+                    document.querySelector('#DiscordEpisodesEnabled').checked = config.DiscordEpisodesEnabled;
+                    document.querySelector('#DiscordSeriesEmbedColor').value = config.DiscordSeriesEmbedColor;
+                    document.querySelector('#DiscordMoviesEmbedColor').value = config.DiscordMoviesEmbedColor;
                     //emailDetails
                     document.querySelector('#ToAddr').value = config.ToAddr;
                     document.querySelector('#FromAddr').value = config.FromAddr;
@@ -246,12 +374,12 @@
                     //librariesEnabled
                     document.querySelector('#SeriesEnabled').checked = config.SeriesEnabled;
                     document.querySelector('#MoviesEnabled').checked = config.MoviesEnabled;
-                    //scraperConfig
+                    //scraperConfig (Deprecated)
+                    //document.querySelector('#HostingSelector').value = config.PHType;
+                    //hideScraperConfig();
+                    //showScraperConfig(config.PHType);
+                    //document.querySelector('#ApiKey').value = config.ApiKey;
                     //hosting options
-                    document.querySelector('#HostingSelector').value = config.PHType;
-                    hideScraperConfig();
-                    showScraperConfig(config.PHType);
-                    document.querySelector('#ApiKey').value = config.ApiKey;
                     document.querySelector('#Hostname').value = config.Hostname;
 
                     Dashboard.hideLoadingMsg();
@@ -295,11 +423,32 @@
                 return false;
             });
 
-            document.querySelector('#HostingSelector')
-                .addEventListener('change', function() {
-                hideScraperConfig();
-                showScraperConfig(this.value);
+            document.querySelector('#testButtonDiscord')
+                .addEventListener('click', function(e) {
+                Dashboard.showLoadingMsg();
+                // saveConfig();
+                console.log("Test discord message button pressed!");
+                // Configure test notification
+                ApiClient.getPluginConfiguration(NewsletterConfig.pluginUniqueId).then(function (config) {
+                    console.log("TEST: ", config);
+                    let url = ApiClient.getUrl('Discord/SendDiscordTestMessage');
+                    // console.log("ServerAddr: ", ApiClient.serverAddress());
+                    // console.log("URL: ",url);
+                    let data = JSON.stringify(config);
+                    ApiClient.ajax({ type: 'POST', url, data, contentType: 'application/json' });
+                });
+                Dashboard.hideLoadingMsg();
+                e.preventDefault();
+                alert("Test discord message sent!");
+                return false;
             });
+            
+            // Scrapper config (Deprecated)
+            // document.querySelector('#HostingSelector')
+            //     .addEventListener('change', function() {
+            //     hideScraperConfig();
+            //     showScraperConfig(this.value);
+            // });
 
         </script>
     </div>
