@@ -124,6 +124,14 @@ public class Scraper
         totalLibCount = items.Count;
         logger.Info($"Scan Size: {totalLibCount}");
         logger.Info($"Scanning '{type}'");
+
+        var allowedExternalIds = new Dictionary<string, string>
+        {
+            { "Imdb", "imdb_id" },
+            { "Tmdb", "tmdb" },
+            { "Tvdb", "tvdb_id" },
+        };
+
         foreach (BaseItem item in items)
         {
             logger.Debug("---------------");
@@ -175,7 +183,10 @@ public class Scraper
 
                     foreach (var kvp in series.ProviderIds)
                     {
-                        logger.Debug($"External ID: {kvp.Key} => {kvp.Value}");
+                        if (allowedExternalIds.TryGetValue(kvp.Key, out var mappedKey))
+                        {
+                            logger.Debug($"External ID: {allowedExternalIds[kvp.Key]} => {kvp.Value}");
+                        }
                     }
                 }
                 catch (Exception e)
@@ -186,10 +197,14 @@ public class Scraper
                 }
 
                 JsonFileObj currFileObj = new JsonFileObj();
+
                 foreach (var kvp in series.ProviderIds)
                 {
-                    // logger.Info($"External ID - {kvp.Key}: {kvp.Value}");
-                    currFileObj.ExternalIds[kvp.Key] = kvp.Value;
+                    if (allowedExternalIds.TryGetValue(kvp.Key, out var mappedKey))
+                    {
+                        // logger.Debug($"External ID: {kvp.Key} => {kvp.Value}");
+                        currFileObj.ExternalIds[allowedExternalIds[kvp.Key]] = kvp.Value;
+                    }                    
                 }
 
                 currFileObj.Filename = episode.Path;
@@ -404,7 +419,7 @@ public class Scraper
             }
         }
 
-        logger.Debug("Uploading poster...");
+        logger.Debug("Grabbing poster...");
         logger.Debug(currObj.ItemID);
         logger.Debug(currObj.PosterPath);
         // return string.Empty;
