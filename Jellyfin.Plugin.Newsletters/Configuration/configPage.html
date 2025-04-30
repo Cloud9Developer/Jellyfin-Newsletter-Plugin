@@ -82,9 +82,10 @@
                         </details>
                     </div>
                     <br>
-
+                    
+                    <!-- Deprecating scraper configuration part as we have moved to tmdb api for poster images -->
                     <!-- Scraper configuration Details -->
-                    <div id="HiddenDetails" name="ScraperConfig" class="DropdownSection">
+                    <!-- <div id="HiddenDetails" name="ScraperConfig" class="DropdownSection">
                         <details>
                             <summary>Scraper Config</summary><br>
                             <div class="selectContainer">
@@ -112,7 +113,7 @@
                         </details>
                     </div>
 
-                    <br>
+                    <br> -->
                     <!-- SMTP Server Details -->
                     <div id="HiddenDetails" name="ServerDetails" class="DropdownSection">
                         <details>
@@ -329,10 +330,10 @@
                     //librariesEnabled
                     config.SeriesEnabled = document.querySelector('#SeriesEnabled').checked;
                     config.MoviesEnabled = document.querySelector('#MoviesEnabled').checked;
-                    //scraperConfig
+                    //scraperConfig (Deprecated)
+                    //config.PHType = document.querySelector('#HostingSelector').value;
+                    //config.ApiKey = document.querySelector('#ApiKey').value;
                     //hosting options
-                    config.PHType = document.querySelector('#HostingSelector').value;
-                    config.ApiKey = document.querySelector('#ApiKey').value;
                     config.Hostname = document.querySelector('#Hostname').value;
 
                     ApiClient.updatePluginConfiguration(NewsletterConfig.pluginUniqueId, config).then(function (result) {
@@ -373,12 +374,12 @@
                     //librariesEnabled
                     document.querySelector('#SeriesEnabled').checked = config.SeriesEnabled;
                     document.querySelector('#MoviesEnabled').checked = config.MoviesEnabled;
-                    //scraperConfig
+                    //scraperConfig (Deprecated)
+                    //document.querySelector('#HostingSelector').value = config.PHType;
+                    //hideScraperConfig();
+                    //showScraperConfig(config.PHType);
+                    //document.querySelector('#ApiKey').value = config.ApiKey;
                     //hosting options
-                    document.querySelector('#HostingSelector').value = config.PHType;
-                    hideScraperConfig();
-                    showScraperConfig(config.PHType);
-                    document.querySelector('#ApiKey').value = config.ApiKey;
                     document.querySelector('#Hostname').value = config.Hostname;
 
                     Dashboard.hideLoadingMsg();
@@ -441,12 +442,13 @@
                 alert("Test discord message sent!");
                 return false;
             });
-
-            document.querySelector('#HostingSelector')
-                .addEventListener('change', function() {
-                hideScraperConfig();
-                showScraperConfig(this.value);
-            });
+            
+            // Scrapper config (Deprecated)
+            // document.querySelector('#HostingSelector')
+            //     .addEventListener('change', function() {
+            //     hideScraperConfig();
+            //     showScraperConfig(this.value);
+            // });
 
         </script>
     </div>

@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using Jellyfin.Plugin.Newsletters.Configuration;
 using Jellyfin.Plugin.Newsletters.LOGGER;
 using Jellyfin.Plugin.Newsletters.Scripts.ENTITIES;
@@ -21,6 +22,9 @@ public class PosterImageHandler
     private readonly PluginConfiguration config;
     private Logger logger;
     private SQLiteDatabase db;
+    private static readonly object RateLimitLock = new object();
+    private static readonly TimeSpan MinInterval = TimeSpan.FromMilliseconds(25);
+    private static DateTime lastRequestTime = DateTime.MinValue;
 
     // Non-readonly
     private List<JsonFileObj> archiveSeriesList;
@@ -66,22 +70,35 @@ public class PosterImageHandler
                     url = $"https://api.themoviedb.org/3/find/{externalIdValue}?external_source={externalIdName}&api_key={apiKey}";
                 }
 
+                // TMDB api has rate-limiting which is 50 requests/second (https://developer.themoviedb.org/docs/rate-limiting)
+                // This is a very poor attempt for now, we can add a better rate limit logic in future :)
+                // Rate-limiting logic
+                lock (RateLimitLock)
+                {
+                    var now = DateTime.UtcNow;
+                    var timeSinceLast = now - lastRequestTime;
+                    if (timeSinceLast < MinInterval)
+                    {
+                        logger.Debug($"Sleeping for {MinInterval - timeSinceLast}");
+                        Thread.Sleep(MinInterval - timeSinceLast);
+                    }
+
+                    lastRequestTime = DateTime.UtcNow;
+                }
+
                 string response = wc.DownloadString(url);
                 logger.Debug("TMDB Response: " + response);
 
                 JObject json = JObject.Parse(response);
 
-                // It can be in movie_results or tv_results depending on the type
                 JToken? posterPathToken = null;
 
                 if (externalIdName == "tmdb")
                 {
-                    // When using direct TMDB ID (no movie_results or tv_results array)
                     posterPathToken = json["poster_path"];
                 }
                 else
                 {
-                    // When using external IDs like imdb_id, tvdb_id, etc.
                     if (item.Type == "Series")
                     {
                         posterPathToken = json["tv_results"]?.FirstOrDefault()?["poster_path"];
@@ -105,8 +122,6 @@ public class PosterImageHandler
                 }
             }
 
-            // If we're here that means we were not able to find the poster path
-            // return an empty string
             return string.Empty;
         }
         catch (WebException e)
@@ -125,43 +140,43 @@ public class PosterImageHandler
         }
     }
 
-    private string UploadToImgur(string posterFilePath)
-    {
-        WebClient wc = new();
+    // private string UploadToImgur(string posterFilePath)
+    // {
+    //     WebClient wc = new();
 
-        NameValueCollection values = new()
-        {
-            { "image", Convert.ToBase64String(File.ReadAllBytes(posterFilePath)) }
-        };
+    //     NameValueCollection values = new()
+    //     {
+    //         { "image", Convert.ToBase64String(File.ReadAllBytes(posterFilePath)) }
+    //     };
 
-        wc.Headers.Add("Authorization", "Client-ID " + config.ApiKey);
+    //     wc.Headers.Add("Authorization", "Client-ID " + config.ApiKey);
 
-        try
-        {
-            byte[] response = wc.UploadValues("https://api.imgur.com/3/upload.xml", values);
+    //     try
+    //     {
+    //         byte[] response = wc.UploadValues("https://api.imgur.com/3/upload.xml", values);
 
-            string res = System.Text.Encoding.Default.GetString(response);
+    //         string res = System.Text.Encoding.Default.GetString(response);
 
-            logger.Debug("Imgur Response: " + res);
+    //         logger.Debug("Imgur Response: " + res);
 
-            logger.Info("Imgur Uploaded! Link:");
-            logger.Info(res.Split("<link>")[1].Split("</link>")[0]);
+    //         logger.Info("Imgur Uploaded! Link:");
+    //         logger.Info(res.Split("<link>")[1].Split("</link>")[0]);
 
-            return res.Split("<link>")[1].Split("</link>")[0];
-        }
-        catch (WebException e)
-        {
-            logger.Debug("WebClient Return STATUS: " + e.Status);
-            logger.Debug(e.ToString().Split(")")[0].Split("(")[1]);
-            try
-            {
-                return e.ToString().Split(")")[0].Split("(")[1];
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Error caught while trying to parse webException error: " + ex);
-                return "ERR";
-            }
-        }
-    }
+    //         return res.Split("<link>")[1].Split("</link>")[0];
+    //     }
+    //     catch (WebException e)
+    //     {
+    //         logger.Debug("WebClient Return STATUS: " + e.Status);
+    //         logger.Debug(e.ToString().Split(")")[0].Split("(")[1]);
+    //         try
+    //         {
+    //             return e.ToString().Split(")")[0].Split("(")[1];
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             logger.Error("Error caught while trying to parse webException error: " + ex);
+    //             return "ERR";
+    //         }
+    //     }
+    // }
 }
