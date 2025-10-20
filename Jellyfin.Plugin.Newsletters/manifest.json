@@ -13,8 +13,8 @@
                 "changelog": "- Updated/fixed support for Jellyfin Server release 10.11.0 FULL CHANGELOG: https://raw.githubusercontent.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/master/CHANGELOG.md\n",
                 "targetAbi": "10.11.0.0",
                 "sourceUrl": "https://github.com/Cloud9Developer/Jellyfin-Newsletter-Plugin/releases/download/v0.6.5.0/newsletters_0.6.5.0.zip",
-                "checksum": "17692491ab14f54b665cbe6533be77fb",
-                "timestamp": "2025-10-20T18:29:26Z"
+                "checksum": "bfcf2be1ace269e5a248d13c17de6ea4",
+                "timestamp": "2025-10-20T18:37:11Z"
             },
             {
                 "version": "0.6.4.2",
