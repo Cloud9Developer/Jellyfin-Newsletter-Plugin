@@ -126,7 +126,8 @@ public class SQLiteDatabase
                     }
                     catch (SQLiteException sle)
                     {
-                        logger.Warn(sle);
+                        // logger.Warn(sle);
+                        logger.Debug(sle);
                     }
                 }
             }

@@ -18,7 +18,7 @@ IMAGE="pypi_dotnet"
 echo "Using image: '${IMAGE}:${TAG}.0'"
 if ! docker images -a | grep "${IMAGE}" | grep "${TAG}.0"; then
     echo "Generating '${IMAGE}:${TAG}.0' image"
-    docker build -t ${IMAGE}:${TAG}.0 --build-arg IMAGE_TAG=8 ./BuildScripts/
+    docker build -t ${IMAGE}:${TAG}.0 --build-arg IMAGE_TAG=9 ./BuildScripts/
 else
     echo "Image already exists!"
 fi
