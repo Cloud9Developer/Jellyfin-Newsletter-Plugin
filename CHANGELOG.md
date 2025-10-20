@@ -1,3 +1,6 @@
+# 0.6.5.0
+- Updated/fixed support for Jellyfin Server release 10.11.0
+
 # 0.6.4.0
 - Minor bug fix
 

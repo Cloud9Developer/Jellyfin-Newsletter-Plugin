@@ -106,14 +106,28 @@ public class Scraper
         {
             InternalItemsQuery series = new InternalItemsQuery();
             series.IncludeItemTypes = new[] { BaseItemKind.Episode };
-            BuildObjs(libManager.GetItemList(series), "Series"); // populate series
+            BuildObjs(libManager.GetItemList(series).ToList(), "Series"); // populate series
+
+            // BuildObjs(
+            //     libManager.GetItemList(new InternalItemsQuery
+            //     {
+            //         IncludeItemTypes = new[] { BaseItemKind.Episode }
+            //     }),
+            //     "Series"); 
         }
 
         if (config.MoviesEnabled)
         {
             InternalItemsQuery movie = new InternalItemsQuery();
             movie.IncludeItemTypes = new[] { BaseItemKind.Movie };
-            BuildObjs(libManager.GetItemList(movie), "Movie"); // populate movies
+            BuildObjs(libManager.GetItemList(movie).ToList(), "Movie"); // populate movies
+
+            // BuildObjs(
+            //     libManager.GetItemList(new InternalItemsQuery
+            //     {
+            //         IncludeItemTypes = new[] { BaseItemKind.Movie }
+            //     }),
+            //     "Movie");
         }
     }
 

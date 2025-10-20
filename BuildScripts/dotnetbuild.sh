@@ -10,6 +10,8 @@ if [[ "${1}" == "prod" ]]; then
     ./BuildScripts/jprm_build.sh
     cp ./Jellyfin.Plugin.Newsletters/manifest.json ./manifest.json
 else
+    # dotnet --list-sdks
+    # dotnet clean
     dotnet build
     # dotnet publish
 fi

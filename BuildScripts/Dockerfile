@@ -1,4 +1,5 @@
-ARG IMAGE_TAG=8
+# ARG IMAGE_TAG=8
+ARG IMAGE_TAG=9
 FROM mcr.microsoft.com/dotnet/sdk:${IMAGE_TAG}.0
 
 RUN apt-get update -y && \

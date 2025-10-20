@@ -7,8 +7,8 @@ fi
 read -p "VERSION: " ver
 
 zip -j ${dir}/Newsletters-v${ver}.zip \
-    Jellyfin.Plugin.Newsletters/bin/Release/net8.0/Jellyfin.Plugin.Newsletters.dll \
-    Jellyfin.Plugin.Newsletters/bin/Release/net8.0/publish/SQLitePCL.pretty.dll
+    Jellyfin.Plugin.Newsletters/bin/Release/net9.0/Jellyfin.Plugin.Newsletters.dll \
+    Jellyfin.Plugin.Newsletters/bin/Release/net9.0/publish/SQLitePCL.pretty.dll
 
 echo '---'
 
