@@ -1,79 +1,129 @@
-<html>
-	<body>
-		<div>
-			<table width="100%" style="margin-left: auto; margin-right: auto; font-family:'Google Sans',Arial,sans-serif;">
-				<tr width="100%"> 
-					<td width="100%" height="100%" style="vertical-align: top; background-color: #000000;"> 
-						<table id="InsertHere" name="MainTable" style="margin-left: auto; margin-right: auto; border-spacing: 0 10px; padding: 0 10px;"> 
-							<tr style="text-align: center;"> 
-								<td colspan="2"> 
-									<h1 id="Title" style="font-size:3.3em;margin:10px 0 0 0;"><a href="[YOUR.JELLYFIN.SERVER]" target="_blank" style="color:#E197BC;text-decoration: none;"><img src="https://cdn0.iconfinder.com/data/icons/google-material-design-3-0/48/ic_play_circle_filled_white_48px-512.png" style="height: 1.3em;margin-bottom:-12px;"> Jellyfin Newsletter</a></h1>
-									<h3 id="Date" style="color:#FFFFFF;margin:0px;">{Date}</h3>
-								</td> 
-							</tr>
-							<!-- Fill this in from code --> 
-							<tr class="boxed" style="outline: 1px solid #bf7df0;border-radius: 25px;">
-								<td>
-									<table style="margin:0;padding:0;border:0;">
-										<tr style="margin:0;padding:0;border:0;">
-											<td rowspan="0" class="lefttable" style="padding-right: 20px; padding-left: 20px; padding-top: 20px; padding-bottom: 20px;"> 
-												<a href="{ServerURL}" target="_blank"><img style="width: 133px; height: 200px;" src="{ImageURL}"></a>
-											</td>
-											<td class="righttable" style="vertical-align: top; padding-right: 10px; padding-top: 10px;width:100%;"> 
-												<div id="SeriesTitle" class="text" style="color: #FFFFFF; text-align: center;">
-													<h2 style="margin-top:6px;margin-bottom:0px;"><a href="{ServerURL}" target="_blank" style="color:#87beff;text-decoration: none;">
-													{Title} 
-													</a></h2>
-												</div>
-												
-												<!-- One time create, not loop for these elements-->
-												<table>
-													<td>
-														<div id="runtime" style="color: #d190c5; font-size: small;">
-															<b>Duration:</b> <i>{RunTime} min.</i> |
-														</div>
-													</td>
-													<td>
-														<div id="communityrating" style="color: #d190c5; font-size: small;">
-															<img src="https://cdn-icons-png.flaticon.com/512/3418/3418886.png" style="height: 15px;"> 
-														</div>
-													</td>
-													<td>
-														<div id="communityrating" style="color: #d190c5; font-size: small;">
-															{CommunityRating} |
-														</div>
-													</td>
-													<td>
-														<div id="officialrating" style="color: #d190c5; font-size: small;">
-															{OfficialRating} |
-														</div>
-													</td>
-													<td>
-														<div id="premiereyear" style="color: #d190c5; font-size: small;">
-															{PremiereYear}
-														</div>
-													</td>
-												</table>
-							
-												<!--  -->
-												
-												<div class="text" style="color: #d190c5;">
-													{SeasonEpsInfo}
-												</div>
-												<hr style="border-color: #007fb1;margin-bottom:12px;width:80%;"/> 
-												<div id="Description" class="text" style="color: #FFFFFF;">
-													{SeriesOverview}
-												</div>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<!-- Fill that in from code -->
-						</table> 
-					</td>
-				</tr> 
-			</table> 
-		</div>
-	</body>
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <style>
+            .container {
+                font-family: 'Google Sans', Arial, sans-serif;
+                color: #ffffff;
+                align-items: center;
+                width: 100%;
+                background-color: #2c2c2c;
+                overflow: hidden;
+            }
+            .header {
+                background-color: #000000;
+                text-align: center;
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 2.5em;
+                margin: 0;
+                text-align:center;
+            }
+            .header a {
+                color: #139ad8;
+                text-decoration: none;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .header img {
+                height: 1.5em;
+                margin-right: 10px;
+            }
+            .content {
+                padding: 20px;
+            }
+            .date {
+            color:#FFFFFF;margin:0px;
+            text-align:center;
+            }
+            .movie-card {
+                display: flex;
+                background-color: #3a3a3a;
+                border-radius: 12px;
+                margin: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .movie-card img {
+                width: 150px;
+                height: 225px;
+                object-fit: cover;
+            }
+            .movie-details {
+                padding: 20px;
+                flex: 1;
+            }
+            .movie-details h2 {
+                margin: 0 0 10px;
+                color: #87beff;
+            }
+            .movie-details a {
+                color: #87beff;
+                text-decoration: none;
+            }
+            .movie-info {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                font-size: 0.9em;
+                color: #d190c5;
+            }
+            .movie-info div {
+                display: flex;
+                align-items: center;
+            }
+            .movie-info img {
+            height: 20px;
+            width: 20px;
+            margin-right: 5px;
+            }
+            .movie-description {
+                margin-top: 10px;
+            }
+            .footer {
+                text-align: center;
+                padding: 20px;
+                background-color: #000000;
+                font-size: 0.9em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>
+                    <a href="{ServerURL}" target="_blank">
+                        <img src="https://play-lh.googleusercontent.com/FAlWhVMAjAzI6Nxc7bf4KPgjbwA3GT9j2bzeAMnRpdWim_2SXnS9i4zhwasKWIC8PV4" alt="Jellyfin Logo"> 
+                        Jellyfin Newsletter
+                    </a>
+                </h1>
+                <h3 class="date">{Date}</h3>
+            </div>
+               <!-- Fill this in from code -->
+			   <div class="movie-card">
+				<a href="{ServerURL}" target="_blank">
+					<img src="{ImageURL}" alt="{Title}">
+				</a>
+				<div class="movie-details">
+					<h2><a href="{ServerURL}" target="_blank">{Title}</a></h2>
+					<div class="movie-info">
+						<div><strong>Duration: {RunTime} min</strong></div>
+						<div>
+							<img src="https://cdn-icons-png.flaticon.com/512/3418/3418886.png" alt="Rating"> 
+							{CommunityRating} | {OfficialRating} | {PremiereYear}
+						</div>
+					</div>
+					<div class="movie-info">
+						<div>{SeasonEpsInfo}</div>
+					</div>
+					<div class="movie-description">
+						{SeriesOverview}
+					</div>
+				</div>
+			</div>
+			   <!-- Fill that in from code -->
+        </div>
+    </body>
 </html>
